@@ -81,4 +81,4 @@ def sqlInsert(data, conn):
     return None
 if __name__ == '__main__':
     import sys
-    main(sys.argv[1:)
+    main(sys.argv[1:])
