@@ -37,6 +37,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+INSERT INTO `admin` VALUES ('cool_class4400');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -48,7 +49,7 @@ DROP TABLE IF EXISTS `company`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `company` (
-  `comName` varchar(20) NOT NULL,
+  `comName` varchar(45) NOT NULL,
   PRIMARY KEY (`comName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -59,6 +60,7 @@ CREATE TABLE `company` (
 
 LOCK TABLES `company` WRITE;
 /*!40000 ALTER TABLE `company` DISABLE KEYS */;
+INSERT INTO `company` VALUES ('4400 Theater Company'),('AI Theater Company'),('Awesome Theater Company'),('EZ Theater Company');
 /*!40000 ALTER TABLE `company` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,6 +84,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+INSERT INTO `customer` VALUES ('calcultron'),('calcultron2'),('calcwizard'),('clarinetbeast'),('cool_class4400'),('DNAhelix'),('does2Much'),('eeqmcsquare'),('entropyRox'),('fullMetal'),('georgep'),('ilikemoney$$'),('imready'),('isthisthekrustykrab'),('notFullMetal'),('programerAAL'),('RitzLover28'),('thePiGuy3.14'),('theScienceGuy');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,8 +96,8 @@ DROP TABLE IF EXISTS `customercreditcard`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customercreditcard` (
-  `creditCardNum` int(11) NOT NULL,
-  `username` varchar(45) DEFAULT NULL,
+  `creditCardNum` bigint(15) NOT NULL,
+  `username` varchar(45) NOT NULL,
   PRIMARY KEY (`creditCardNum`),
   KEY `fk_custcredit_cust_idx` (`username`),
   CONSTRAINT `fk_custcredit_cust` FOREIGN KEY (`username`) REFERENCES `customer` (`username`)
@@ -107,6 +110,7 @@ CREATE TABLE `customercreditcard` (
 
 LOCK TABLES `customercreditcard` WRITE;
 /*!40000 ALTER TABLE `customercreditcard` DISABLE KEYS */;
+INSERT INTO `customercreditcard` VALUES (1111111111000000,'calcultron'),(1111111100000000,'calcultron2'),(1111111110000000,'calcultron2'),(1111111111100000,'calcwizard'),(2222222222000000,'cool_class4400'),(2220000000000000,'DNAhelix'),(2222222200000000,'does2Much'),(2222222222222200,'eeqmcsquare'),(2222222222200000,'entropyRox'),(2222222222220000,'entropyRox'),(1100000000000000,'fullMetal'),(1111111111110000,'georgep'),(1111111111111000,'georgep'),(1111111111111100,'georgep'),(1111111111111110,'georgep'),(1111111111111111,'georgep'),(2222222222222220,'ilikemoney$$'),(2222222222222222,'ilikemoney$$'),(9000000000000000,'ilikemoney$$'),(1111110000000000,'imready'),(1110000000000000,'isthisthekrustykrab'),(1111000000000000,'isthisthekrustykrab'),(1111100000000000,'isthisthekrustykrab'),(1000000000000000,'notFullMetal'),(2222222000000000,'programerAAL'),(3333333333333300,'RitzLover28'),(2222222220000000,'thePiGuy3.14'),(2222222222222000,'theScienceGuy');
 /*!40000 ALTER TABLE `customercreditcard` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -118,7 +122,7 @@ DROP TABLE IF EXISTS `customerviewmovie`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customerviewmovie` (
-  `creditCardNum` int(11) NOT NULL,
+  `creditCardNum` bigint(15) NOT NULL,
   `thName` varchar(45) NOT NULL,
   `comName` varchar(45) NOT NULL,
   `movName` varchar(45) NOT NULL,
@@ -126,7 +130,6 @@ CREATE TABLE `customerviewmovie` (
   `movPlayDate` date NOT NULL,
   PRIMARY KEY (`creditCardNum`,`thName`,`comName`,`movName`,`movReleaseDate`,`movPlayDate`),
   KEY `fk_custview_movplay_idx` (`thName`,`comName`,`movName`,`movReleaseDate`,`movPlayDate`),
-  CONSTRAINT `fk_custview_custcredit` FOREIGN KEY (`creditCardNum`) REFERENCES `customercreditcard` (`creditCardNum`),
   CONSTRAINT `fk_custview_movplay` FOREIGN KEY (`thName`, `comName`, `movName`, `movReleaseDate`, `movPlayDate`) REFERENCES `movieplay` (`thName`, `comName`, `movName`, `movReleaseDate`, `movPlayDate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -137,6 +140,7 @@ CREATE TABLE `customerviewmovie` (
 
 LOCK TABLES `customerviewmovie` WRITE;
 /*!40000 ALTER TABLE `customerviewmovie` DISABLE KEYS */;
+INSERT INTO `customerviewmovie` VALUES (1111111111111111,'Cinema Star','4400 Theater Company','How to Train Your Dragon','2010-03-21','2010-04-02'),(1111111111111111,'Main Movies','EZ Theater Company','How to Train Your Dragon','2010-03-21','2010-03-22'),(1111111111111111,'Main Movies','EZ Theater Company','How to Train Your Dragon','2010-03-21','2010-03-23'),(1111111111111100,'Star Movies','EZ Theater Company','How to Train Your Dragon','2010-03-21','2010-03-25');
 /*!40000 ALTER TABLE `customerviewmovie` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -154,6 +158,15 @@ CREATE TABLE `employee` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `employee`
+--
+
+LOCK TABLES `employee` WRITE;
+/*!40000 ALTER TABLE `employee` DISABLE KEYS */;
+INSERT INTO `employee` VALUES ('calcultron'),('cool_class4400'),('entropyRox'),('fatherAI'),('georgep'),('ghcghc'),('imbatman'),('manager1'),('manager2'),('manager3'),('manager4'),('radioactivePoRa');
+/*!40000 ALTER TABLE `employee` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `manager`
@@ -167,7 +180,7 @@ CREATE TABLE `manager` (
   `comName` varchar(45) NOT NULL,
   `manStreet` varchar(45) NOT NULL,
   `manCity` varchar(45) NOT NULL,
-  `manState` varchar(2) NOT NULL,
+  `manState` varchar(5) NOT NULL,
   `manZipcode` int(11) NOT NULL,
   `thName` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`username`),
@@ -183,6 +196,7 @@ CREATE TABLE `manager` (
 
 LOCK TABLES `manager` WRITE;
 /*!40000 ALTER TABLE `manager` DISABLE KEYS */;
+INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,'Jonathan\'s Movies'),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
 /*!40000 ALTER TABLE `manager` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +208,7 @@ DROP TABLE IF EXISTS `movie`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `movie` (
-  `movName` varchar(30) NOT NULL,
+  `movName` varchar(45) NOT NULL,
   `movReleaseDate` date NOT NULL,
   `duration` int(11) NOT NULL,
   PRIMARY KEY (`movName`,`movReleaseDate`)
@@ -207,6 +221,7 @@ CREATE TABLE `movie` (
 
 LOCK TABLES `movie` WRITE;
 /*!40000 ALTER TABLE `movie` DISABLE KEYS */;
+INSERT INTO `movie` VALUES ('4400 The Movie','2019-08-12',130),('Avengers: Endgame','2019-04-26',181),('Calculus Returns: A ML Story','2019-09-19',314),('George P Burdell\'s Life Story','1927-08-12',100),('Georgia Tech The Movie','1985-08-13',100),('How to Train Your Dragon','2010-03-21',98),('Spaceballs','1987-06-24',96),('Spider-Man: Into the Spider-Verse','2018-12-01',117),('The First Pokemon Movie','1998-07-19',75),('The King\'s Speech','2010-11-26',119);
 /*!40000 ALTER TABLE `movie` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,6 +251,7 @@ CREATE TABLE `movieplay` (
 
 LOCK TABLES `movieplay` WRITE;
 /*!40000 ALTER TABLE `movieplay` DISABLE KEYS */;
+INSERT INTO `movieplay` VALUES ('ABC Theater','Awesome Theater Company','4400 The Movie','2019-08-12','2019-10-12'),('Cinema Star','4400 Theater Company','4400 The Movie','2019-08-12','2019-09-12'),('Star Movies','EZ Theater Company','4400 The Movie','2019-08-12','2019-08-12'),('ML Movies','AI Theater Company','Calculus Returns: A ML Story','2019-09-19','2019-10-10'),('ML Movies','AI Theater Company','Calculus Returns: A ML Story','2019-09-19','2019-12-30'),('Cinema Star','4400 Theater Company','George P Burdell\'s Life Story','1927-08-12','2010-05-20'),('Main Movies','EZ Theater Company','George P Burdell\'s Life Story','1927-08-12','2019-07-14'),('Main Movies','EZ Theater Company','George P Burdell\'s Life Story','1927-08-12','2019-10-22'),('ABC Theater','Awesome Theater Company','Georgia Tech The Movie','1985-08-13','1985-08-13'),('Cinema Star','4400 Theater Company','Georgia Tech The Movie','1985-08-13','2019-09-30'),('Cinema Star','4400 Theater Company','How to Train Your Dragon','2010-03-21','2010-04-02'),('Main Movies','EZ Theater Company','How to Train Your Dragon','2010-03-21','2010-03-22'),('Main Movies','EZ Theater Company','How to Train Your Dragon','2010-03-21','2010-03-23'),('Star Movies','EZ Theater Company','How to Train Your Dragon','2010-03-21','2010-03-25'),('Cinema Star','4400 Theater Company','Spaceballs','1987-06-24','2000-02-02'),('Main Movies','EZ Theater Company','Spaceballs','1987-06-24','1999-06-24'),('ML Movies','AI Theater Company','Spaceballs','1987-06-24','2010-04-02'),('ML Movies','AI Theater Company','Spaceballs','1987-06-24','2023-01-23'),('ML Movies','AI Theater Company','Spider-Man: Into the Spider-Verse','2018-12-01','2019-09-30'),('ABC Theater','Awesome Theater Company','The First Pokemon Movie','1998-07-19','2018-07-19'),('Cinema Star','4400 Theater Company','The King\'s Speech','2010-11-26','2019-12-20'),('Main Movies','EZ Theater Company','The King\'s Speech','2010-11-26','2019-12-20');
 /*!40000 ALTER TABLE `movieplay` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,6 +285,7 @@ CREATE TABLE `theater` (
 
 LOCK TABLES `theater` WRITE;
 /*!40000 ALTER TABLE `theater` DISABLE KEYS */;
+INSERT INTO `theater` VALUES ('ABC Theater','Awesome Theater Company',5,'880 Color Dr','Austin','TX',73301,'imbatman'),('Cinema Star','4400 Theater Company',4,'100 Cool Place','San Francisco','CA',94016,'entropyRox'),('Jonathan\'s Movies','4400 Theater Company',2,'67 Pearl Dr','Seattle','WA',98101,'georgep'),('Main Movies','EZ Theater Company',3,'123 Main St','New York','NY',10001,'fatherAI'),('ML Movies','AI Theater Company',3,'314 Pi St','Pallet Town','KS',31415,'ghcghc'),('Star Movies','4400 Theater Company',5,'4400 Rocks Ave','Boulder','CA',80301,'radioactivePoRa'),('Star Movies','EZ Theater Company',2,'745 GT St','Atlanta','GA',30332,'calcultron');
 /*!40000 ALTER TABLE `theater` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -293,6 +310,16 @@ CREATE TABLE `user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES ('calcultron','Approved','333333333','Dwight','Schrute','1','1','0'),('calcultron2','Approved','444444444','Jim','Halpert','0','1','0'),('calcwizard','Approved','222222222','Issac','Newton','0','1','0'),('clarinetbeast','Declined','999999999','Squidward','Tentacles','0','1','0'),('cool_class4400','Approved','333333333','A. TA','Washere','1','1','0'),('DNAhelix','Approved','777777777','Rosalind','Franklin','0','1','0'),('does2Much','Approved','1212121212','Carl','Gauss','0','1','0'),('eeqmcsquare','Approved','111111110','Albert','Einstein','0','1','0'),('entropyRox','Approved','999999999','Claude','Shannon','1','1','0'),('fatherAI','Approved','222222222','Alan','Turing','1','0','0'),('fullMetal','Approved','111111100','Edward','Elric','0','1','0'),('gdanger','Declined','555555555','Gary','Danger','0','0','1'),('georgep','Approved','111111111','George P.','Burdell','1','1','0'),('ghcghc','Approved','666666666','Grace','Hopper','1','0','0'),('ilikemoney$$','Approved','111111110','Eugene','Krabs','0','1','0'),('imbatman','Approved','666666666','Bruce','Wayne','1','0','0'),('imready','Approved','777777777','Spongebob','Squarepants','0','1','0'),('isthisthekrustykrab','Approved','888888888','Patrick','Star','0','1','0'),('manager1','Approved','1122112211','Manager','One','1','0','0'),('manager2','Approved','3131313131','Manager','Two','1','0','0'),('manager3','Approved','8787878787','Three','Three','1','0','0'),('manager4','Approved','5755555555','Four','Four','1','0','0'),('notFullMetal','Approved','111111100','Alphonse','Elric','0','1','0'),('programerAAL','Approved','3131313131','Ada','Lovelace','0','1','0'),('radioactivePoRa','Approved','1313131313','Marie','Curie','1','0','0'),('RitzLover28','Approved','444444444','Abby','Normal','0','1','0'),('smith_j','Pending','333333333','John','Smith','0','0','1'),('texasStarKarate','Declined','111111110','Sandy','Cheeks','0','0','1'),('thePiGuy3.14','Approved','1111111111','Archimedes','Syracuse','0','1','0'),('theScienceGuy','Approved','999999999','Bill','Nye','0','1','0');
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `uservisittheater`
 --
 
@@ -310,7 +337,7 @@ CREATE TABLE `uservisittheater` (
   KEY `fk_uservisit_th_idx` (`thName`,`comName`),
   CONSTRAINT `fk_uservisit_th` FOREIGN KEY (`thName`, `comName`) REFERENCES `theater` (`thName`, `comName`),
   CONSTRAINT `fk_uservisit_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -319,6 +346,7 @@ CREATE TABLE `uservisittheater` (
 
 LOCK TABLES `uservisittheater` WRITE;
 /*!40000 ALTER TABLE `uservisittheater` DISABLE KEYS */;
+INSERT INTO `uservisittheater` VALUES (1,'georgep','Main Movies','EZ Theater Company','2010-03-22'),(2,'calcwizard','Main Movies','EZ Theater Company','2010-03-22'),(3,'calcwizard','Star Movies','EZ Theater Company','2010-03-25'),(4,'imready','Star Movies','EZ Theater Company','2010-03-25'),(5,'calcwizard','ML Movies','AI Theater Company','2010-03-20');
 /*!40000 ALTER TABLE `uservisittheater` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -339,4 +367,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-18 12:04:32
+-- Dump completed on 2019-11-18 15:05:19
