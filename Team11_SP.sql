@@ -69,6 +69,10 @@ END
 -- Last one done - Screen 13: Admin decline user
 
 -- INSERT YOUR STUFF HERE
+CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_schedule_mov`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_movPlayDate DATE)
+BEGIN
+	INSERT INTO movieplay(thName, comName, movName, movReleaseDate, movPlayDate) VALUES((SELECT thName FROM team11.manager WHERE username = i_manUsername), (SELECT comName FROM team11.manager WHERE username = i_manUsername), i_movName, i_movReleaseDate, i_movPlayDate);
+END
 
 -- Next procedure - Screen 22: User filter theater
 
