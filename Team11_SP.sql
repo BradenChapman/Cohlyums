@@ -74,6 +74,42 @@ BEGIN
 	INSERT INTO movieplay(thName, comName, movName, movReleaseDate, movPlayDate) VALUES((SELECT thName FROM team11.manager WHERE username = i_manUsername), (SELECT comName FROM team11.manager WHERE username = i_manUsername), i_movName, i_movReleaseDate, i_movPlayDate);
 END
 
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_filter_mov`(IN i_movName VARCHAR(50), IN i_comName VARCHAR(50), IN i_city VARCHAR(50), IN i_state CHAR(3), IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE)
+BEGIN
+    DROP TABLE IF EXISTS CosFilterMovie;
+    CREATE TABLE CosFilterMovie
+    SELECT (movName, thName, thStreet, thCity, thState, thZipcode, comName, movPlayDate, movReleaseDate)
+    FROM theater 
+    NATURAL JOIN movieplay
+    WHERE
+	(i_movName = movName or i_movName = "ALL") AND
+        (i_comName = comName or i_comName = "ALL") AND
+        (i_city = thCity or i_city = "ALL") AND
+        (i_state = thState or i_state = "ALL") AND
+        (i_minMovPlayDate IS NULL OR movPlayDate >= i_minMovPlayDate) AND
+        (i_maxMovPlayDate IS NULL OR movPlayDate <= i_maxMovPlayDate);
+END
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_view_mov`(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
+BEGIN
+    INSERT INTO customerviewmovie (creditcardnum, thName, comName, movName, movReleaseDate, movPlayDate) 
+    VALUES (i_creditCardNum, i_thName, i_comName, i_movName, i_movReleaseDate, i_movPlayDate);
+END
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_view_history`(IN i_cusUsername VARCHAR(50))
+BEGIN
+    DROP TABLE IF EXISTS CosViewHistory;
+    CREATE TABLE CosViewHistory
+    SELECT movName, thName, comName, creditCardNum, movPlayDate 
+    FROM customerviewmovie 
+    NATURAL JOIN customercreditcard 
+    WHERE
+		(i_cusUsername = username OR i_cusUsername = "ALL");
+END
+
 -- Next procedure - Screen 22: User filter theater
 
 
