@@ -68,6 +68,41 @@ END
 
 -- Last one done - Screen 13: Admin decline user
 
+DROP PROCEDURE IF EXISTS admin_filter_user;
+DELIMITER $$
+CREATE procedure `admin_filter_user` (IN i_username VARCHAR(50), IN i_status VARCHAR(50), IN i_sortBy ENUM('username', 'creditCardCount', 'userType', 'status'), IN i_sortDirection VARCHAR(50))
+BEGIN
+	DROP TABLE IF EXISTS AdFilterUser;
+    CREATE TABLE AdFilterUser
+	SELECT username, COUNT(SELECT * from customercreditcard WHERE i_username = customerCreditCard.username) as creditCardCount,
+    CASE
+		WHEN i_username in (SELECT username from customer) AND i_username in (SELECT username from admin) THEN "CustomerAdmin"
+        WHEN i_username in (SELECT username from customer) AND i_username in (SELECT username from manager) THEN "CustomerManager"
+        WHEN i_username in (SELECT username from manager) THEN "Manager"
+        WHEN i_username in (SELECT username from admin) THEN "Admin"
+        WHEN i_username in (SELECT username from customer) THEN "Customer"
+        WHEN i_username in (SELECT username from user) THEN "User"
+	END as userType, status
+    FROM user
+    WHERE i_username = user.username
+    ORDER BY (
+		CASE
+			WHEN i_sortBy = 'username' THEN username
+            WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+            WHEN i_sortBy = 'userType' THEN userType
+            WHEN i_sortBy = 'status' THEN status
+            ELSE 'username'
+		END
+	) (CASE
+		WHEN i_sortDirection = 'ASC' THEN ASC
+        WHEN i_sortDirection = 'DESC' THEN DESC
+        ELSE DESC
+	END);
+        
+END$$
+DELIMITER ;
+	
+
 -- INSERT YOUR STUFF HERE
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_schedule_mov`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_movPlayDate DATE)
 BEGIN
