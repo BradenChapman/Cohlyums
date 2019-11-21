@@ -166,7 +166,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES ('calcultron',0,1),('cool_class4400',1,0),('entropyRox'0,1),('fatherAI'0,1),('georgep'0,1),('ghcghc'0,1),('imbatman'0,1),('manager1'0,1),('manager2'0,1),('manager3'0,1),('manager4'0,1),('radioactivePoRa'0,1);
+INSERT INTO `employee` VALUES ('calcultron',0,1),('cool_class4400',1,0),('entropyRox',0,1),('fatherAI',0,1),('georgep',0,1),('ghcghc',0,1),('imbatman',0,1),('manager1',0,1),('manager2',0,1),('manager3',0,1),('manager4',0,1),('radioactivePoRa',0,1);
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -198,7 +198,7 @@ CREATE TABLE `manager` (
 
 LOCK TABLES `manager` WRITE;
 /*!40000 ALTER TABLE `manager` DISABLE KEYS */;
-INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,'Jonathan\'s Movies'),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
+INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,"Jonathan's Movies"),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
 /*!40000 ALTER TABLE `manager` ENABLE KEYS */;
 UNLOCK TABLES;
 
