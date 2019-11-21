@@ -1,6 +1,6 @@
 USE team11;
 
--- SCREEN 1
+-- SCREEN 1 --
 
 DROP PROCEDURE IF EXISTS `user_login`;
 DELIMITER $$
@@ -12,7 +12,7 @@ BEGIN
 END$$
 DELIMITER ;
 
--- SCREEN 3--
+-- SCREEN 3 --
 
 DROP PROCEDURE IF EXISTS `user_register`;
 DELIMITER $$
@@ -22,7 +22,7 @@ BEGIN
 END$$
 DELIMITER ;
 
--- SCREEN 4--
+-- SCREEN 4 --
 
 DROP PROCEDURE IF EXISTS `customer_only_register`;
 DELIMITER $$
