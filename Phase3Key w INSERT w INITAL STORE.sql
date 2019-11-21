@@ -153,6 +153,8 @@ DROP TABLE IF EXISTS `employee`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `employee` (
   `username` varchar(30) NOT NULL,
+  `isAdmin` varchar(5) NOT NULL DEFAULT '0',
+  `isManager` varchar(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`username`),
   CONSTRAINT `fk_emp_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -164,7 +166,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES ('calcultron'),('cool_class4400'),('entropyRox'),('fatherAI'),('georgep'),('ghcghc'),('imbatman'),('manager1'),('manager2'),('manager3'),('manager4'),('radioactivePoRa');
+INSERT INTO `employee` VALUES ('calcultron',0,1),('cool_class4400',1,0),('entropyRox'0,1),('fatherAI'0,1),('georgep'0,1),('ghcghc'0,1),('imbatman'0,1),('manager1'0,1),('manager2'0,1),('manager3'0,1),('manager4'0,1),('radioactivePoRa'0,1);
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
