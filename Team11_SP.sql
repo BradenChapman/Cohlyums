@@ -69,39 +69,51 @@ BEGIN
         WHERE username = i_username;
 END
 
-DROP PROCEDURE IF EXISTS admin_filter_user;
-DELIMITER $$
-CREATE procedure `admin_filter_user` (IN i_username VARCHAR(50), IN i_status VARCHAR(50), IN i_sortBy ENUM('username', 'creditCardCount', 'userType', 'status'), IN i_sortDirection VARCHAR(50))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_filter_user`(IN i_username VARCHAR(50), IN i_status VARCHAR(50), IN i_sortBy VARCHAR(50), IN i_sortDirection VARCHAR(50))
 BEGIN
 	DROP TABLE IF EXISTS AdFilterUser;
     CREATE TABLE AdFilterUser
-	SELECT username, COUNT(SELECT * from customercreditcard WHERE i_username = customerCreditCard.username) as creditCardCount,
-    CASE
-		WHEN i_username in (SELECT username from customer) AND i_username in (SELECT username from admin) THEN "CustomerAdmin"
-        WHEN i_username in (SELECT username from customer) AND i_username in (SELECT username from manager) THEN "CustomerManager"
-        WHEN i_username in (SELECT username from manager) THEN "Manager"
-        WHEN i_username in (SELECT username from admin) THEN "Admin"
-        WHEN i_username in (SELECT username from customer) THEN "Customer"
-        WHEN i_username in (SELECT username from user) THEN "User"
-	END as userType, status
-    FROM user
-    WHERE i_username = user.username
-    ORDER BY (
-		CASE
-			WHEN i_sortBy = 'username' THEN username
-            WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
-            WHEN i_sortBy = 'userType' THEN userType
-            WHEN i_sortBy = 'status' THEN status
-            ELSE 'username'
-		END
-	) (CASE
-		WHEN i_sortDirection = 'ASC' THEN ASC
-        WHEN i_sortDirection = 'DESC' THEN DESC
-        ELSE DESC
-	END);
-        
-END$$
-DELIMITER ;
+    SELECT username,creditCardCount,status,
+    (CASE
+		WHEN isUser = 1 THEN 'User'
+        WHEN isCustomer = 1 THEN 'Customer'
+        WHEN isCustomer = 1 AND isAdmin = 1 THEN 'CustomerAdmin'
+        WHEN isCustomer = 1 AND isManager = 1 THEN 'CustomerManager'
+        WHEN isAdmin = 1 THEN 'Admin'
+        WHEN isManager = 1 THEN 'Manager'
+	END) AS userType
+    FROM (
+		SELECT user.username as username, creditCardCount, status, isCustomer, isUser, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
+		FROM user left join employee on user.username = employee.username
+		left join 
+		(SELECT user.username,ifnull(creditCardCount,0) as creditCardCount
+		FROM user left join (select username, count(creditCardNum) as creditCardCount from customercreditcard group by customercreditcard.username) as cCardCount
+		on user.username = cCardCount.username) as cardInfo
+		on user.username = cardInfo.username) as userInfo
+WHERE 
+	(username = i_username) AND
+	(status = i_status OR i_status = "ALL") 
+ORDER BY 
+		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN 
+				(CASE
+					WHEN i_sortBy = 'username' THEN username
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount 
+					WHEN i_sortBy = 'userType' THEN userType 
+					WHEN i_sortBy = 'status' THEN status 
+					ELSE username 
+				END)
+			END) DESC,
+		(CASE WHEN (i_sortDirection = 'ASC') THEN  
+				(CASE
+					WHEN i_sortBy = 'username' THEN username 
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount 
+					WHEN i_sortBy = 'userType' THEN userType 
+					WHEN i_sortBy = 'status' THEN status 
+					ELSE username 
+				END)
+			END) ASC
+;
+END
 	
 -- Last one done - Screen 13: Admin filter user
 
