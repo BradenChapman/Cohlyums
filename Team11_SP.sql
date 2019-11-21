@@ -2,15 +2,10 @@
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(50), IN i_password VARCHAR(50))
 BEGIN
-	SELECT username, status, isCustomer, i_username in (
-		SELECT username
-        FROM admin
-    ) as isAdmin, i_username in (
-		SELECT username
-        FROM manager
-    ) as isManager
-	FROM user
-	WHERE i_username = user.username and i_password = user.password;
+	SELECT username, status, isCustomer, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
+	FROM user left join employee on user.username = employee.username
+	WHERE user.username = i_username and  user.password=i_password
+;
 END
 
 --SCREEN 3--
