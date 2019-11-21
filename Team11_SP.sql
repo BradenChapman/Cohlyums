@@ -6,9 +6,12 @@ DROP PROCEDURE IF EXISTS `user_login`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(50), IN i_password VARCHAR(50))
 BEGIN
-	SELECT username, status, isCustomer, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
+	DROP TABLE IF EXISTS UserLogin;
+    CREATE TABLE UserLogin
+    SELECT user.username, status, isCustomer, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 	FROM user left join employee on user.username = employee.username
-	WHERE user.username = i_username and  user.password=i_password
+	WHERE user.username = i_username and  user.password=i_password;
+    SELECT * FROM UserLogin
 ;
 END$$
 DELIMITER ;
@@ -111,34 +114,35 @@ BEGIN
     FROM (
 		SELECT user.username as username, creditCardCount, status, isCustomer, isUser, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 		FROM user left join employee on user.username = employee.username
-		left join
+		left join 
 		(SELECT user.username,ifnull(creditCardCount,0) as creditCardCount
 		FROM user left join (select username, count(creditCardNum) as creditCardCount from customercreditcard group by customercreditcard.username) as cCardCount
 		on user.username = cCardCount.username) as cardInfo
 		on user.username = cardInfo.username) as userInfo
-WHERE
+WHERE 
 	(username = i_username) AND
-	(status = i_status OR i_status = "ALL")
-ORDER BY
-		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
+	(status = i_status OR i_status = "ALL") 
+ORDER BY 
+		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN 
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
-					WHEN i_sortBy = 'userType' THEN userType
-					WHEN i_sortBy = 'status' THEN status
-					ELSE username
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount 
+					WHEN i_sortBy = 'userType' THEN userType 
+					WHEN i_sortBy = 'status' THEN status 
+					ELSE username 
 				END)
 			END) DESC,
-		(CASE WHEN (i_sortDirection = 'ASC') THEN
+		(CASE WHEN (i_sortDirection = 'ASC') THEN  
 				(CASE
-					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
-					WHEN i_sortBy = 'userType' THEN userType
-					WHEN i_sortBy = 'status' THEN status
-					ELSE username
+					WHEN i_sortBy = 'username' THEN username 
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount 
+					WHEN i_sortBy = 'userType' THEN userType 
+					WHEN i_sortBy = 'status' THEN status 
+					ELSE username 
 				END)
 			END) ASC
 ;
+SELECT * FROM AdFilterUser;
 END$$
 DELIMITER ;
 
