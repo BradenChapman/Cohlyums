@@ -152,15 +152,87 @@ DELIMITER ;
 
 -- SCREEN 16--
 
--- INSERT CODE HERE--
+DROP PROCEDURE IF EXISTS `admin_view_comDetail_emp`;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_view_comDetail_emp`(IN i_comName VARCHAR(50))
+BEGIN
+    DROP TABLE IF EXISTS AdComDetailEmp;
+    CREATE TABLE AdComDetailEmp
+    SELECT firstName as empFirstname, lastName as empLast
+    FROM manager
+    NATURAL JOIN user
+    WHERE
+		(i_comName = comName OR i_comName = "ALL");
+END$$
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `admin_view_comDetail_th`;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_view_comDetail_th`(IN i_comName VARCHAR(50))
+BEGIN
+    DROP TABLE IF EXISTS AdComDetailTh;
+    CREATE TABLE AdComDetailTh
+    SELECT thName, manUsername as thManagerUsername, thCity, thState, capacity as thCapacity
+    FROM company 
+    NATURAL JOIN theater
+    WHERE
+		(i_comName = comName OR i_comName = "ALL");
+END$$
+DELIMITER ;
 
 -- SCREEN 17--
 
--- INSERT CODE HERE--
+DROP PROCEDURE IF EXISTS `admin_create_mov`;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_mov`(IN i_movName VARCHAR(50), IN i_movDuration INT, IN i_movReleaseDate DATE)
+BEGIN
+    INSERT INTO movie (movName, movReleaseDate, duration)
+    VALUES (i_movName, i_movReleaseDate, i_movDuration);
+END$$
+DELIMITER ;
 
 -- SCREEN 18--
 
--- INSERT CODE HERE--
+DROP PROCEDURE IF EXISTS `manager_filter_th`;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_filter_th`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_minMovDuration INT(4), IN i_maxMovDuration INT(4), IN i_minMovReleaseDate DATE, IN i_maxMovReleaseDate DATE, IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE, IN i_includeNotPlayed BOOLEAN)
+BEGIN
+	DROP TABLE IF EXISTS ManFilterTh;
+	CASE 
+		WHEN i_includeNotPlayed IS NULL OR i_includeNotPlayed = FALSE
+		THEN
+        CREATE TABLE ManFilterTh
+        SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
+		FROM movie 
+		LEFT OUTER JOIN movieplay ON movie.movName=movieplay.movName 
+		LEFT OUTER JOIN theater ON movieplay.thName=theater.thName
+		WHERE
+			(i_manUsername = theater.manUsername or i_manUsername = "ALL") AND
+			(movieplay.movName LIKE CONCAT ('%',i_movName,'%') OR i_movName = "ALL" ) AND
+			(i_minMovDuration IS NULL OR movie.duration >= i_minMovDuration) AND
+			(i_maxMovDuration IS NULL OR movie.duration <= i_maxMovDuration) AND
+			(i_minMovReleaseDate IS NULL OR movieplay.movReleaseDate >= i_minMovReleaseDate) AND
+			(i_maxMovReleaseDate IS NULL OR movieplay.movReleaseDate <= i_maxMovReleaseDate) AND
+			(i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate) AND
+			(i_maxMovPlayDate IS NULL OR movieplay.movPlayDate <= i_maxMovPlayDate);
+		WHEN i_includeNotPlayed = TRUE
+		THEN
+			CREATE TABLE ManFilterTh
+			SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
+			FROM movie 
+			LEFT OUTER JOIN movieplay ON movie.movName=movieplay.movName 
+            LEFT OUTER JOIN theater ON movieplay.thName=theater.thName
+			WHERE
+				(i_manUsername = theater.manUsername or i_manUsername = "ALL") AND
+				(movieplay.movName LIKE CONCAT ('%',i_movName,'%') OR i_movName = "ALL" ) AND
+				(i_minMovDuration IS NULL OR movie.duration >= i_minMovDuration) AND
+				(i_maxMovDuration IS NULL OR movie.duration <= i_maxMovDuration) AND
+				(i_minMovReleaseDate IS NULL OR movieplay.movReleaseDate >= i_minMovReleaseDate) AND
+				(i_maxMovReleaseDate IS NULL OR movieplay.movReleaseDate <= i_maxMovReleaseDate) AND
+				(movieplay.movPlayDate IS NULL);
+	END CASE;
+END$$
+DELIMITER ;
 
 -- SCREEN 19--
 
