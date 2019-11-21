@@ -105,6 +105,26 @@ DELIMITER ;
 	
 -- Last one done - Screen 13: Admin filter user
 
+--SCREEN 14--
+
+--INSERT CODE HERE--
+
+--SCREEN 15--
+
+--INSERT CODE HERE--
+
+--SCREEN 16--
+
+--INSERT CODE HERE--
+
+--SCREEN 17--
+
+--INSERT CODE HERE--
+
+--SCREEN 18--
+
+--INSERT CODE HERE--
+
 --SCREEN 19--
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_schedule_mov`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_movPlayDate DATE)
