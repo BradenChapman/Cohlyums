@@ -6,8 +6,6 @@ DROP PROCEDURE IF EXISTS `user_login`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(50), IN i_password VARCHAR(50))
 BEGIN
-	DROP TABLE IF EXISTS UserLogin;
-    CREATE TABLE UserLogin
     SELECT user.username, status, isCustomer, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 	FROM user left join employee on user.username = employee.username
 	WHERE user.username = i_username and  user.password=i_password;
