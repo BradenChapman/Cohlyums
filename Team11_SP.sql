@@ -11,8 +11,6 @@ BEGIN
     SELECT user.username, status, isCustomer, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 	FROM user left join employee on user.username = employee.username
 	WHERE user.username = i_username and  user.password=i_password;
-    SELECT * FROM UserLogin
-;
 END$$
 DELIMITER ;
 
@@ -141,8 +139,6 @@ ORDER BY
 					ELSE username 
 				END)
 			END) ASC;
-SELECT * FROM AdFilterUser
-;
 END$$
 DELIMITER ;
 
