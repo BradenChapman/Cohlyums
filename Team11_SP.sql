@@ -140,9 +140,9 @@ ORDER BY
 					WHEN i_sortBy = 'status' THEN status 
 					ELSE username 
 				END)
-			END) ASC
+			END) ASC;
+SELECT * FROM AdFilterUser
 ;
-SELECT * FROM AdFilterUser;
 END$$
 DELIMITER ;
 
