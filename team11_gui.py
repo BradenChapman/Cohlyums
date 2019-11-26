@@ -1067,14 +1067,14 @@ class CreateTheater(QDialog):
 
         name = QLineEdit()
         comp = QComboBox()
-        comp.addItems(["c1","c2","...","cn"])
+        comp.addItems(["ALL"])
         street = QLineEdit()
         city = QLineEdit()
         state = QLineEdit()
         zip_ = QLineEdit()
         cap = QLineEdit()
         manager = QComboBox()
-        manager.addItems(["m1","m2","...","mn"])
+        manager.addItems(["ALL"])
 
         mvbox = QVBoxLayout()
 
