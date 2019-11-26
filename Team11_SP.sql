@@ -306,7 +306,7 @@ BEGIN
     FROM theater
     NATURAL JOIN movieplay
     WHERE
-	(i_movName = movName or i_movName = "ALL") AND
+		(i_movName = movName or i_movName = "ALL") AND
         (i_comName = comName or i_comName = "ALL") AND
         (i_city = thCity or i_city = "ALL") AND
         (i_state = thState or i_state = "ALL") AND
