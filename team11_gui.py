@@ -26,6 +26,15 @@ from PyQt5.QtWidgets import (
 #    -
 #
 
+
+
+# STATIC FUNCTIONS
+
+def getCompanyNames():
+    curs.execute("SELECT DISTINCT comname FROM company;")
+    dum = curs.fetchall()
+    return [ i["comname"] for i in dum]
+
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
         QAbstractTableModel.__init__(self, None)
@@ -275,6 +284,7 @@ class UserRegistration(QDialog):
             curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
             print('what')
             # a = curs.fetchall()
+        self.close()
         Login().exec()
 
 class CustomerRegistration(QDialog):
@@ -981,9 +991,7 @@ class ManageCompany(QDialog):
 
         self.name = QComboBox()
         self.name.addItems(["ALL"])
-        curs.execute("SELECT DISTINCT comname FROM company;")
-        dum = curs.fetchall()
-        dum = [ i["comname"] for i in dum]
+        dum = getCompanyNames()
         self.name.addItems(dum)
 
         c1 = QLineEdit()
@@ -1225,6 +1233,19 @@ class ViewHistory(QDialog):
 
         vbox = QVBoxLayout()
 
+        curs.execute('call customer_view_history("{USERNAME}");')
+        dum1 = curs.fetchall()
+        curs.execute('SELECT * FROM CosViewHistory;')
+        dum2 = curs.fetchall()
+        print(dum1)
+        print(dum2)
+
+        table_model = SimpleTableModel(dum2)
+        table_view = QTableView()
+        table_view.setModel(table_model)
+        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        vbox.addWidget(table_view)
         vbox.addWidget(QLabel("" + USERNAME))
 
         self.setLayout(vbox)
@@ -1246,7 +1267,7 @@ class ExploreTheater(QDialog):
         hbox2 = QHBoxLayout()
 
         tn = QComboBox()
-        tn.addItems(["-- ALL --"] + list(set([i["Theater"] for i in data1])))
+        tn.addItems(["ALL"] + list(set([i["Theater"] for i in data1])))
         comp = QComboBox()
         comp.addItems(list(set([i["Company"] for i in data1])))
         city = QLineEdit()
@@ -1322,7 +1343,7 @@ class VisitHistory(QDialog):
 if __name__ == '__main__':
     global connection, curs
     app = QApplication(sys.argv)
-    # sys.argv = ["team11_gui.py"]
+    sys.argv = ["team11_gui.py", "asdf"]
     password = sys.argv[1]
     try:
         connection = pymysql.connect(host="localhost",
