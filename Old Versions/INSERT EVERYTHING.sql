@@ -26,8 +26,7 @@ DROP TABLE IF EXISTS `adcomdetailemp`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `adcomdetailemp` (
   `empFirstname` varchar(45) NOT NULL,
-  `empLast` varchar(45) NOT NULL,
-  `hashing` varchar(3000) DEFAULT NULL
+  `empLastname` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -37,7 +36,7 @@ CREATE TABLE `adcomdetailemp` (
 
 LOCK TABLES `adcomdetailemp` WRITE;
 /*!40000 ALTER TABLE `adcomdetailemp` DISABLE KEYS */;
-INSERT INTO `adcomdetailemp` VALUES ('Claude','Shannon',NULL),('George P.','Burdell',NULL),('Manager','One',NULL),('Three','Three',NULL),('Four','Four',NULL),('Marie','Curie',NULL);
+INSERT INTO `adcomdetailemp` VALUES ('Claude','Shannon'),('George P.','Burdell'),('Manager','One'),('Three','Three'),('Four','Four'),('Marie','Curie');
 /*!40000 ALTER TABLE `adcomdetailemp` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,6 +159,32 @@ LOCK TABLES `company` WRITE;
 /*!40000 ALTER TABLE `company` DISABLE KEYS */;
 INSERT INTO `company` VALUES ('4400 Theater Company'),('AI Theater Company'),('Awesome Theater Company'),('EZ Theater Company');
 /*!40000 ALTER TABLE `company` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cosviewhistory`
+--
+
+DROP TABLE IF EXISTS `cosviewhistory`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cosviewhistory` (
+  `movName` varchar(45) NOT NULL,
+  `thName` varchar(45) NOT NULL,
+  `comName` varchar(45) NOT NULL,
+  `creditCardNum` char(16) NOT NULL,
+  `movPlayDate` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cosviewhistory`
+--
+
+LOCK TABLES `cosviewhistory` WRITE;
+/*!40000 ALTER TABLE `cosviewhistory` DISABLE KEYS */;
+INSERT INTO `cosviewhistory` VALUES ('How to Train Your Dragon','Cinema Star','4400 Theater Company','1111111111111111','2010-04-02'),('How to Train Your Dragon','Main Movies','EZ Theater Company','1111111111111111','2010-03-22'),('How to Train Your Dragon','Main Movies','EZ Theater Company','1111111111111111','2010-03-23'),('How to Train Your Dragon','Star Movies','EZ Theater Company','1111111111111100','2010-03-25');
+/*!40000 ALTER TABLE `cosviewhistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -298,6 +323,30 @@ LOCK TABLES `manager` WRITE;
 /*!40000 ALTER TABLE `manager` DISABLE KEYS */;
 INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA','30308','Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA','94016','Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY','10001','Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA','98105','Jonathan\'s Movies'),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS','31415','ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX','78653','ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA','30332',''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA','30332',''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA','30332',''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA','30332',''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA','94088','Star Movies');
 /*!40000 ALTER TABLE `manager` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `manfilterth`
+--
+
+DROP TABLE IF EXISTS `manfilterth`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `manfilterth` (
+  `movName` varchar(45),
+  `movDuration` int(11) NOT NULL,
+  `movReleaseDate` date,
+  `movPlayDate` date
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `manfilterth`
+--
+
+LOCK TABLES `manfilterth` WRITE;
+/*!40000 ALTER TABLE `manfilterth` DISABLE KEYS */;
+/*!40000 ALTER TABLE `manfilterth` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -803,9 +852,9 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = cp850 */ ;
-/*!50003 SET character_set_results = cp850 */ ;
-/*!50003 SET collation_connection  = cp850_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
@@ -817,7 +866,7 @@ BEGIN
     FROM customerviewmovie
     NATURAL JOIN customercreditcard
     WHERE
-		(i_cusUsername = username OR i_cusUsername = "ALL");
+		i_cusUsername = username;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1103,4 +1152,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-26 16:57:12
+-- Dump completed on 2019-11-26 17:42:58
