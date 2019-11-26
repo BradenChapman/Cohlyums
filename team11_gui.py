@@ -280,11 +280,6 @@ class UserRegistration(QDialog):
         cPassword = self.cpassword.text()
         if cPassword == password and not firstName == "" and not lastName == "" and not username == "" and not password == "":
             curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
-<<<<<<< HEAD
-=======
-            print('what')
-            # a = curs.fetchall()
->>>>>>> 439d38de150204cf9c2f507d8c436b33aa0ecf10
         self.close()
         Login().exec()
 
