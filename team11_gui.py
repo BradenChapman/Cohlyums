@@ -263,7 +263,19 @@ class UserRegistration(QDialog):
 
     def run_register(self):
         # TEST FOR PASSWORD COMPATIBILITY, USERNAME TAKEN, ETC...
-        self.close()
+        # self.close()
+        firstName = self.firstname.text()
+        lastName = self.lastname.text()
+        username = self.username.text()
+        password = self.password.text()
+        cPassword = self.cpassword.text()
+        if cPassword == password and not firstName == "" and not lastName == "" and not username == "" and not password == "":
+            # (IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
+            print('hello')
+            curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
+            print('what')
+            # a = curs.fetchall()
+        Login().exec()
 
 class CustomerRegistration(QDialog):
 
@@ -1310,7 +1322,7 @@ class VisitHistory(QDialog):
 if __name__ == '__main__':
     global connection, curs
     app = QApplication(sys.argv)
-    sys.argv = ["team11_gui.py", "asdf"]
+    # sys.argv = ["team11_gui.py"]
     password = sys.argv[1]
     try:
         connection = pymysql.connect(host="localhost",
