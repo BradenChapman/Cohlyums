@@ -147,7 +147,16 @@ DELIMITER ;
 -- INSERT CODE HERE--
 
 -- SCREEN 15--
-
+DROP PROCEDURE IF EXISTS `admin_create_theater`;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_theater`(IN i_thName VARCHAR(30), 
+	IN i_comName VARCHAR(30), IN i_thStreet VARCHAR(45), IN i_thCity VARCHAR(45), 
+    IN i_thState CHAR(2), IN i_thZipcode CHAR(11), IN i_capacity INT(11), IN i_managerUsername VARCHAR(45))
+BEGIN
+	insert into theater (thName, comName, thStreet, thCity, thState, thZipcode, capacity, manUsername)
+    values (i_thName, i_comName, i_thStreet, i_thCity, i_thState, i_thZipcode, i_capacity, i_managerUsername);
+END $$
+DELIMITER ;
 -- INSERT CODE HERE--
 
 -- SCREEN 16--
