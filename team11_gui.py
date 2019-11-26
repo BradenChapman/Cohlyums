@@ -38,8 +38,9 @@ def isDuplicateUsername(un):
     dum = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
     if dum:
         w = QMessageBox()
-        QMessageBox.warning(w, "Login Error", "You login credentials are not valid, please try again or register")
-        w.show()
+        QMessageBox.warning(w, "Login Error", "Your username is already in use")
+        # w.show()
+        # w.close()
         return True
     else:
         return False
@@ -169,7 +170,7 @@ class Login(QDialog):
                 User().exec()
         else:
             w = QMessageBox()
-            QMessageBox.warning(w, "Login Error", "You login credentials are not valid, please try again or register")
+            QMessageBox.warning(w, "Login Error", "Your login credentials are not valid, please try again or register")
             w.show()
 
     def run_register(self):
@@ -288,10 +289,11 @@ class UserRegistration(QDialog):
         username = self.username.text()
         password = self.password.text()
         cPassword = self.cpassword.text()
-        if cPassword == password and not firstName == "" and not lastName == "" and not username == "" and not password == "":
-            curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
-        self.close()
-        Login().exec()
+        if not isDuplicateUsername(username):
+            if cPassword == password and not firstName == "" and not lastName == "" and not username == "" and not password == "":
+                curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
+            self.close()
+            Login().exec()
 
 class CustomerRegistration(QDialog):
 
