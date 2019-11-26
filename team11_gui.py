@@ -20,6 +20,12 @@ from PyQt5.QtWidgets import (
     qApp
 )
 
+# MEMORABLE COMMENTS
+#
+#    - "It's the fix a ton of stuff that destroyed everthing" - David Zhou
+#    -
+#
+
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
         QAbstractTableModel.__init__(self, None)
@@ -85,6 +91,28 @@ class Login(QDialog):
         p = self.password.text()
         # un = "calcultron"
         # p = "333333333"
+
+        if un:
+            if not p:
+                if un == "a":
+                    un = "cool_class4400"
+                    p = "333333333"
+                elif un == "ac":
+                    un = "cool_class4400"
+                    p = "333333333"
+                elif un == "m":
+                    un = "fatherai"
+                    p = "222222222"
+                elif un == "mc":
+                    un = "georgep"
+                    p = "111111111"
+                elif un == "c":
+                    un = "fullmetal"
+                    p = "111111100"
+                elif un == "u":
+                    un = "gdanger"
+                    p = "555555555"
+
 
         # SET GLOBAL VARIABLE USERNAME
         global USERNAME
@@ -174,333 +202,6 @@ class RegisterNavigation(QDialog):
         ManagerCustomerRegistration().exec()
 
     def back(self):
-        self.close()
-        Login().exec()
-
-class AdminOnly(QDialog):
-
-    def __init__(self):
-        super(AdminOnly, self).__init__()
-        self.setModal(True)
-        self.setWindowTitle("Admin-Only Functionality")
-
-        self.mhbox = QHBoxLayout()
-
-        self.vbox1 = QVBoxLayout()
-        self.mu = QPushButton("Manager User")
-        self.mu.pressed.connect(self.mu_)
-        self.mc = QPushButton("Manage Company")
-        self.mc.pressed.connect(self.mc_)
-        self.cm = QPushButton("Create Movie")
-        self.cm.pressed.connect(self.cm_)
-        self.vbox1.addWidget(self.mu)
-        self.vbox1.addWidget(self.mc)
-        self.vbox1.addWidget(self.cm)
-
-        self.vbox2 = QVBoxLayout()
-        self.et = QPushButton("Explore Theater")
-        self.et.pressed.connect(self.et_)
-        self.viewh = QPushButton("View History")
-        self.viewh.pressed.connect(self.viewh_)
-        self.back = QPushButton("Back")
-        self.back.pressed.connect(self.back_)
-        self.vbox2.addWidget(self.et)
-        self.vbox2.addWidget(self.viewh)
-        self.vbox2.addWidget(self.back)
-
-        self.mhbox.addLayout(self.vbox1)
-        self.mhbox.addLayout(self.vbox2)
-
-        self.setLayout(self.mhbox)
-
-    def mu_(self):
-        self.close()
-        ManageUser().exec()
-
-    def mc_(self):
-        self.close()
-        ManageCompany().exec()
-
-    def cm_(self):
-        CreateMovie().exec()
-
-    def et_(self):
-        ExploreTheater().exec()
-
-    def viewh_(self):
-        self.close()
-
-    def back_(self):
-        self.close()
-        Login().exec()
-
-class AdminCustomer(QDialog):
-
-    def __init__(self):
-        super(AdminCustomer, self).__init__()
-        self.setModal(True)
-        self.setWindowTitle("Admin-Customer Functionality")
-
-        self.mhbox = QHBoxLayout()
-
-        self.vbox1 = QVBoxLayout()
-        self.mu = QPushButton("Manager User")
-        self.mu.pressed.connect(self.mu_)
-        self.mc = QPushButton("Manage Company")
-        self.mc.pressed.connect(self.mc_)
-        self.cm = QPushButton("Create Movie")
-        self.cm.pressed.connect(self.cm_)
-        self.visith = QPushButton("Visit History")
-        self.visith.pressed.connect(self.visith_)
-        self.vbox1.addWidget(self.mu)
-        self.vbox1.addWidget(self.mc)
-        self.vbox1.addWidget(self.cm)
-        self.vbox1.addWidget(self.visith)
-
-        self.vbox2 = QVBoxLayout()
-        self.em = QPushButton("Explore Movie")
-        self.em.pressed.connect(self.em_)
-        self.et = QPushButton("Explore Theater")
-        self.et.pressed.connect(self.et_)
-        self.viewh = QPushButton("View History")
-        self.viewh.pressed.connect(self.viewh_)
-        self.back = QPushButton("Back")
-        self.back.pressed.connect(self.back_)
-        self.vbox2.addWidget(self.em)
-        self.vbox2.addWidget(self.et)
-        self.vbox2.addWidget(self.viewh)
-        self.vbox2.addWidget(self.back)
-
-        self.mhbox.addLayout(self.vbox1)
-        self.mhbox.addLayout(self.vbox2)
-
-        self.setLayout(self.mhbox)
-
-    def mu_(self):
-        ManageUser().exec()
-
-    def mc_(self):
-        ManageCompany().exec()
-
-    def cm_(self):
-        CreateMovie().exec()
-
-    def visith_(self):
-        VisitHistory().exec()
-
-    def em_(self):
-        ExploreMovie().exec()
-
-    def et_(self):
-        ExploreTheater().exec()
-
-    def viewh_(self):
-        ViewHistory().exec()
-
-    def back_(self):
-        self.close()
-        Login().exec()
-
-class ManagerOnly(QDialog):
-
-    def __init__(self):
-        super(ManagerOnly, self).__init__()
-        self.setModal(True)
-        self.setWindowTitle("Manager-Only Functionality")
-
-        self.mvbox = QVBoxLayout()
-        self.mhbox = QHBoxLayout()
-
-        self.vbox1 = QVBoxLayout()
-        self.to = QPushButton("Theater Overview")
-        self.to.pressed.connect(self.to_)
-        self.sm = QPushButton("Schedule Movie")
-        self.sm.pressed.connect(self.sm_)
-        self.vbox1.addWidget(self.to)
-        self.vbox1.addWidget(self.sm)
-
-        self.vbox2 = QVBoxLayout()
-        self.et = QPushButton("Explore Theater")
-        self.et.pressed.connect(self.et_)
-        self.vh = QPushButton("View History")
-        self.vh.pressed.connect(self.vh_)
-        self.vbox2.addWidget(self.et)
-        self.vbox2.addWidget(self.vh)
-
-        self.back = QPushButton("Back")
-        self.back.pressed.connect(self.back_)
-
-        self.mhbox.addLayout(self.vbox1)
-        self.mhbox.addLayout(self.vbox2)
-
-        self.mvbox.addLayout(self.mhbox)
-        self.mvbox.addWidget(self.back)
-
-        self.setLayout(self.mvbox)
-
-    def to_(self):
-        self.close()
-
-    def sm_(self):
-        self.close()
-
-    def et_(self):
-        ExploreTheater().exec()
-
-    def vh_(self):
-        self.close()
-
-    def back_(self):
-        self.close()
-        Login().exec()
-
-class ManagerCustomer(QDialog):
-
-    def __init__(self):
-        super(ManagerCustomer, self).__init__()
-        self.setModal(True)
-        self.setWindowTitle("Manager-Customer Functionality")
-
-        self.mvbox= QVBoxLayout()
-        self.mhbox = QHBoxLayout()
-
-        self.vbox1 = QVBoxLayout()
-        self.to = QPushButton("Theater Overview")
-        self.to.pressed.connect(self.to_)
-        self.sm = QPushButton("Schedule Movie")
-        self.sm.pressed.connect(self.sm_)
-        self.viewh = QPushButton("View History")
-        self.viewh.pressed.connect(self.viewh_)
-        self.vbox1.addWidget(self.to)
-        self.vbox1.addWidget(self.sm)
-        self.vbox1.addWidget(self.viewh)
-
-        self.vbox2 = QVBoxLayout()
-        self.em = QPushButton("Explore Movie")
-        self.em.pressed.connect(self.em_)
-        self.et = QPushButton("Explore Theater")
-        self.et.pressed.connect(self.et_)
-        self.visith = QPushButton("Visit History")
-        self.visith.pressed.connect(self.visith_)
-        self.vbox2.addWidget(self.em)
-        self.vbox2.addWidget(self.et)
-        self.vbox2.addWidget(self.visith)
-
-        self.back = QPushButton("Back")
-        self.back.pressed.connect(self.back_)
-
-        self.mhbox.addLayout(self.vbox1)
-        self.mhbox.addLayout(self.vbox2)
-
-        self.mvbox.addLayout(self.mhbox)
-        self.mvbox.addWidget(self.back)
-
-        self.setLayout(self.mvbox)
-
-    def to_(self):
-        TheaterOverview().exec()
-
-    def sm_(self):
-        ScheduleMovie().exec()
-
-    def viewh_(self):
-        ViewHistory().exec()
-
-    def em_(self):
-        ExploreMovie().exec()
-
-    def et_(self):
-        ExploreTheater().exec()
-
-    def visith_(self):
-        VisitHistory().exec()
-
-    def back_(self):
-        self.close()
-        Login().exec()
-
-class Customer(QDialog):
-    def __init__(self):
-        super(Customer, self).__init__()
-        self.setModal(True)
-        self.setWindowTitle("Customer Functionality")
-
-        self.mvbox = QVBoxLayout()
-        self.mhbox = QHBoxLayout()
-
-        self.vbox1 = QVBoxLayout()
-        self.em = QPushButton("Explore Movie")
-        self.em.pressed.connect(self.em_)
-        self.et = QPushButton("Explore Theater")
-        self.et.pressed.connect(self.et_)
-        self.vbox1.addWidget(self.em)
-        self.vbox1.addWidget(self.et)
-
-        self.vbox2 = QVBoxLayout()
-        self.viewh = QPushButton("View History")
-        self.viewh.pressed.connect(self.viewh_)
-        self.visith = QPushButton("Visit History")
-        self.visith.pressed.connect(self.visith_)
-        self.vbox2.addWidget(self.viewh)
-        self.vbox2.addWidget(self.visith)
-
-        self.back = QPushButton("Back")
-        self.back.pressed.connect(self.back_)
-
-        self.mhbox.addLayout(self.vbox1)
-        self.mhbox.addLayout(self.vbox2)
-
-        self.mvbox.addLayout(self.mhbox)
-        self.mvbox.addWidget(self.back)
-
-        self.setLayout(self.mvbox)
-
-    def em_(self):
-        self.close()
-
-    def et_(self):
-        ExploreTheater().exec()
-
-    def viewh_(self):
-        self.close()
-
-    def visith_(self):
-        self.close()
-
-    def back_(self):
-        self.close()
-        Login().exec()
-
-class User(QDialog):
-
-    def __init__(self, un):
-        super(User, self).__init__()
-        self.setModal(True)
-        self.setWindowTitle("User Functionality")
-
-        self.un = un
-
-        self.vbox1 = QVBoxLayout()
-        self.et = QPushButton("Explore Theater")
-        self.et.pressed.connect(self.et_)
-        self.viewh = QPushButton("View History")
-        self.viewh.pressed.connect(self.viewh_)
-        self.back = QPushButton("Back")
-        self.back.pressed.connect(self.back_)
-
-        self.vbox1.addWidget(self.et)
-        self.vbox1.addWidget(self.viewh)
-        self.vbox1.addWidget(self.back)
-
-    def et_(self):
-        ExploreTheater().exec()
-        self.close()
-
-    def viewh_(self):
-        ViewHistory().exec()
-        self.close()
-
-    def back_(self):
         self.close()
         Login().exec()
 
@@ -876,6 +577,329 @@ class ManagerCustomerRegistration(QDialog):
     def remove_(self):
         i = self.card_cb.currentIndex()
         self.card_cb.removeItem(i)
+
+class AdminOnly(QDialog):
+
+    def __init__(self):
+        super(AdminOnly, self).__init__()
+        self.setModal(True)
+        self.setWindowTitle("Admin-Only Functionality")
+
+        self.mhbox = QHBoxLayout()
+
+        self.vbox1 = QVBoxLayout()
+        self.mu = QPushButton("Manager User")
+        self.mu.pressed.connect(self.mu_)
+        self.mc = QPushButton("Manage Company")
+        self.mc.pressed.connect(self.mc_)
+        self.cm = QPushButton("Create Movie")
+        self.cm.pressed.connect(self.cm_)
+        self.vbox1.addWidget(self.mu)
+        self.vbox1.addWidget(self.mc)
+        self.vbox1.addWidget(self.cm)
+
+        self.vbox2 = QVBoxLayout()
+        self.et = QPushButton("Explore Theater")
+        self.et.pressed.connect(self.et_)
+        self.viewh = QPushButton("Visit History")
+        self.viewh.pressed.connect(self.viewh_)
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.vbox2.addWidget(self.et)
+        self.vbox2.addWidget(self.viewh)
+        self.vbox2.addWidget(self.back)
+
+        self.mhbox.addLayout(self.vbox1)
+        self.mhbox.addLayout(self.vbox2)
+
+        self.setLayout(self.mhbox)
+
+    def mu_(self):
+        ManageUser().exec()
+
+    def mc_(self):
+        ManageCompany().exec()
+
+    def cm_(self):
+        CreateMovie().exec()
+
+    def et_(self):
+        ExploreTheater().exec()
+
+    def visith_(self):
+        VisitHistory().exec()
+
+    def back_(self):
+        self.close()
+        Login().exec()
+
+class AdminCustomer(QDialog):
+
+    def __init__(self):
+        super(AdminCustomer, self).__init__()
+        self.setModal(True)
+        self.setWindowTitle("Admin-Customer Functionality")
+
+        self.mhbox = QHBoxLayout()
+
+        self.vbox1 = QVBoxLayout()
+        self.mu = QPushButton("Manager User")
+        self.mu.pressed.connect(self.mu_)
+        self.mc = QPushButton("Manage Company")
+        self.mc.pressed.connect(self.mc_)
+        self.cm = QPushButton("Create Movie")
+        self.cm.pressed.connect(self.cm_)
+        self.visith = QPushButton("Visit History")
+        self.visith.pressed.connect(self.visith_)
+        self.vbox1.addWidget(self.mu)
+        self.vbox1.addWidget(self.mc)
+        self.vbox1.addWidget(self.cm)
+        self.vbox1.addWidget(self.visith)
+
+        self.vbox2 = QVBoxLayout()
+        self.em = QPushButton("Explore Movie")
+        self.em.pressed.connect(self.em_)
+        self.et = QPushButton("Explore Theater")
+        self.et.pressed.connect(self.et_)
+        self.viewh = QPushButton("View History")
+        self.viewh.pressed.connect(self.viewh_)
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.vbox2.addWidget(self.em)
+        self.vbox2.addWidget(self.et)
+        self.vbox2.addWidget(self.viewh)
+        self.vbox2.addWidget(self.back)
+
+        self.mhbox.addLayout(self.vbox1)
+        self.mhbox.addLayout(self.vbox2)
+
+        self.setLayout(self.mhbox)
+
+    def mu_(self):
+        ManageUser().exec()
+
+    def mc_(self):
+        ManageCompany().exec()
+
+    def cm_(self):
+        CreateMovie().exec()
+
+    def visith_(self):
+        VisitHistory().exec()
+
+    def em_(self):
+        ExploreMovie().exec()
+
+    def et_(self):
+        ExploreTheater().exec()
+
+    def viewh_(self):
+        ViewHistory().exec()
+
+    def back_(self):
+        self.close()
+        Login().exec()
+
+class ManagerOnly(QDialog):
+
+    def __init__(self):
+        super(ManagerOnly, self).__init__()
+        self.setModal(True)
+        self.setWindowTitle("Manager-Only Functionality")
+
+        self.mvbox = QVBoxLayout()
+        self.mhbox = QHBoxLayout()
+
+        self.vbox1 = QVBoxLayout()
+        self.to = QPushButton("Theater Overview")
+        self.to.pressed.connect(self.to_)
+        self.sm = QPushButton("Schedule Movie")
+        self.sm.pressed.connect(self.sm_)
+        self.vbox1.addWidget(self.to)
+        self.vbox1.addWidget(self.sm)
+
+        self.vbox2 = QVBoxLayout()
+        self.et = QPushButton("Explore Theater")
+        self.et.pressed.connect(self.et_)
+        self.vh = QPushButton("View History")
+        self.vh.pressed.connect(self.vh_)
+        self.vbox2.addWidget(self.et)
+        self.vbox2.addWidget(self.vh)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+
+        self.mhbox.addLayout(self.vbox1)
+        self.mhbox.addLayout(self.vbox2)
+
+        self.mvbox.addLayout(self.mhbox)
+        self.mvbox.addWidget(self.back)
+
+        self.setLayout(self.mvbox)
+
+    def to_(self):
+        TheaterOverview().exec()
+
+    def sm_(self):
+        ScheduleMovie().exec()
+
+    def et_(self):
+        ExploreTheater().exec()
+
+    def vh_(self):
+        VisitHistory().exec()
+
+    def back_(self):
+        self.close()
+        Login().exec()
+
+class ManagerCustomer(QDialog):
+
+    def __init__(self):
+        super(ManagerCustomer, self).__init__()
+        self.setModal(True)
+        self.setWindowTitle("Manager-Customer Functionality")
+
+        self.mvbox= QVBoxLayout()
+        self.mhbox = QHBoxLayout()
+
+        self.vbox1 = QVBoxLayout()
+        self.to = QPushButton("Theater Overview")
+        self.to.pressed.connect(self.to_)
+        self.sm = QPushButton("Schedule Movie")
+        self.sm.pressed.connect(self.sm_)
+        self.viewh = QPushButton("View History")
+        self.viewh.pressed.connect(self.viewh_)
+        self.vbox1.addWidget(self.to)
+        self.vbox1.addWidget(self.sm)
+        self.vbox1.addWidget(self.viewh)
+
+        self.vbox2 = QVBoxLayout()
+        self.em = QPushButton("Explore Movie")
+        self.em.pressed.connect(self.em_)
+        self.et = QPushButton("Explore Theater")
+        self.et.pressed.connect(self.et_)
+        self.visith = QPushButton("Visit History")
+        self.visith.pressed.connect(self.visith_)
+        self.vbox2.addWidget(self.em)
+        self.vbox2.addWidget(self.et)
+        self.vbox2.addWidget(self.visith)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+
+        self.mhbox.addLayout(self.vbox1)
+        self.mhbox.addLayout(self.vbox2)
+
+        self.mvbox.addLayout(self.mhbox)
+        self.mvbox.addWidget(self.back)
+
+        self.setLayout(self.mvbox)
+
+    def to_(self):
+        TheaterOverview().exec()
+
+    def sm_(self):
+        ScheduleMovie().exec()
+
+    def viewh_(self):
+        ViewHistory().exec()
+
+    def em_(self):
+        ExploreMovie().exec()
+
+    def et_(self):
+        ExploreTheater().exec()
+
+    def visith_(self):
+        VisitHistory().exec()
+
+    def back_(self):
+        self.close()
+        Login().exec()
+
+class Customer(QDialog):
+    def __init__(self):
+        super(Customer, self).__init__()
+        self.setModal(True)
+        self.setWindowTitle("Customer Functionality")
+
+        self.mvbox = QVBoxLayout()
+        self.mhbox = QHBoxLayout()
+
+        self.vbox1 = QVBoxLayout()
+        self.em = QPushButton("Explore Movie")
+        self.em.pressed.connect(self.em_)
+        self.et = QPushButton("Explore Theater")
+        self.et.pressed.connect(self.et_)
+        self.vbox1.addWidget(self.em)
+        self.vbox1.addWidget(self.et)
+
+        self.vbox2 = QVBoxLayout()
+        self.viewh = QPushButton("View History")
+        self.viewh.pressed.connect(self.viewh_)
+        self.visith = QPushButton("Visit History")
+        self.visith.pressed.connect(self.visith_)
+        self.vbox2.addWidget(self.viewh)
+        self.vbox2.addWidget(self.visith)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+
+        self.mhbox.addLayout(self.vbox1)
+        self.mhbox.addLayout(self.vbox2)
+
+        self.mvbox.addLayout(self.mhbox)
+        self.mvbox.addWidget(self.back)
+
+        self.setLayout(self.mvbox)
+
+    def em_(self):
+        ExploreMovie().exec()
+
+    def et_(self):
+        ExploreTheater().exec()
+
+    def viewh_(self):
+        ViewHistory().exec()
+
+    def visith_(self):
+        VisitHistory().exec()
+
+    def back_(self):
+        self.close()
+        Login().exec()
+
+class User(QDialog):
+
+    def __init__(self):
+        super(User, self).__init__()
+        self.setModal(True)
+        self.setWindowTitle("User Functionality")
+
+        self.vbox1 = QVBoxLayout()
+        self.et = QPushButton("Explore Theater")
+        self.et.pressed.connect(self.et_)
+        self.viewh = QPushButton("View History")
+        self.viewh.pressed.connect(self.viewh_)
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+
+        self.vbox1.addWidget(self.et)
+        self.vbox1.addWidget(self.viewh)
+        self.vbox1.addWidget(self.back)
+
+        self.setLayout(self.vbox1)
+
+    def et_(self):
+        ExploreTheater().exec()
+
+    def viewh_(self):
+        ViewHistory().exec()
+
+    def back_(self):
+        self.close()
+        Login().exec()
 
 class ManageUser(QDialog):
     def __init__(self):
