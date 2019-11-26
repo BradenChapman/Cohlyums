@@ -6,6 +6,8 @@ DROP PROCEDURE IF EXISTS `user_login`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(50), IN i_password VARCHAR(50))
 BEGIN
+  DROP TABLE IF EXISTS UserLogin;
+  CREATE TABLE UserLogin
   SELECT user.username, status, isCustomer, 
 		i_username in (SELECT username from admin) as isAdmin,
     i_username in (SELECT username from manager) as isManager
@@ -20,7 +22,7 @@ DROP PROCEDURE IF EXISTS `user_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `user_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname) VALUES (i_username, MD5(i_password), i_firstname, i_lastname);
+		INSERT INTO user (username, password, firstname, lastname, isUser) VALUES (i_username, i_password, i_firstname, i_lastname,1);
 END$$
 DELIMITER ;
 
@@ -30,7 +32,7 @@ DROP PROCEDURE IF EXISTS `customer_only_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname, isCustomer) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
+		INSERT INTO user (username, password, firstname, lastname, isCustomer) VALUES (i_username, i_password, i_firstname, i_lastname,1);
 END$$
 DELIMITER ;
 
@@ -48,8 +50,8 @@ DROP PROCEDURE IF EXISTS `manager_only_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname) VALUES (i_username, MD5(i_password), i_firstname, i_lastname);
-        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
+		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
+        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode,isManager) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode,1);
 END$$
 DELIMITER ;
 
@@ -59,8 +61,8 @@ DROP PROCEDURE IF EXISTS `manager_customer_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname, isCustomer) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
-        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
+		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1,1);
+        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode,isManager) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode,1);
 END$$
 DELIMITER ;
 
@@ -106,8 +108,8 @@ BEGIN
         WHEN isCustomer = 1 THEN 'Customer'
         WHEN isCustomer = 1 AND isAdmin = 1 THEN 'CustomerAdmin'
         WHEN isCustomer = 1 AND isManager = 1 THEN 'CustomerManager'
-        WHEN isAdmin = 1 THEN 'Admin'
-        WHEN isManager = 1 THEN 'Manager'
+        WHEN isCustomer = 0 AND isAdmin = 1 THEN 'Admin'
+        WHEN isCustomer = 0 AND isManager = 1 THEN 'Manager'
 	END) AS userType
     FROM (
 		SELECT user.username as username, creditCardCount, status, isCustomer, isUser, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
@@ -210,7 +212,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_view_comDetail_emp`(IN i_comN
 BEGIN
     DROP TABLE IF EXISTS AdComDetailEmp;
     CREATE TABLE AdComDetailEmp
-    SELECT firstName as empFirstname, lastName as empLast
+    SELECT firstName as empFirstname, lastName as empLastname
     FROM manager
     NATURAL JOIN user
     WHERE
