@@ -8,9 +8,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(5
 BEGIN
   DROP TABLE IF EXISTS UserLogin;
   CREATE TABLE UserLogin
-  SELECT user.username, status, isCustomer,
-		i_username in (SELECT username from admin) as isAdmin,
-    i_username in (SELECT username from manager) as isManager
+  SELECT user.username, status, isCustomer,i_username in (SELECT username from admin) as isAdmin, i_username in (SELECT username from manager) as isManager
 	FROM user left join employee on user.username = employee.username
 	WHERE user.username = i_username and  user.password=i_password;
 END$$
@@ -340,7 +338,7 @@ BEGIN
     FROM customerviewmovie
     NATURAL JOIN customercreditcard
     WHERE
-		(i_cusUsername = username OR i_cusUsername = "ALL");
+		i_cusUsername = username;
 END$$
 DELIMITER ;
 
