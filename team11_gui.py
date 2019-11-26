@@ -26,14 +26,23 @@ from PyQt5.QtWidgets import (
 #    - "I can assure that the rest of the SP work .... 5:15 pm"
 #    -
 
-
-
 # STATIC FUNCTIONS
 
 def getCompanyNames():
     curs.execute("SELECT DISTINCT comname FROM company;")
     dum = curs.fetchall()
     return [ i["comname"] for i in dum]
+
+def isDuplicateUsername(un):
+    # Return true if
+    dum = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
+    if dum:
+        w = QMessageBox()
+        QMessageBox.warning(w, "Login Error", "You login credentials are not valid, please try again or register")
+        w.show()
+        return True
+    else:
+        return False
 
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
