@@ -86,6 +86,10 @@ class Login(QDialog):
         # un = "calcultron"
         # p = "333333333"
 
+        # SET GLOBAL VARIABLE USERNAME
+        global USERNAME
+        USERNAME = un
+
         curs.execute(f'call user_login("{un}", "{p}");')
         a = curs.fetchall()
 
@@ -416,7 +420,6 @@ class ManagerCustomer(QDialog):
         Login().exec()
 
 class Customer(QDialog):
-
     def __init__(self):
         super(Customer, self).__init__()
         self.setModal(True)
@@ -470,10 +473,12 @@ class Customer(QDialog):
 
 class User(QDialog):
 
-    def __init__(self):
+    def __init__(self, un):
         super(User, self).__init__()
         self.setModal(True)
         self.setWindowTitle("User Functionality")
+
+        self.un = un
 
         self.vbox1 = QVBoxLayout()
         self.et = QPushButton("Explore Theater")
@@ -1182,6 +1187,12 @@ class ViewHistory(QDialog):
         self.setModal(True)
         self.setWindowTitle("View History")
 
+        vbox = QVBoxLayout()
+
+        vbox.addWidget(QLabel("" + USERNAME))
+
+        self.setLayout(vbox)
+
 class ExploreTheater(QDialog):
     def __init__(self):
         super(ExploreTheater, self).__init__()
@@ -1260,10 +1271,22 @@ class VisitHistory(QDialog):
         self.setModal(True)
         self.setWindowTitle("Visit History")
 
+        back = QPushButton("Back")
+        back.pressed.connect(self.back_)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(QLabel("" + USERNAME))
+        vbox.addWidget(back)
+
+        self.setLayout(vbox)
+
+    def back_(self):
+        self.close()
+
 if __name__ == '__main__':
-    global connection, curs, admin, app
+    global connection, curs
     app = QApplication(sys.argv)
-    # sys.argv = ["team11_gui.py", "asdf"]
+    sys.argv = ["team11_gui.py", "asdf"]
     password = sys.argv[1]
     try:
         connection = pymysql.connect(host="localhost",
