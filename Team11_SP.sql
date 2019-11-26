@@ -2,10 +2,12 @@ USE team11;
 
 -- SCREEN 1 --
 
-DROP PROCEDURE IF EXISTS `user_login`;
+DROP PROCEDURE IF EXISTS 'user_login';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(50), IN i_password VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'user_login'(IN i_username VARCHAR(50), IN i_password VARCHAR(50))
 BEGIN
+	DROP TABLE IF EXISTS UserLogin;
+    CREATE TABLE UserLogin
     SELECT user.username, status, isCustomer, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 	FROM user left join employee on user.username = employee.username
 	WHERE user.username = i_username and  user.password=i_password;
@@ -14,9 +16,9 @@ DELIMITER ;
 
 -- SCREEN 3 --
 
-DROP PROCEDURE IF EXISTS `user_register`;
+DROP PROCEDURE IF EXISTS 'user_register';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `user_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'user_register'(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
 BEGIN
 		INSERT INTO user (username, password, firstname, lastname) VALUES (i_username, MD5(i_password), i_firstname, i_lastname);
 END$$
@@ -24,17 +26,17 @@ DELIMITER ;
 
 -- SCREEN 4 --
 
-DROP PROCEDURE IF EXISTS `customer_only_register`;
+DROP PROCEDURE IF EXISTS 'customer_only_register';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'customer_only_register'(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50))
 BEGIN
 		INSERT INTO user (username, password, firstname, lastname, isCustomer) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `customer_add_credicard`;
+DROP PROCEDURE IF EXISTS 'customer_add_credicard';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_add_credicard`(IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'customer_add_credicard'(IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16))
 BEGIN
 		INSERT INTO customercreditcard (username, creditCardNum) VALUES (i_username, i_creditCardNum);
 END$$
@@ -42,9 +44,9 @@ DELIMITER ;
 
 -- SCREEN 5--
 
-DROP PROCEDURE IF EXISTS `manager_only_register`;
+DROP PROCEDURE IF EXISTS 'manager_only_register';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'manager_only_register'(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
 		INSERT INTO user (username, password, firstname, lastname) VALUES (i_username, MD5(i_password), i_firstname, i_lastname);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
@@ -53,18 +55,18 @@ DELIMITER ;
 
 -- SCREEN 6--
 
-DROP PROCEDURE IF EXISTS `manager_customer_register`;
+DROP PROCEDURE IF EXISTS 'manager_customer_register';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'manager_customer_register'(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
 		INSERT INTO user (username, password, firstname, lastname, isCustomer) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `manager_customer_add_creditcard`;
+DROP PROCEDURE IF EXISTS 'manager_customer_add_creditcard';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_add_creditcard`(IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'manager_customer_add_creditcard'(IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16))
 BEGIN
 		INSERT INTO customercreditcard (username, creditCardNum) VALUES (i_username, i_creditCardNum);
 END$$
@@ -72,9 +74,9 @@ DELIMITER ;
 
 -- SCREEN 13--
 
-DROP PROCEDURE IF EXISTS `admin_approve_user`;
+DROP PROCEDURE IF EXISTS 'admin_approve_user';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_approve_user`(IN i_username VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_approve_user'(IN i_username VARCHAR(50))
 BEGIN
 		UPDATE user
         SET status = 'Approved'
@@ -82,9 +84,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `admin_decline_user`;
+DROP PROCEDURE IF EXISTS 'admin_decline_user';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_decline_user`(IN i_username VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_decline_user'(IN i_username VARCHAR(50))
 BEGIN
 		UPDATE user
         SET status = 'Declined'
@@ -92,9 +94,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `admin_filter_user`;
+DROP PROCEDURE IF EXISTS 'admin_filter_user';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_filter_user`(IN i_username VARCHAR(50), IN i_status VARCHAR(50), IN i_sortBy VARCHAR(50), IN i_sortDirection VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_filter_user'(IN i_username VARCHAR(50), IN i_status VARCHAR(50), IN i_sortBy VARCHAR(50), IN i_sortDirection VARCHAR(50))
 BEGIN
 	DROP TABLE IF EXISTS AdFilterUser;
     CREATE TABLE AdFilterUser
@@ -142,9 +144,9 @@ DELIMITER ;
 
 -- SCREEN 14--
 
-DROP PROCEDURE IF EXISTS `admin_filter_company`;
+DROP PROCEDURE IF EXISTS 'admin_filter_company';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_filter_company`(IN i_comName VARCHAR(50), IN i_minCity INT, IN i_maxCity INT, IN i_minTheater INT, IN i_maxTheater INT, IN i_minEmployee INT, IN i_maxEmployee INT, i_sortBy VARCHAR(50), i_sortDirection VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_filter_company'(IN i_comName VARCHAR(50), IN i_minCity INT, IN i_maxCity INT, IN i_minTheater INT, IN i_maxTheater INT, IN i_minEmployee INT, IN i_maxEmployee INT, i_sortBy VARCHAR(50), i_sortDirection VARCHAR(50))
 BEGIN
 	DROP TABLE IF EXISTS AdFilterCom;
     CREATE TABLE AdFilterCom
@@ -189,9 +191,9 @@ DELIMITER ;
 
 -- SCREEN 15--
 
-DROP PROCEDURE IF EXISTS `admin_create_theater`;
+DROP PROCEDURE IF EXISTS 'admin_create_theater';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_theater`(IN i_thName VARCHAR(30), 
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_create_theater'(IN i_thName VARCHAR(30), 
 	IN i_comName VARCHAR(30), IN i_thStreet VARCHAR(45), IN i_thCity VARCHAR(45), 
     IN i_thState CHAR(2), IN i_thZipcode CHAR(11), IN i_capacity INT(11), IN i_managerUsername VARCHAR(45))
 BEGIN
@@ -202,13 +204,13 @@ DELIMITER ;
 
 -- SCREEN 16--
 
-DROP PROCEDURE IF EXISTS `admin_view_comDetail_emp`;
+DROP PROCEDURE IF EXISTS 'admin_view_comDetail_emp';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_view_comDetail_emp`(IN i_comName VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_view_comDetail_emp'(IN i_comName VARCHAR(50))
 BEGIN
     DROP TABLE IF EXISTS AdComDetailEmp;
     CREATE TABLE AdComDetailEmp
-    SELECT firstName as empFirstname, lastName as empLast
+    SELECT firstName as empFirstname, lastName as empLastname
     FROM manager
     NATURAL JOIN user
     WHERE
@@ -216,9 +218,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `admin_view_comDetail_th`;
+DROP PROCEDURE IF EXISTS 'admin_view_comDetail_th';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_view_comDetail_th`(IN i_comName VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_view_comDetail_th'(IN i_comName VARCHAR(50))
 BEGIN
     DROP TABLE IF EXISTS AdComDetailTh;
     CREATE TABLE AdComDetailTh
@@ -232,9 +234,9 @@ DELIMITER ;
 
 -- SCREEN 17--
 
-DROP PROCEDURE IF EXISTS `admin_create_mov`;
+DROP PROCEDURE IF EXISTS 'admin_create_mov';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_mov`(IN i_movName VARCHAR(50), IN i_movDuration INT, IN i_movReleaseDate DATE)
+CREATE DEFINER='root'@'localhost' PROCEDURE 'admin_create_mov'(IN i_movName VARCHAR(50), IN i_movDuration INT, IN i_movReleaseDate DATE)
 BEGIN
     INSERT INTO movie (movName, movReleaseDate, duration)
     VALUES (i_movName, i_movReleaseDate, i_movDuration);
@@ -243,9 +245,9 @@ DELIMITER ;
 
 -- SCREEN 18--
 
-DROP PROCEDURE IF EXISTS `manager_filter_th`;
+DROP PROCEDURE IF EXISTS 'manager_filter_th';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_filter_th`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_minMovDuration INT(4), IN i_maxMovDuration INT(4), IN i_minMovReleaseDate DATE, IN i_maxMovReleaseDate DATE, IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE, IN i_includeNotPlayed BOOLEAN)
+CREATE DEFINER='root'@'localhost' PROCEDURE 'manager_filter_th'(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_minMovDuration INT(4), IN i_maxMovDuration INT(4), IN i_minMovReleaseDate DATE, IN i_maxMovReleaseDate DATE, IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE, IN i_includeNotPlayed BOOLEAN)
 BEGIN
 	DROP TABLE IF EXISTS ManFilterTh;
 	CASE 
@@ -286,9 +288,9 @@ DELIMITER ;
 
 -- SCREEN 19--
 
-DROP PROCEDURE IF EXISTS `manager_schedule_mov`;
+DROP PROCEDURE IF EXISTS 'manager_schedule_mov';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_schedule_mov`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_movPlayDate DATE)
+CREATE DEFINER='root'@'localhost' PROCEDURE 'manager_schedule_mov'(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_movPlayDate DATE)
 BEGIN
 	INSERT INTO movieplay(thName, comName, movName, movReleaseDate, movPlayDate) VALUES((SELECT thName FROM team11.manager WHERE username = i_manUsername), (SELECT comName FROM team11.manager WHERE username = i_manUsername), i_movName, i_movReleaseDate, i_movPlayDate);
 END$$
@@ -296,9 +298,9 @@ DELIMITER ;
 
 -- SCREEN 20--
 
-DROP PROCEDURE IF EXISTS `customer_filter_mov`;
+DROP PROCEDURE IF EXISTS 'customer_filter_mov';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_filter_mov`(IN i_movName VARCHAR(50), IN i_comName VARCHAR(50), IN i_city VARCHAR(50), IN i_state CHAR(3), IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE)
+CREATE DEFINER='root'@'localhost' PROCEDURE 'customer_filter_mov'(IN i_movName VARCHAR(50), IN i_comName VARCHAR(50), IN i_city VARCHAR(50), IN i_state CHAR(3), IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE)
 BEGIN
     DROP TABLE IF EXISTS CosFilterMovie;
     CREATE TABLE CosFilterMovie
@@ -315,9 +317,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `customer_view_mov`;
+DROP PROCEDURE IF EXISTS 'customer_view_mov';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_view_mov`(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
+CREATE DEFINER='root'@'localhost' PROCEDURE 'customer_view_mov'(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
 BEGIN
     INSERT INTO customerviewmovie (creditcardnum, thName, comName, movName, movReleaseDate, movPlayDate)
     VALUES (i_creditCardNum, i_thName, i_comName, i_movName, i_movReleaseDate, i_movPlayDate);
@@ -326,9 +328,9 @@ DELIMITER ;
 
 -- SCREEN 21--
 
-DROP PROCEDURE IF EXISTS `customer_view_history`;
+DROP PROCEDURE IF EXISTS 'customer_view_history';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_view_history`(IN i_cusUsername VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'customer_view_history'(IN i_cusUsername VARCHAR(50))
 BEGIN
     DROP TABLE IF EXISTS CosViewHistory;
     CREATE TABLE CosViewHistory
@@ -342,9 +344,9 @@ DELIMITER ;
 
 -- SCREEN 22--
 
-DROP PROCEDURE IF EXISTS `user_filter_th`;
+DROP PROCEDURE IF EXISTS 'user_filter_th';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `user_filter_th`(IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_city VARCHAR(50), IN i_state VARCHAR(3))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'user_filter_th'(IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_city VARCHAR(50), IN i_state VARCHAR(3))
 BEGIN
     DROP TABLE IF EXISTS UserFilterTh;
     CREATE TABLE UserFilterTh
@@ -358,9 +360,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `user_visit_th`;
+DROP PROCEDURE IF EXISTS 'user_visit_th';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `user_visit_th`(IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_visitDate DATE, IN i_username VARCHAR(50))
+CREATE DEFINER='root'@'localhost' PROCEDURE 'user_visit_th'(IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_visitDate DATE, IN i_username VARCHAR(50))
 BEGIN
     INSERT INTO UserVisitTheater (thName, comName, visitDate, username)
     VALUES (i_thName, i_comName, i_visitDate, i_username);
@@ -369,9 +371,9 @@ DELIMITER ;
 
 -- SCREEN 23--
 
-DROP PROCEDURE IF EXISTS `user_filter_visitHistory`;
+DROP PROCEDURE IF EXISTS 'user_filter_visitHistory';
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `user_filter_visitHistory`(IN i_username VARCHAR(50), IN i_minVisitDate DATE, IN i_maxVisitDate DATE)
+CREATE DEFINER='root'@'localhost' PROCEDURE 'user_filter_visitHistory'(IN i_username VARCHAR(50), IN i_minVisitDate DATE, IN i_maxVisitDate DATE)
 BEGIN
     DROP TABLE IF EXISTS UserVisitHistory;
     CREATE TABLE UserVisitHistory
