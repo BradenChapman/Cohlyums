@@ -1,5 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `team11` 
-/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE  IF NOT EXISTS `team11` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `team11`;
 -- MySQL dump 10.13  Distrib 8.0.17, for Win64 (x86_64)
 --
@@ -201,7 +200,6 @@ LOCK TABLES `manager` WRITE;
 /*!40000 ALTER TABLE `manager` DISABLE KEYS */;
 INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,'Jonathan\'s Movies'),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
 /*!40000 ALTER TABLE `manager` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
@@ -287,10 +285,10 @@ CREATE TABLE `theater` (
 -- Dumping data for table `theater`
 --
 
-LOCK TABLES 'theater' WRITE;
-/*!40000 ALTER TABLE 'theater' DISABLE KEYS */;
-INSERT INTO 'theater' VALUES ('ABC Theater','Awesome Theater Company',5,'880 Color Dr','Austin','TX',73301,'imbatman'),('Cinema Star','4400 Theater Company',4,'100 Cool Place','San Francisco','CA',94016,'entropyRox'),('Jonathan\'s Movies','4400 Theater Company',2,'67 Pearl Dr','Seattle','WA',98101,'georgep'),('Main Movies','EZ Theater Company',3,'123 Main St','New York','NY',10001,'fatherAI'),('ML Movies','AI Theater Company',3,'314 Pi St','Pallet Town','KS',31415,'ghcghc'),('Star Movies','4400 Theater Company',5,'4400 Rocks Ave','Boulder','CA',80301,'radioactivePoRa'),('Star Movies','EZ Theater Company',2,'745 GT St','Atlanta','GA',30332,'calcultron');
-/*!40000 ALTER TABLE 'theater' ENABLE KEYS */;
+LOCK TABLES `theater` WRITE;
+/*!40000 ALTER TABLE `theater` DISABLE KEYS */;
+INSERT INTO `theater` VALUES ('ABC Theater','Awesome Theater Company',5,'880 Color Dr','Austin','TX',73301,'imbatman'),('Cinema Star','4400 Theater Company',4,'100 Cool Place','San Francisco','CA',94016,'entropyRox'),('Jonathan\'s Movies','4400 Theater Company',2,'67 Pearl Dr','Seattle','WA',98101,'georgep'),('Main Movies','EZ Theater Company',3,'123 Main St','New York','NY',10001,'fatherAI'),('ML Movies','AI Theater Company',3,'314 Pi St','Pallet Town','KS',31415,'ghcghc'),('Star Movies','4400 Theater Company',5,'4400 Rocks Ave','Boulder','CA',80301,'radioactivePoRa'),('Star Movies','EZ Theater Company',2,'745 GT St','Atlanta','GA',30332,'calcultron');
+/*!40000 ALTER TABLE `theater` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -319,7 +317,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('calcultron','Approved','333333333','Dwight','Schrute','1','1','0'),('calcultron2','Approved','444444444','Jim','Halpert','0','1','0'),('calcwizard','Approved','222222222','Issac','Newton','0','1','0'),('clarinetbeast','Declined','999999999','Squidward','Tentacles','0','1','0'),('cool_class4400','Approved','333333333','A. TA','Washere','1','1','0'),('DNAhelix','Approved','777777777','Rosalind','Franklin','0','1','0'),('does2Much','Approved','1212121212','Carl','Gauss','0','1','0'),('eeqmcsquare','Approved','111111110','Albert','Einstein','0','1','0'),('entropyRox','Approved','999999999','Claude','Shannon','1','1','0'),('fatherAI','Approved','222222222','Alan','Turing','1','0','0'),('fullMetal','Approved','111111100','Edward','Elric','0','1','0'),('gdanger','Declined','555555555','Gary','Danger','0','0','1'),('georgep','Approved','111111111','George P.','Burdell','1','1','0'),('ghcghc','Approved','666666666','Grace','Hopper','1','0','0'),('ilikemoney$$','Approved','111111110','Eugene','Krabs','0','1','0'),('imbatman','Approved','666666666','Bruce','Wayne','1','0','0'),('imready','Approved','777777777','Spongebob','Squarepants','0','1','0'),('isthisthekrustykrab','Approved','888888888','Patrick','Star','0','1','0'),('manager1','Approved','1122112211',`manager`,'One','1','0','0'),('manager2','Approved','3131313131',`manager`,'Two','1','0','0'),('manager3','Approved','8787878787','Three','Three','1','0','0'),('manager4','Approved','5755555555','Four','Four','1','0','0'),('notFullMetal','Approved','111111100','Alphonse','Elric','0','1','0'),('programerAAL','Approved','3131313131','Ada','Lovelace','0','1','0'),('radioactivePoRa','Approved','1313131313','Marie','Curie','1','0','0'),('RitzLover28','Approved','444444444','Abby','Normal','0','1','0'),('smith_j','Pending','333333333','John','Smith','0','0','1'),('texasStarKarate','Declined','111111110','Sandy','Cheeks','0','0','1'),('thePiGuy3.14','Approved','1111111111','Archimedes','Syracuse','0','1','0'),('theScienceGuy','Approved','999999999','Bill','Nye','0','1','0');
+INSERT INTO `user` VALUES ('calcultron','Approved','333333333','Dwight','Schrute','1','1','0'),('calcultron2','Approved','444444444','Jim','Halpert','0','1','0'),('calcwizard','Approved','222222222','Issac','Newton','0','1','0'),('clarinetbeast','Declined','999999999','Squidward','Tentacles','0','1','0'),('cool_class4400','Approved','333333333','A. TA','Washere','1','1','0'),('DNAhelix','Approved','777777777','Rosalind','Franklin','0','1','0'),('does2Much','Approved','1212121212','Carl','Gauss','0','1','0'),('eeqmcsquare','Approved','111111110','Albert','Einstein','0','1','0'),('entropyRox','Approved','999999999','Claude','Shannon','1','1','0'),('fatherAI','Approved','222222222','Alan','Turing','1','0','0'),('fullMetal','Approved','111111100','Edward','Elric','0','1','0'),('gdanger','Declined','555555555','Gary','Danger','0','0','1'),('georgep','Approved','111111111','George P.','Burdell','1','1','0'),('ghcghc','Approved','666666666','Grace','Hopper','1','0','0'),('ilikemoney$$','Approved','111111110','Eugene','Krabs','0','1','0'),('imbatman','Approved','666666666','Bruce','Wayne','1','0','0'),('imready','Approved','777777777','Spongebob','Squarepants','0','1','0'),('isthisthekrustykrab','Approved','888888888','Patrick','Star','0','1','0'),('manager1','Approved','1122112211','Manager','One','1','0','0'),('manager2','Approved','3131313131','Manager','Two','1','0','0'),('manager3','Approved','8787878787','Three','Three','1','0','0'),('manager4','Approved','5755555555','Four','Four','1','0','0'),('notFullMetal','Approved','111111100','Alphonse','Elric','0','1','0'),('programerAAL','Approved','3131313131','Ada','Lovelace','0','1','0'),('radioactivePoRa','Approved','1313131313','Marie','Curie','1','0','0'),('RitzLover28','Approved','444444444','Abby','Normal','0','1','0'),('smith_j','Pending','333333333','John','Smith','0','0','1'),('texasStarKarate','Declined','111111110','Sandy','Cheeks','0','0','1'),('thePiGuy3.14','Approved','1111111111','Archimedes','Syracuse','0','1','0'),('theScienceGuy','Approved','999999999','Bill','Nye','0','1','0');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
