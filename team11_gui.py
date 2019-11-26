@@ -1263,6 +1263,7 @@ class VisitHistory(QDialog):
 if __name__ == '__main__':
     global connection, curs, admin, app
     app = QApplication(sys.argv)
+    # sys.argv = ["team11_gui.py", "asdf"]
     password = sys.argv[1]
     try:
         connection = pymysql.connect(host="localhost",
@@ -1277,6 +1278,6 @@ if __name__ == '__main__':
         print(e)
         app.quit()
         sys.exit()
-    Login().exec()
-    app.quit()
+    log = Login()
+    log.show()
     sys.exit(app.exec_())
