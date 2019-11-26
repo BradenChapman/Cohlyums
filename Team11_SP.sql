@@ -8,7 +8,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(5
 BEGIN
   DROP TABLE IF EXISTS UserLogin;
   CREATE TABLE UserLogin
-  SELECT user.username, status, isCustomer,i_username in (SELECT username from admin) as isAdmin, i_username in (SELECT username from manager) as isManager
+  SELECT user.username, status, isCustomer, i_username IN (SELECT username from admin) AS isAdmin, i_username IN (SELECT username from manager) AS isManager
 	FROM user left join employee on user.username = employee.username
 	WHERE user.username = i_username and  user.password=i_password;
 END$$
@@ -304,7 +304,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_filter_mov`(IN i_movName V
 BEGIN
     DROP TABLE IF EXISTS CosFilterMovie;
     CREATE TABLE CosFilterMovie
-    SELECT (movName, thName, thStreet, thCity, thState, thZipcode, comName, movPlayDate, movReleaseDate)
+    SELECT movName, thName, thStreet, thCity, thState, thZipcode, comName, movPlayDate, movReleaseDate
     FROM theater
     NATURAL JOIN movieplay
     WHERE
