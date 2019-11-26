@@ -140,13 +140,55 @@ ORDER BY
 END$$
 DELIMITER ;
 
--- Last one done - Screen 13: Admin filter user
-
 -- SCREEN 14--
 
--- INSERT CODE HERE--
+DROP PROCEDURE IF EXISTS `admin_filter_company`;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_filter_company`(IN i_comName VARCHAR(50), IN i_minCity INT, IN i_maxCity INT, IN i_minTheater INT, IN i_maxTheater INT, IN i_minEmployee INT, IN i_maxEmployee INT, i_sortBy VARCHAR(50), i_sortDirection VARCHAR(50))
+BEGIN
+	DROP TABLE IF EXISTS AdFilterCom;
+    CREATE TABLE AdFilterCom
+    SELECT comName, numCityCover, numTheater, numEmployee
+    FROM (
+    SELECT theaterInfo.comName, numCityCover, numTheater, numEmployee
+	FROM
+		(SELECT comName, count(DISTINCT thCity,thState) AS numCityCover, count(thName) AS numTheater FROM theater GROUP BY comName) AS theaterInfo
+	LEFT JOIN
+		(SELECT comName, count(username) AS numEmployee FROM manager GROUP BY comName) AS manInfo
+	ON theaterInfo.comName = manInfo.comName) AS comFilter 
+    WHERE 
+		(comName = i_comName) AND
+		(numCityCover >= i_minCity) AND
+        (numCityCover<= i_maxCity) AND
+        (numTheater >= i_minTheater) AND
+        (numTheater<= i_maxTheater) AND
+        (numEmployee >= i_minEmployee) AND
+        (numEmployee<= i_maxEmployee)
+	ORDER BY 
+			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN 
+					(CASE
+						WHEN i_sortBy = 'comName' THEN comName
+						WHEN i_sortBY = 'numCityCover' THEN numCityCover 
+						WHEN i_sortBy = 'numTheater' THEN numTheater 
+						WHEN i_sortBy = 'numEmployee' THEN numEmployee 
+						ELSE comName 
+					END)
+				END) DESC,
+			(CASE WHEN (i_sortDirection = 'ASC') THEN  
+					(CASE
+						WHEN i_sortBy = 'comName' THEN comName
+						WHEN i_sortBY = 'numCityCover' THEN numCityCover 
+						WHEN i_sortBy = 'numTheater' THEN numTheater 
+						WHEN i_sortBy = 'numEmployee' THEN numEmployee 
+						ELSE comName 
+					END)
+				END) ASC
+;
+END$$
+DELIMITER ;
 
 -- SCREEN 15--
+
 DROP PROCEDURE IF EXISTS `admin_create_theater`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_theater`(IN i_thName VARCHAR(30), 
@@ -157,7 +199,6 @@ BEGIN
     values (i_thName, i_comName, i_thStreet, i_thCity, i_thState, i_thZipcode, i_capacity, i_managerUsername);
 END $$
 DELIMITER ;
--- INSERT CODE HERE--
 
 -- SCREEN 16--
 
