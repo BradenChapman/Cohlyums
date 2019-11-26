@@ -295,6 +295,7 @@ class UserRegistration(QDialog):
             self.close()
             Login().exec()
 
+
 class CustomerRegistration(QDialog):
 
     def __init__(self):
@@ -1241,19 +1242,20 @@ class ViewHistory(QDialog):
 
         vbox = QVBoxLayout()
 
-        curs.execute('call customer_view_history("{USERNAME}");')
-        dum1 = curs.fetchall()
-        curs.execute('SELECT * FROM CosViewHistory;')
-        dum2 = curs.fetchall()
-        print(dum1)
-        print(dum2)
+        # curs.execute('call customer_view_history("{USERNAME}");')
+        # dum1 = curs.fetchall()
+        # curs.execute('SELECT * FROM CosViewHistory;')
+        # dum2 = curs.fetchall()
+        # print(dum1)
+        # print(dum2)
 
-        table_model = SimpleTableModel(dum2)
-        table_view = QTableView()
-        table_view.setModel(table_model)
-        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        # table_model = SimpleTableModel(dum2)
+        # table_view = QTableView()
+        # table_view.setModel(table_model)
+        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
-        vbox.addWidget(table_view)
+        # vbox.addWidget(table_view)
+
         vbox.addWidget(QLabel("" + USERNAME))
 
         self.setLayout(vbox)
