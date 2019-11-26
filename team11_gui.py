@@ -23,8 +23,8 @@ from PyQt5.QtWidgets import (
 # MEMORABLE COMMENTS
 #
 #    - "It's the fix a ton of stuff that destroyed everthing" - David Zhou
+#    - "I can assure that the rest of the SP work .... 5:15 pm"
 #    -
-#
 
 
 
@@ -128,8 +128,9 @@ class Login(QDialog):
         USERNAME = un
 
         curs.execute(f'call user_login("{un}", "{p}");')
+        curs.fetchall()
+        curs.execute('SELECT * FROM UserLogin;')
         a = curs.fetchall()
-
         if bool(a):
             a = a[0]
             status, ic, ia, im = a["status"], int(a["isCustomer"]), int(a["isAdmin"]), int(a["isManager"])
