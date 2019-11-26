@@ -196,6 +196,7 @@ CREATE TABLE `manager` (
 -- Dumping data for table `manager`
 --
 
+<<<<<<< HEAD
 LOCK TABLES 'manager' WRITE;
 /*!40000 ALTER TABLE 'manager' DISABLE KEYS */;
 INSERT INTO 'manager' VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,'Jonathan\'s Movies'),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
@@ -210,6 +211,12 @@ INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree S
 LOCK TABLES `manager` WRITE;
 /*!40000 ALTER TABLE `manager` DISABLE KEYS */;
 INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,"Jonathan\'s Movies"),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
+/*!40000 ALTER TABLE `manager` ENABLE KEYS */;
+>>>>>>> parent of a12f192... Fix a ton of stuff
+=======
+LOCK TABLES `manager` WRITE;
+/*!40000 ALTER TABLE `manager` DISABLE KEYS */;
+INSERT INTO `manager` VALUES ('calcultron','EZ Theater Company','123 Peachtree St','Atlanta','GA',30308,'Star Movies'),('entropyRox','4400 Theater Company','200 Cool Place','San Francisco','CA',94016,'Cinema Star'),('fatherAI','EZ Theater Company','456 Main St','New York','NY',10001,'Main Movies'),('georgep','4400 Theater Company','10 Pearl Dr','Seattle','WA',98105,'Jonathan\'s Movies'),('ghcghc','AI Theater Company','100 Pi St','Pallet Town','KS',31415,'ML Movies'),('imbatman','Awesome Theater Company','800 Color Dr','Austin','TX',78653,'ABC Theater'),('manager1','4400 Theater Company','123 Ferst Drive','Atlanta','GA',30332,''),('manager2','AI Theater Company','456 Ferst Drive','Atlanta','GA',30332,''),('manager3','4400 Theater Company','789 Ferst Drive','Atlanta','GA',30332,''),('manager4','4400 Theater Company','000 Ferst Drive','Atlanta','GA',30332,''),('radioactivePoRa','4400 Theater Company','100 Blu St','Sunnyvale','CA',94088,'Star Movies');
 /*!40000 ALTER TABLE `manager` ENABLE KEYS */;
 >>>>>>> parent of a12f192... Fix a ton of stuff
 UNLOCK TABLES;
@@ -297,6 +304,7 @@ CREATE TABLE `theater` (
 -- Dumping data for table `theater`
 --
 
+<<<<<<< HEAD
 LOCK TABLES 'theater' WRITE;
 /*!40000 ALTER TABLE 'theater' DISABLE KEYS */;
 INSERT INTO 'theater' VALUES ('ABC Theater','Awesome Theater Company',5,'880 Color Dr','Austin','TX',73301,'imbatman'),('Cinema Star','4400 Theater Company',4,'100 Cool Place','San Francisco','CA',94016,'entropyRox'),('Jonathan\'s Movies','4400 Theater Company',2,'67 Pearl Dr','Seattle','WA',98101,'georgep'),('Main Movies','EZ Theater Company',3,'123 Main St','New York','NY',10001,'fatherAI'),('ML Movies','AI Theater Company',3,'314 Pi St','Pallet Town','KS',31415,'ghcghc'),('Star Movies','4400 Theater Company',5,'4400 Rocks Ave','Boulder','CA',80301,'radioactivePoRa'),('Star Movies','EZ Theater Company',2,'745 GT St','Atlanta','GA',30332,'calcultron');
@@ -309,6 +317,12 @@ INSERT INTO `theater` VALUES ('ABC Theater','Awesome Theater Company',5,'880 Col
 LOCK TABLES `theater` WRITE;
 /*!40000 ALTER TABLE `theater` DISABLE KEYS */;
 INSERT INTO `theater` VALUES ('ABC Theater','Awesome Theater Company',5,'880 Color Dr','Austin','TX',73301,'imbatman'),('Cinema Star','4400 Theater Company',4,'100 Cool Place','San Francisco','CA',94016,'entropyRox'),('Jonathan's Movies','4400 Theater Company',2,'67 Pearl Dr','Seattle','WA',98101,'georgep'),('Main Movies','EZ Theater Company',3,'123 Main St','New York','NY',10001,'fatherAI'),('ML Movies','AI Theater Company',3,'314 Pi St','Pallet Town','KS',31415,'ghcghc'),('Star Movies','4400 Theater Company',5,'4400 Rocks Ave','Boulder','CA',80301,'radioactivePoRa'),('Star Movies','EZ Theater Company',2,'745 GT St','Atlanta','GA',30332,'calcultron');
+/*!40000 ALTER TABLE `theater` ENABLE KEYS */;
+>>>>>>> parent of a12f192... Fix a ton of stuff
+=======
+LOCK TABLES `theater` WRITE;
+/*!40000 ALTER TABLE `theater` DISABLE KEYS */;
+INSERT INTO `theater` VALUES ('ABC Theater','Awesome Theater Company',5,'880 Color Dr','Austin','TX',73301,'imbatman'),('Cinema Star','4400 Theater Company',4,'100 Cool Place','San Francisco','CA',94016,'entropyRox'),('Jonathan\'s Movies','4400 Theater Company',2,'67 Pearl Dr','Seattle','WA',98101,'georgep'),('Main Movies','EZ Theater Company',3,'123 Main St','New York','NY',10001,'fatherAI'),('ML Movies','AI Theater Company',3,'314 Pi St','Pallet Town','KS',31415,'ghcghc'),('Star Movies','4400 Theater Company',5,'4400 Rocks Ave','Boulder','CA',80301,'radioactivePoRa'),('Star Movies','EZ Theater Company',2,'745 GT St','Atlanta','GA',30332,'calcultron');
 /*!40000 ALTER TABLE `theater` ENABLE KEYS */;
 >>>>>>> parent of a12f192... Fix a ton of stuff
 UNLOCK TABLES;
