@@ -8,7 +8,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(5
 BEGIN
   DROP TABLE IF EXISTS UserLogin;
   CREATE TABLE UserLogin
-  SELECT user.username, status, isCustomer, 
+  SELECT user.username, status, isCustomer,
 		i_username in (SELECT username from admin) as isAdmin,
     i_username in (SELECT username from manager) as isManager
 	FROM user left join employee on user.username = employee.username
@@ -114,31 +114,31 @@ BEGIN
     FROM (
 		SELECT user.username as username, creditCardCount, status, isCustomer, isUser, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 		FROM user left join employee on user.username = employee.username
-		left join 
+		left join
 		(SELECT user.username,ifnull(creditCardCount,0) as creditCardCount
 		FROM user left join (select username, count(creditCardNum) as creditCardCount from customercreditcard group by customercreditcard.username) as cCardCount
 		on user.username = cCardCount.username) as cardInfo
 		on user.username = cardInfo.username) as userInfo
-WHERE 
+WHERE
 	(username = i_username) AND
-	(status = i_status OR i_status = "ALL") 
-ORDER BY 
-		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN 
+	(status = i_status OR i_status = "ALL")
+ORDER BY
+		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount 
-					WHEN i_sortBy = 'userType' THEN userType 
-					WHEN i_sortBy = 'status' THEN status 
-					ELSE username 
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+					WHEN i_sortBy = 'userType' THEN userType
+					WHEN i_sortBy = 'status' THEN status
+					ELSE username
 				END)
 			END) DESC,
-		(CASE WHEN (i_sortDirection = 'ASC') THEN  
+		(CASE WHEN (i_sortDirection = 'ASC') THEN
 				(CASE
-					WHEN i_sortBy = 'username' THEN username 
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount 
-					WHEN i_sortBy = 'userType' THEN userType 
-					WHEN i_sortBy = 'status' THEN status 
-					ELSE username 
+					WHEN i_sortBy = 'username' THEN username
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+					WHEN i_sortBy = 'userType' THEN userType
+					WHEN i_sortBy = 'status' THEN status
+					ELSE username
 				END)
 			END) ASC;
 END$$
@@ -159,8 +159,8 @@ BEGIN
 		(SELECT comName, count(DISTINCT thCity,thState) AS numCityCover, count(thName) AS numTheater FROM theater GROUP BY comName) AS theaterInfo
 	LEFT JOIN
 		(SELECT comName, count(username) AS numEmployee FROM manager GROUP BY comName) AS manInfo
-	ON theaterInfo.comName = manInfo.comName) AS comFilter 
-    WHERE 
+	ON theaterInfo.comName = manInfo.comName) AS comFilter
+    WHERE
 		(comName = i_comName) AND
 		(numCityCover >= i_minCity) AND
         (numCityCover<= i_maxCity) AND
@@ -168,23 +168,23 @@ BEGIN
         (numTheater<= i_maxTheater) AND
         (numEmployee >= i_minEmployee) AND
         (numEmployee<= i_maxEmployee)
-	ORDER BY 
-			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN 
+	ORDER BY
+			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 					(CASE
 						WHEN i_sortBy = 'comName' THEN comName
-						WHEN i_sortBY = 'numCityCover' THEN numCityCover 
-						WHEN i_sortBy = 'numTheater' THEN numTheater 
-						WHEN i_sortBy = 'numEmployee' THEN numEmployee 
-						ELSE comName 
+						WHEN i_sortBY = 'numCityCover' THEN numCityCover
+						WHEN i_sortBy = 'numTheater' THEN numTheater
+						WHEN i_sortBy = 'numEmployee' THEN numEmployee
+						ELSE comName
 					END)
 				END) DESC,
-			(CASE WHEN (i_sortDirection = 'ASC') THEN  
+			(CASE WHEN (i_sortDirection = 'ASC') THEN
 					(CASE
 						WHEN i_sortBy = 'comName' THEN comName
-						WHEN i_sortBY = 'numCityCover' THEN numCityCover 
-						WHEN i_sortBy = 'numTheater' THEN numTheater 
-						WHEN i_sortBy = 'numEmployee' THEN numEmployee 
-						ELSE comName 
+						WHEN i_sortBY = 'numCityCover' THEN numCityCover
+						WHEN i_sortBy = 'numTheater' THEN numTheater
+						WHEN i_sortBy = 'numEmployee' THEN numEmployee
+						ELSE comName
 					END)
 				END) ASC
 ;
@@ -195,8 +195,8 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `admin_create_theater`;
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_theater`(IN i_thName VARCHAR(30), 
-	IN i_comName VARCHAR(30), IN i_thStreet VARCHAR(45), IN i_thCity VARCHAR(45), 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_theater`(IN i_thName VARCHAR(30),
+	IN i_comName VARCHAR(30), IN i_thStreet VARCHAR(45), IN i_thCity VARCHAR(45),
     IN i_thState CHAR(2), IN i_thZipcode CHAR(11), IN i_capacity INT(11), IN i_managerUsername VARCHAR(45))
 BEGIN
 	insert into theater (thName, comName, thStreet, thCity, thState, thZipcode, capacity, manUsername)
@@ -227,7 +227,7 @@ BEGIN
     DROP TABLE IF EXISTS AdComDetailTh;
     CREATE TABLE AdComDetailTh
     SELECT thName, manUsername as thManagerUsername, thCity, thState, capacity as thCapacity
-    FROM company 
+    FROM company
     NATURAL JOIN theater
     WHERE
 		(i_comName = comName OR i_comName = "ALL");
@@ -252,13 +252,13 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_filter_th`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_minMovDuration INT(4), IN i_maxMovDuration INT(4), IN i_minMovReleaseDate DATE, IN i_maxMovReleaseDate DATE, IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE, IN i_includeNotPlayed BOOLEAN)
 BEGIN
 	DROP TABLE IF EXISTS ManFilterTh;
-	CASE 
+	CASE
 		WHEN i_includeNotPlayed IS NULL OR i_includeNotPlayed = FALSE
 		THEN
         CREATE TABLE ManFilterTh
         SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
-		FROM movie 
-		LEFT OUTER JOIN movieplay ON movie.movName=movieplay.movName 
+		FROM movie
+		LEFT OUTER JOIN movieplay ON movie.movName=movieplay.movName
 		LEFT OUTER JOIN theater ON movieplay.thName=theater.thName
 		WHERE
 			(i_manUsername = theater.manUsername or i_manUsername = "ALL") AND
@@ -273,8 +273,8 @@ BEGIN
 		THEN
 			CREATE TABLE ManFilterTh
 			SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
-			FROM movie 
-			LEFT OUTER JOIN movieplay ON movie.movName=movieplay.movName 
+			FROM movie
+			LEFT OUTER JOIN movieplay ON movie.movName=movieplay.movName
             LEFT OUTER JOIN theater ON movieplay.thName=theater.thName
 			WHERE
 				(i_manUsername = theater.manUsername or i_manUsername = "ALL") AND
