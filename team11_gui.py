@@ -1,4 +1,4 @@
-import pymysql, sys
+import pymysql, sys, datetime
 from typing import *
 from PyQt5.QtCore import Qt, QAbstractTableModel, QVariant
 from PyQt5.QtGui import QPixmap
@@ -1719,17 +1719,51 @@ class TheaterOverview(QDialog):
 
         mn, d1, d2, r1, r2, p1, p2 = mn.text(), d1.text(), d2.text(), r1.text(), r2.text(), p1.text(), p2.text()
         # CHECK TO SEE IF DATES IN CORRECT FORMAT
+        if bool(r1):
+            try:
+                datetime.datetime.strptime(r1, '%Y-%m-%d')
+            except:
+                w = QMessageBox()
+                QMessageBox.warning(w, "Explore Theater Error", f"Invalid date {r1}")
+                return None
+        if bool(r2):
+            try:
+                datetime.datetime.strptime(r2, '%Y-%m-%d')
+            except:
+                w = QMessageBox()
+                QMessageBox.warning(w, "Explore Theater Error", f"Invalid date {r1}")
+                return None
+        if bool(p1):
+            try:
+                datetime.datetime.strptime(p1, '%Y-%m-%d')
+            except:
+                w = QMessageBox()
+                QMessageBox.warning(w, "Explore Theater Error", f"Invalid date {r1}")
+                return None
+        if bool(p2):
+            try:
+                datetime.datetime.strptime(p2, '%Y-%m-%d')
+            except:
+                w = QMessageBox()
+                QMessageBox.warning(w, "Explore Theater Error", f"Invalid date {r1}")
+                return None
         aList = [d1, d2, r1, r2, p1, p2]
         bList = [ "NULL" if i == "" else i for i in aList]
         d1, d2, r1, r2, p1, p2 = bList
-        if mn == "":
-            query = f'call manager_filter_th("{un}", "", '+ d1 +", "+ d2 +", "+ r1 + \
-                    ", " + r2 + ", " + p1 + ", " + p2 + ", " + str(played) + ");"
-            print(query)
-        else:
-            query = f'call manager_filter_th("{un}", "{mn}", '+ d1 +", "+ d2 +", "+ r1 + \
-                    ", " + r2 + ", " + p1 + ", " + p2 + ", " + str(played) + ");"
-            print(query)
+        if d1 != "NULL":
+            d1 = f'"{d1}"'
+        if d2 != "NULL":
+            d2 = f'"{d2}"'
+        if r1 != "NULL":
+            r1 = f'"{r1}"'
+        if r2 != "NULL":
+            r2 = f'"{r2}"'
+        if p1 != "NULL":
+            p1 = f'"{p1}"'
+        if p2 != "NULL":
+            p2 = f'"{p2}"'
+
+        query = f'call manager_filter_th("{un}","{mn}",{d1},{d2},{r1},{r2},{p1},{p2},{played});'
         curs.execute(query)
         curs.fetchall()
         curs.execute("SELECT * FROM ManFilterTh;")
@@ -1744,7 +1778,7 @@ class TheaterOverview(QDialog):
             data = [{"Movie Name" : i["movName"], "Duration" : i["movDuration"], "Release Date": i["movReleaseDate"] , \
             "Play Date": i["movPlayDate"]} for i in data]
         else:
-            data = [{i : "" for i in self.stuffff.keys() }]
+            data = [{i : "" for i in  ["Movie Name", "Duration", "Release Date", "Play Date"]}]
         self.table_model = SimpleTableModel(data)
         self.table_view = QTableView()
         self.table_view.setModel(self.table_model)
@@ -1942,12 +1976,12 @@ class ExploreMovie(QDialog):
         if maxDate == "":
             maxDate = MAX_DATE
 
-        try: 
+        try:
             curs.execute(f'call customer_filter_mov("{movieName}","{company}","{city}", "{state}", "{minDate}", "{maxDate}");')
-        except: 
+        except:
             b = QMessageBox()
             QMessageBox.warning(b, "Error", "Your date is the wrong format")
-        
+
         dum1 = curs.fetchall()
         dum = curs.execute('SELECT * FROM CosFilterMovie;')
         dum2 = curs.fetchall()
@@ -2015,7 +2049,7 @@ class ExploreMovie(QDialog):
         try:
             curs.execute(f'call customer_view_mov("{ccard}", "{movie}", "{releaseDate}", "{theater}", "{company}", "{playDate}");')
             connection.commit()
-        except: 
+        except:
             b = QMessageBox()
             QMessageBox.warning(b, "Error", "Your date is the wrong format")
 
@@ -2166,10 +2200,10 @@ class ExploreTheater(QDialog):
         visitDate = self.vd.text()
         username = USERNAME
         if not visitDate == "":
-            try: 
+            try:
                 curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
                 connection.commit()
-            except: 
+            except:
                 b = QMessageBox()
                 QMessageBox.warning(b, "Error", "Your date is the wrong format")
         else:
