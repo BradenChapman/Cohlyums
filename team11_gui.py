@@ -52,6 +52,13 @@ def getMinAndMaxDate():
     dum2 = curs.fetchall()
     return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
 
+def getMinAndMaxDateMoviePlay():
+    curs.execute("SELECT min(movPlayDate) as min1 from movieplay;")
+    dum1 = curs.fetchall()
+    curs.execute("SELECT max(movPlayDate) as max1 from movieplay;")
+    dum2 = curs.fetchall()
+    return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
+
 def getMovies():
     curs.execute("SELECT movname from movie;")
     return [i["movname"] for i in curs.fetchall()]
@@ -1545,87 +1552,176 @@ class ExploreMovie(QDialog):
         self.setModal(True)
         self.setWindowTitle("Explore Movie")
 
-        # curs.execute("SELECT * FROM theater WHERE TRUE;")
-        # data = curs.fetchall()
-        # data1 = [{"Theater" : i["thName"], "Address" : i["thStreet"] + ", " + \
-        #         i["thCity"] + ", " + i["thState"] + " " + str(i["thZipcode"]), \
-        #         "Company" : i["comName"]} for i in data]
+        curs.execute("SELECT * FROM movieplay WHERE TRUE;")
+        moviePlays = curs.fetchall()
+        self.data1 = []
 
-        vbox = QVBoxLayout()
+        for i in moviePlays:
+            theater = i["thName"] 
+            company = i["comName"]
+            movie = i["movName"]
+            playDate = i["movPlayDate"]
+            curs.execute(f"SELECT * FROM theater WHERE thName = '{theater}' AND comName = '{company}';")
+            address = curs.fetchall()
+            address = address[0]["thStreet"] + ", " + address[0]["thCity"] + ", " + address[0]["thState"] + " " + str(address[0]["thZipcode"])
+            dictionary = {
+                "Movie": movie,
+                "Theater": theater,
+                "Address": address,
+                "Company": company,
+                "PlayDate": playDate
+            }
+            self.data1.append(dictionary)
+
+        self.vbox = QVBoxLayout()
 
 
-        mn = QComboBox()
-        mn.addItems(["ALL"])
+        self.mn = QComboBox()
+        self.mn.addItems(["ALL"] + list(set([i["Movie"] for i in self.data1])))
 
-        comp = QComboBox()
-        comp.addItems(["company"])
+        self.comp = QComboBox()
+        self.comp.addItems(["ALL"] + list(set([i["Company"] for i in self.data1])))
 
-        city = QLineEdit()
+        self.city = QLineEdit()
 
-        state = QComboBox()
-        states = getStates()
-        state.addItems(states)
+        self.state = QComboBox()
+        self.states = getStates()
+        self.state.addItems(['All'] + self.states)
 
-        filter_ = QPushButton("Filter")
-        filter_.pressed.connect(self.filter__)
+        self.filter_ = QPushButton("Filter")
+        self.filter_.pressed.connect(self.filter__)
 
-        hbox1 = QHBoxLayout()
-        hbox1.addWidget(QLabel("Movie Name:"))
-        hbox1.addWidget(mn)
-        hbox1.addWidget(QLabel("Company Name:"))
-        hbox1.addWidget(comp)
+        self.hbox1 = QHBoxLayout()
+        self.hbox1.addWidget(QLabel("Movie Name:"))
+        self.hbox1.addWidget(self.mn)
+        self.hbox1.addWidget(QLabel("Company Name:"))
+        self.hbox1.addWidget(self.comp)
 
-        hbox2 = QHBoxLayout()
-        hbox2.addWidget(QLabel("City:"))
-        hbox2.addWidget(city)
-        hbox2.addWidget(QLabel("State:"))
-        hbox2.addWidget(state)
+        self.hbox2 = QHBoxLayout()
+        self.hbox2.addWidget(QLabel("City:"))
+        self.hbox2.addWidget(self.city)
+        self.hbox2.addWidget(QLabel("State:"))
+        self.hbox2.addWidget(self.state)
 
-        hbox2_5 = QHBoxLayout()
-        mpd1 = QLineEdit()
-        mpd2 = QLineEdit()
-        hbox2_5.addWidget(QLabel("Movie PLay Date:"))
-        hbox2_5.addWidget(mpd1)
-        hbox2_5.addWidget(QLabel(" -- "))
-        hbox2_5.addWidget(mpd2)
+        self.hbox2_5 = QHBoxLayout()
+        self.mpd1 = QLineEdit()
+        self.mpd2 = QLineEdit()
+        self.hbox2_5.addWidget(QLabel("Movie Play Date:"))
+        self.hbox2_5.addWidget(self.mpd1)
+        self.hbox2_5.addWidget(QLabel(" -- "))
+        self.hbox2_5.addWidget(self.mpd2)
 
-        vbox.addLayout(hbox1)
-        vbox.addLayout(hbox2)
-        vbox.addLayout(hbox2_5)
-        vbox.addWidget(filter_)
+        self.vbox.addLayout(self.hbox1)
+        self.vbox.addLayout(self.hbox2)
+        self.vbox.addLayout(self.hbox2_5)
+        self.vbox.addWidget(self.filter_)
 
-        # table_model = SimpleTableModel(data1)
-        # table_view = QTableView()
-        # table_view.setModel(table_model)
-        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.table_model = SimpleTableModel(self.data1)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
-        # vbox.addWidget(table_view)
+        self.vbox.addWidget(self.table_view)
 
-        hbox3 = QHBoxLayout()
-        back = QPushButton("Back")
-        back.pressed.connect(self.back_)
-        cnum_combo = QComboBox()
-        cnum_combo.addItems(getCreditCards(USERNAME))
-        view = QPushButton("View")
-        view.pressed.connect(self.view_)
+        self.hbox3 = QHBoxLayout()
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.cnum_combo = QComboBox()
+        self.cnum_combo.addItems(getCreditCards(USERNAME))
+        self.view = QPushButton("View")
+        self.view.pressed.connect(self.view_)
 
-        hbox3.addWidget(back)
-        hbox3.addWidget(QLabel("Card Number:"))
-        hbox3.addWidget(cnum_combo)
-        hbox3.addWidget(view)
+        self.hbox3.addWidget(self.back)
+        self.hbox3.addWidget(QLabel("Card Number:"))
+        self.hbox3.addWidget(self.cnum_combo)
+        self.hbox3.addWidget(self.view)
 
-        vbox.addLayout(hbox3)
+        self.vbox.addLayout(self.hbox3)
 
-        self.setLayout(vbox)
+        self.setLayout(self.vbox)
 
     def filter__(self):
-        pass
+        # `customer_view_mov`(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
+        # `customer_filter_mov`(IN i_movName VARCHAR(50), IN i_comName VARCHAR(50), IN i_city VARCHAR(50), IN i_state CHAR(3), IN i_minMovPlayDate DATE, IN i_maxMovPlayDate DATE)
+        movieName = self.mn.currentText()
+        company = self.comp.currentText()
+        city = self.city.text()
+        state = self.state.currentText()
+        minDate = self.mpd1.text()
+        maxDate = self.mpd2.text()
+        MIN_DATE, MAX_DATE = getMinAndMaxDateMoviePlay()
+        if minDate == "":
+            minDate = MIN_DATE
+        if maxDate == "":
+            maxDate = MAX_DATE
+
+        curs.execute(f'call customer_filter_mov("{movieName}","{company}","{city}", "{state}", "{minDate}", "{maxDate}");')
+        dum1 = curs.fetchall()
+        dum = curs.execute('SELECT * FROM CosFilterMovie;')
+        dum2 = curs.fetchall()
+        print(dum2)
+
+        if not dum:
+            dum3 = [{"Theater":"","Address":"","Company":""}]
+        else:
+            dum3 = [{
+                "Movie": i["movName"],
+                "Theater" : i["thName"], 
+                "Address" : i["thStreet"] + ", " + i["thCity"] + ", " + i["thState"] + " " + str(i["thZipcode"]),
+                "Company" : i["comName"],
+                "PlayDate" : i["movPlayDate"]
+            } for i in dum2]
+        
+        self.table_model.setParent(None)
+        self.table_view.setParent(None)
+        self.hbox3.setParent(None)
+        self.vbox.addWidget(self.filter_)
+        self.table_model = SimpleTableModel(dum3)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        self.vbox.addWidget(self.table_view)
+        self.hbox3 = QHBoxLayout()
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.cnum_combo = QComboBox()
+        self.cnum_combo.addItems(getCreditCards(USERNAME))
+        self.view = QPushButton("View")
+        self.view.pressed.connect(self.view_)
+
+        self.hbox3.addWidget(self.back)
+        self.hbox3.addWidget(QLabel("Card Number:"))
+        self.hbox3.addWidget(self.cnum_combo)
+        self.hbox3.addWidget(self.view)
+
+        self.vbox.addLayout(self.hbox3)
+
+        self.setLayout(self.vbox)
 
     def back_(self):
         self.close()
 
     def view_(self):
-        pass
+        # pass
+        # `customer_view_mov`(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
+        current_index = self.table_view.currentIndex().row()
+        selected_item = self.table_model.row(current_index)
+
+        ccard = self.cnum_combo.currentText()
+        movie = selected_item['Movie']
+        
+        curs.execute(f"SELECT * FROM movie WHERE movName = '{movie}';")
+        movieInfo = curs.fetchall()
+        print(movieInfo)
+
+        releaseDate = movieInfo[0]['movReleaseDate'] # write this
+        theater = selected_item['Theater']
+        company = selected_item['Company']
+        playDate = selected_item['PlayDate']
+
+        curs.execute(f'call customer_view_mov("{ccard}", "{movie}", "{releaseDate}", "{theater}", "{company}", "{playDate}");')
+        connection.commit()
 
 # DONE! (I think)
 class ViewHistory(QDialog):
