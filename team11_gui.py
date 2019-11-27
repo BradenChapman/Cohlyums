@@ -33,6 +33,10 @@ def getCompanyNames():
     dum = curs.fetchall()
     return [ i["comname"] for i in dum]
 
+def getStates():
+    curs.execute("SELECT DISTINCT thState from theater;")
+    return [ i["thState"] for i in curs.fetchall() ]
+
 def isDuplicateUsername(un):
     dum = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
     if dum:
@@ -57,13 +61,23 @@ def addCreditCards(un, ccComboBox):
             else:
                 curs.execute(f'call customer_add_credicard("{un}", "{allItems[i]}");')
 
+def getCreditCards(un):
+    curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
+    return [i["creditcardnum"] for i in curs.fetchall()]
+
+def getMinAndMaxDate():
+    curs.execute("SELECT min(visitdate) as min1 from uservisittheater;")
+    dum1 = curs.fetchall()
+    curs.execute("SELECT max(visitdate) as max1 from uservisittheater;")
+    dum2 = curs.fetchall()
+    return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
 
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
         QAbstractTableModel.__init__(self, None)
         self.data = data
-        self.headers = [k for k, v in data[0].items()]
-        self.rows = [[v for k, v in record.items()] for record in data]
+        self.headers = [str(k) for k, v in data[0].items()]
+        self.rows = [[str(v) for k, v in record.items()] for record in data]
 
     def rowCount(self, parent):
         return len(self.rows)
@@ -1281,6 +1295,88 @@ class ExploreMovie(QDialog):
         self.setModal(True)
         self.setWindowTitle("Explore Movie")
 
+        # curs.execute("SELECT * FROM theater WHERE TRUE;")
+        # data = curs.fetchall()
+        # data1 = [{"Theater" : i["thName"], "Address" : i["thStreet"] + ", " + \
+        #         i["thCity"] + ", " + i["thState"] + " " + str(i["thZipcode"]), \
+        #         "Company" : i["comName"]} for i in data]
+
+        vbox = QVBoxLayout()
+
+
+        mn = QComboBox()
+        mn.addItems(["ALL"])
+
+        comp = QComboBox()
+        comp.addItems(["company"])
+
+        city = QLineEdit()
+
+        state = QComboBox()
+        states = getStates()
+        state.addItems(states)
+
+        filter_ = QPushButton("Filter")
+        filter_.pressed.connect(self.filter__)
+
+        hbox1 = QHBoxLayout()
+        hbox1.addWidget(QLabel("Movie Name:"))
+        hbox1.addWidget(mn)
+        hbox1.addWidget(QLabel("Company Name:"))
+        hbox1.addWidget(comp)
+
+        hbox2 = QHBoxLayout()
+        hbox2.addWidget(QLabel("City:"))
+        hbox2.addWidget(city)
+        hbox2.addWidget(QLabel("State:"))
+        hbox2.addWidget(state)
+
+        hbox2_5 = QHBoxLayout()
+        mpd1 = QLineEdit()
+        mpd2 = QLineEdit()
+        hbox2_5.addWidget(QLabel("Movie PLay Date:"))
+        hbox2_5.addWidget(mpd1)
+        hbox2_5.addWidget(QLabel(" -- "))
+        hbox2_5.addWidget(mpd2)
+
+        vbox.addLayout(hbox1)
+        vbox.addLayout(hbox2)
+        vbox.addLayout(hbox2_5)
+        vbox.addWidget(filter_)
+
+        # table_model = SimpleTableModel(data1)
+        # table_view = QTableView()
+        # table_view.setModel(table_model)
+        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        # vbox.addWidget(table_view)
+
+        hbox3 = QHBoxLayout()
+        back = QPushButton("Back")
+        back.pressed.connect(self.back_)
+        cnum_combo = QComboBox()
+        cnum_combo.addItems(getCreditCards(USERNAME))
+        view = QPushButton("View")
+        view.pressed.connect(self.view_)
+
+        hbox3.addWidget(back)
+        hbox3.addWidget(QLabel("Card Number:"))
+        hbox3.addWidget(cnum_combo)
+        hbox3.addWidget(view)
+
+        vbox.addLayout(hbox3)
+
+        self.setLayout(vbox)
+
+    def filter__(self):
+        pass
+
+    def back_(self):
+        self.close()
+
+    def view_(self):
+        pass
+
 class ViewHistory(QDialog):
     def __init__(self):
         super(ViewHistory, self).__init__()
@@ -1289,20 +1385,21 @@ class ViewHistory(QDialog):
 
         vbox = QVBoxLayout()
 
-        curs.execute('call customer_view_history("{USERNAME}");')
+        curs.execute(f'call customer_view_history("{USERNAME}");')
         dum1 = curs.fetchall()
-        curs.execute('SELECT * FROM CosViewHistory;')
+        dum = curs.execute('SELECT * FROM CosViewHistory;')
         dum2 = curs.fetchall()
-        print(dum1)
-        print(dum2)
+
+        if not dum:
+            dum2 = [{"Movie": "","Theater":"","Company":"","Card#":"","View Date":""}]
 
         table_model = SimpleTableModel(dum2)
         table_view = QTableView()
         table_view.setModel(table_model)
         table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
+        vbox.addWidget(QLabel("View History for " + USERNAME))
         vbox.addWidget(table_view)
-        vbox.addWidget(QLabel("" + USERNAME))
 
         self.setLayout(vbox)
 
@@ -1384,14 +1481,55 @@ class VisitHistory(QDialog):
         self.setModal(True)
         self.setWindowTitle("Visit History")
 
+        vbox = QVBoxLayout()
+
+        hbox = QHBoxLayout()
+        comps = getCompanyNames()
+        comp = QComboBox()
+        comp.addItems(["ALL"] + comps)
+        vd1 = QLineEdit()
+        vd2 = QLineEdit()
+
+        hbox.addWidget(QLabel("Company Name:"))
+        hbox.addWidget(comp)
+        hbox.addWidget(QLabel("Visit Date:"))
+        hbox.addWidget(vd1)
+        hbox.addWidget(QLabel(" -- "))
+        hbox.addWidget(vd2)
+
+        vbox.addLayout(hbox)
+
+        filter_ = QPushButton("Filter")
+        filter_.pressed.connect(self.filter__)
+
+        vbox.addWidget(filter_)
+
+        MIN_DATE, MAX_DATE = getMinAndMaxDate()
+        MIN_DATE, MAX_DATE = str(MIN_DATE), str(MAX_DATE)
+        print(MIN_DATE, MAX_DATE)
+        curs.execute(f'call user_filter_visithistory("{USERNAME}","{MIN_DATE}","{MAX_DATE}");')
+        dum1 = curs.fetchall()
+        dum = curs.execute('SELECT * FROM CosViewHistory;')
+        dum2 = curs.fetchall()
+
+        if not dum:
+            dum2 = [{"Movie": "","Theater":"","Company":"","Card#":"","View Date":""}]
+
+        table_model = SimpleTableModel(dum2)
+        table_view = QTableView()
+        table_view.setModel(table_model)
+        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        vbox.addWidget(QLabel("Visit History for " + USERNAME))
+        vbox.addWidget(table_view)
+
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
 
-        vbox = QVBoxLayout()
-        vbox.addWidget(QLabel("" + USERNAME))
-        vbox.addWidget(back)
-
         self.setLayout(vbox)
+
+    def filter__(self):
+        print("DO STUFFFFFF!!!")
 
     def back_(self):
         self.close()
@@ -1401,6 +1539,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     # sys.argv = ["team11_gui.py", "asdf"]
     password = sys.argv[1]
+
     try:
         connection = pymysql.connect(host="localhost",
                                      user="root",

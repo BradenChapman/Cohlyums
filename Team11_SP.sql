@@ -8,7 +8,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(IN i_username VARCHAR(5
 BEGIN
   DROP TABLE IF EXISTS UserLogin;
   CREATE TABLE UserLogin
-  SELECT user.username, status, isCustomer,i_username in (SELECT username from admin) as isAdmin, i_username in (SELECT username from manager) as isManager
+  SELECT user.username, status, isCustomer, i_username IN (SELECT username from admin) AS isAdmin, i_username IN (SELECT username from manager) AS isManager
 	FROM user left join employee on user.username = employee.username
 	WHERE user.username = i_username and  user.password=i_password;
 END$$
@@ -120,13 +120,13 @@ BEGIN
 		on user.username = cCardCount.username) as cardInfo
 		on user.username = cardInfo.username) as userInfo
 WHERE
-	(username = i_username) AND
-	(status = i_status OR i_status = "ALL")
+	(username = i_username OR i_username = "") AND
+	(status = i_status OR i_status = "ALL") 
 ORDER BY
-		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
+		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -135,7 +135,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'ASC') THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -306,7 +306,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_filter_mov`(IN i_movName V
 BEGIN
     DROP TABLE IF EXISTS CosFilterMovie;
     CREATE TABLE CosFilterMovie
-    SELECT (movName, thName, thStreet, thCity, thState, thZipcode, comName, movPlayDate, movReleaseDate)
+    SELECT movName, thName, thStreet, thCity, thState, thZipcode, comName, movPlayDate, movReleaseDate
     FROM theater
     NATURAL JOIN movieplay
     WHERE
