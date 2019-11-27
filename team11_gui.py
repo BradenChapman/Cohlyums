@@ -232,7 +232,6 @@ class Login(QDialog):
         if bool(a):
             a = a[0]
             status, ic, ia, im = a["status"], int(a["isCustomer"]), int(a["isAdmin"]), int(a["isManager"])
-
             if ia:
                 if ic:
                     self.close()
@@ -1313,7 +1312,7 @@ class ManageUser(QDialog):
     def back_(self):
         self.close()
 
-# NEED TO DO ............
+# DONE!!!!!
 class ManageCompany(QDialog):
     def __init__(self):
         super(ManageCompany, self).__init__()
@@ -1371,13 +1370,13 @@ class ManageCompany(QDialog):
 
         hbox3 = QHBoxLayout()
         hbox3.addWidget(QLabel("Sort By:"))
+
         stuff = ["","Name","#CityCovered", "#Theaters", "#Employee"]
-        stufff = ["","username","creditCardCount", "userType", "status"]
+        stufff = ["","comName","numCityCover", "numTheater", "numEmployee"]
         self.s1 = QComboBox()
-        self.s1.addItems(stufff)
-        # self.stuffff = dict(zip(stufff, stuff))
-        # self.sstuff = dict(zip(stuff, stufff))
-        # self.s1.addItems(stuff)
+        self.stuffff = dict(zip(stufff, stuff))
+        self.sstuff = dict(zip(stuff, stufff))
+        self.s1.addItems(stuff)
         hbox3.addWidget(self.s1)
         self.mvbox.addLayout(hbox3)
 
@@ -1400,13 +1399,25 @@ class ManageCompany(QDialog):
         self.setLayout(self.mvbox)
 
     def add_data(self, name, c1, c2, t1, t2, e1, e2, s1, s2):
-
+        if c1 == "":
+            c1 = 0
+        if c2 == "":
+            c2 = 2 ** 20
+        if t1 == "":
+            t1 = 0
+        if t2 == "":
+            t2 = 2 ** 20
+        if e1 == "":
+            e1 = 0
+        if e2 == "":
+            e2 = 2 ** 20
+        if s1 != "":
+            s1 = self.sstuff[s1]
         # company_name, mincity, max_city, min theater, max theater, min emp, max emp, sort by , sort dir
         curs.execute(f'call admin_filter_company("{name}", "{c1}", "{c2}","{t1}","{t2}","{e1}","{e2}","{s1}","{s2}");')
         curs.fetchall()
-        curs.execute("SELECT * FROM AdFilterCompany;")
+        curs.execute("SELECT * FROM AdFilterCom;")
         data = curs.fetchall()
-        print(data)
         try:
             self.back.setParent(None)
             self.table_model.setParent(None)
@@ -1414,9 +1425,8 @@ class ManageCompany(QDialog):
         except:
             pass
         if bool(data):
-            print(data[0].keys())
-            data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
-            "User Type" : i["userType"], "Status" : i["status"]} for i in data]
+            data = [{"Name" : i["comName"], "#CityCovered" : i["numCityCover"] , \
+            "#Theaters": i["numTheater"], "#Employees": i["numEmployee"] } for i in data]
         else:
             data = [{i : "" for i in self.stuffff.keys() }]
         self.table_model = SimpleTableModel(data)
@@ -1443,10 +1453,15 @@ class ManageCompany(QDialog):
         self.close()
 
     def ct_(self):
-        CreateTheater(self.name.currentText()).exec()
+        CreateTheater().exec()
 
     def detail_(self):
-        CompanyDetail(self.name.currentText()).exec()
+        dum = self.name.currentText()
+        if dum == "ALL":
+            w = QMessageBox()
+            QMessageBox.warning(w, "Company Detail Error", f"Cannot view data for all companies")
+        else:
+            CompanyDetail(dum).exec()
 
 # DONE!!!
 class CreateTheater(QDialog):
@@ -1560,19 +1575,20 @@ class CompanyDetail(QDialog):
         mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
+        username_mappings = getUserNameMapping()
         mans = getManagersAtCompany(comp_name)
-        hbox2.addWidget(QLabel("Employees:" + ", ".join(mans)[-2::-1][::-1]))
+        mans = [username_mappings[i] for i in mans]
+        val = ", ".join(mans)
+        hbox2.addWidget(QLabel("Employees:   " + val))
 
         mvbox.addLayout(hbox2)
 
-        mvbox.addWidget(QLabel("Theaters:"))
+        mvbox.addWidget(QLabel("Theaters:   "))
 
         curs.execute(f'call admin_view_comdetail_th("{comp_name}");')
         curs.fetchall()
         curs.execute("SELECT * FROM adcomdetailth;")
         data1 = curs.fetchall()
-
-        username_mappings = getUserNameMapping()
 
         data1 = [{"Name":i["thName"], "Manager":username_mappings[i["thManagerUsername"]], "City":i["thCity"], \
                 "State":i["thState"], "Capacity":i["thCapacity"]} for i in data1]
@@ -1774,7 +1790,7 @@ class ScheduleMovie(QDialog):
             self.date.setText("")
             self.play_date.setText("")
 
-# DONE
+# DONE!!
 class ExploreMovie(QDialog):
     def __init__(self):
         super(ExploreMovie, self).__init__()
@@ -1786,7 +1802,7 @@ class ExploreMovie(QDialog):
         self.data1 = []
 
         for i in moviePlays:
-            theater = i["thName"] 
+            theater = i["thName"]
             company = i["comName"]
             movie = i["movName"]
             playDate = i["movPlayDate"]
@@ -1895,12 +1911,12 @@ class ExploreMovie(QDialog):
         else:
             dum3 = [{
                 "Movie": i["movName"],
-                "Theater" : i["thName"], 
+                "Theater" : i["thName"],
                 "Address" : i["thStreet"] + ", " + i["thCity"] + ", " + i["thState"] + " " + str(i["thZipcode"]),
                 "Company" : i["comName"],
                 "PlayDate" : i["movPlayDate"]
             } for i in dum2]
-        
+
         self.table_model.setParent(None)
         self.table_view.setParent(None)
         self.hbox3.setParent(None)
@@ -1939,7 +1955,7 @@ class ExploreMovie(QDialog):
 
         ccard = self.cnum_combo.currentText()
         movie = selected_item['Movie']
-        
+
         curs.execute(f"SELECT * FROM movie WHERE movName = '{movie}';")
         movieInfo = curs.fetchall()
         print(movieInfo)

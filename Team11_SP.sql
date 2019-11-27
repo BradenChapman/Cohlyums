@@ -122,7 +122,7 @@ BEGIN
 		on user.username = cardInfo.username) as userInfo
 WHERE
 	(username = i_username OR i_username = "") AND
-	(status = i_status OR i_status = "ALL") 
+	(status = i_status OR i_status = "ALL")
 ORDER BY
 		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
@@ -163,12 +163,12 @@ BEGIN
 	ON theaterInfo.comName = manInfo.comName) AS comFilter
     WHERE
 		(comName = i_comName OR i_comName = "" OR i_comName = "ALL") AND
-		(numCityCover >= i_minCity OR i_minCity IS NULL OR i_minCity = "") AND
-        (numCityCover<= i_maxCity OR i_maxCity IS NULL OR i_maxCity = "") AND
-        (numTheater >= i_minTheater OR i_minTheater IS NULL OR i_minTheater = "") AND
-        (numTheater<= i_maxTheater OR i_maxTheater IS NULL OR i_maxTheater = "") AND
-        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL OR i_minEmployee = "") AND
-        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL OR i_maxEmployee = "")
+		(i_minCity = "" OR numCityCover >= i_minCity OR i_minCity IS NULL) AND
+        (i_maxCity = "" OR numCityCover<= i_maxCity OR i_maxCity IS NULL) AND
+        (i_minTheater = "" OR numTheater >= i_minTheater OR i_minTheater IS NULL) AND
+        (i_maxTheater = "" OR numTheater<= i_maxTheater OR i_maxTheater IS NULL) AND
+        (i_minEmployee = "" OR numEmployee >= i_minEmployee OR i_minEmployee IS NULL) AND
+        (i_maxEmployee = "" OR numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL)
 	ORDER BY
 			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 					(CASE
@@ -259,24 +259,24 @@ BEGIN
     FROM movie
     WHERE (i_minMovDuration IS NULL OR duration >= i_minMovDuration)
     AND (i_maxMovDuration IS NULL OR duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
+    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate)
     AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-	AND (movName NOT IN 
-    (SELECT DISTINCT movName FROM movieplay 
+	AND (movName NOT IN
+    (SELECT DISTINCT movName FROM movieplay
     INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
 	WHERE manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
-	
+
     ELSE
     CREATE TABLE ManFilterTh
 	SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
     FROM movieplay, movie
     WHERE (SELECT thName FROM theater WHERE theater.manUsername = i_manUsername) = movieplay.thName
     AND movie.movName = movieplay.movName
-    AND (i_minMovDuration IS NULL OR movie.duration >= i_minMovDuration) 
+    AND (i_minMovDuration IS NULL OR movie.duration >= i_minMovDuration)
     AND (i_maxMovDuration IS NULL OR movie.duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movieplay.movReleaseDate >= i_minMovReleaseDate) 
+    AND (i_minMovReleaseDate IS NULL OR movieplay.movReleaseDate >= i_minMovReleaseDate)
     AND (i_maxMovReleaseDate IS NULL OR movieplay.movReleaseDate <= i_maxMovReleaseDate)
-    AND (i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate) 
+    AND (i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate)
     AND (i_maxMovPlayDate IS NULL OR movieplay.movPlayDate <= i_maxMovPlayDate)
     AND movieplay.movName IN (Select movName from movie where movName like CONCAT('%', i_movName, '%'))
     UNION
@@ -284,9 +284,9 @@ BEGIN
     FROM movie
     WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
     AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
+    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate)
     AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (movName NOT IN 
+    AND (movName NOT IN
     (SELECT DISTINCT movName FROM movieplay INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
 	WHERE manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
 	END IF;
