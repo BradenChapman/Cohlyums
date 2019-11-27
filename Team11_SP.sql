@@ -62,7 +62,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
 		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1,1);
-        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode,isManager) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode,1);
+        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 		INSERT INTO customer (username) VALUES (i_username);
 END$$
 DELIMITER ;
