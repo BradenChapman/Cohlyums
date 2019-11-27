@@ -163,12 +163,12 @@ BEGIN
 	ON theaterInfo.comName = manInfo.comName) AS comFilter
     WHERE
 		(comName = i_comName OR i_comName = "" OR i_comName = "ALL") AND
-		(numCityCover >= i_minCity OR i_minCity IS NULL) AND
-        (numCityCover<= i_maxCity OR i_maxCity IS NULL) AND
-        (numTheater >= i_minTheater OR i_minTheater IS NULL) AND
-        (numTheater<= i_maxTheater OR i_maxTheater IS NULL) AND
-        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL) AND
-        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL)
+		(numCityCover >= i_minCity OR i_minCity IS NULL OR i_minCity = "") AND
+        (numCityCover<= i_maxCity OR i_maxCity IS NULL OR i_maxCity = "") AND
+        (numTheater >= i_minTheater OR i_minTheater IS NULL OR i_minTheater = "") AND
+        (numTheater<= i_maxTheater OR i_maxTheater IS NULL OR i_maxTheater = "") AND
+        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL OR i_minEmployee = "") AND
+        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL OR i_maxEmployee = "")
 	ORDER BY
 			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 					(CASE
