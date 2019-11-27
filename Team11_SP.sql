@@ -49,7 +49,7 @@ DROP PROCEDURE IF EXISTS `manager_only_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1);
+		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
 		INSERT INTO employee (username, isAdmin, isManager) VALUES (i_username, 0, 1);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 END$$
@@ -61,11 +61,9 @@ DROP PROCEDURE IF EXISTS `manager_customer_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1,1);
+		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1,1);
+        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode,isManager) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode,1);
 		INSERT INTO customer (username) VALUES (i_username);
-		INSERT INTO employee (username, isAdmin, isManager) VALUES (i_username, 0, 1);
-    INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
-		
 END$$
 DELIMITER ;
 
@@ -259,30 +257,18 @@ BEGIN
     CREATE TABLE ManFilterTh
     SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
     FROM movie
-    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
-    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
+    WHERE (i_minMovDuration IS NULL OR duration >= i_minMovDuration)
+    AND (i_maxMovDuration IS NULL OR duration <= i_maxMovDuration)
     AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
     AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (i_minMovPlayDate IS NULL OR minMovPlayDate >= i_minMovPlayDate) 
-    AND (i_maxMovPlayDate IS NULL OR maxMovPlayDate <= i_maxMovPlayDate)
-	AND (movName IN 
+	AND (movName NOT IN 
     (SELECT DISTINCT movName FROM movieplay 
     INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
-	WHERE NOT manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
+	WHERE manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
 	
     ELSE
     CREATE TABLE ManFilterTh
-	SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
-    FROM movie
-    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
-    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
-    AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (movName IN 
-    (SELECT DISTINCT movName FROM movieplay INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
-	WHERE NOT manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')))
-    UNION
-    SELECT movieplay.movName, movie.duration, movieplay.movReleaseDate, movieplay.movPlayDate
+	SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
     FROM movieplay, movie
     WHERE (SELECT thName FROM theater WHERE theater.manUsername = i_manUsername) = movieplay.thName
     AND movie.movName = movieplay.movName
@@ -292,8 +278,18 @@ BEGIN
     AND (i_maxMovReleaseDate IS NULL OR movieplay.movReleaseDate <= i_maxMovReleaseDate)
     AND (i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate) 
     AND (i_maxMovPlayDate IS NULL OR movieplay.movPlayDate <= i_maxMovPlayDate)
-    AND movieplay.movName IN (Select movName from movie where movName like Concat('%', i_movName, '%'));
-    END IF;
+    AND movieplay.movName IN (Select movName from movie where movName like CONCAT('%', i_movName, '%'))
+    UNION
+	SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
+    FROM movie
+    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
+    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
+    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
+    AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
+    AND (movName NOT IN 
+    (SELECT DISTINCT movName FROM movieplay INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
+	WHERE manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
+	END IF;
 END$$
 DELIMITER ;
 
