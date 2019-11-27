@@ -53,12 +53,19 @@ def getCreditCards(un):
     curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
     return [i["creditcardnum"] for i in curs.fetchall()]
 
+def getMinAndMaxDate():
+    curs.execute("SELECT min(visitdate) as min1 from uservisittheater;")
+    dum1 = curs.fetchall()
+    curs.execute("SELECT max(visitdate) as max1 from uservisittheater;")
+    dum2 = curs.fetchall()
+    return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
+
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
         QAbstractTableModel.__init__(self, None)
         self.data = data
-        self.headers = [k for k, v in data[0].items()]
-        self.rows = [[v for k, v in record.items()] for record in data]
+        self.headers = [str(k) for k, v in data[0].items()]
+        self.rows = [[str(v) for k, v in record.items()] for record in data]
 
     def rowCount(self, parent):
         return len(self.rows)
@@ -1331,14 +1338,10 @@ class ViewHistory(QDialog):
 
         vbox = QVBoxLayout()
 
-        curs.execute('call customer_view_history("{USERNAME}");')
-        print(USERNAME)
+        curs.execute(f'call customer_view_history("{USERNAME}");')
         dum1 = curs.fetchall()
-        print(dum1)
         dum = curs.execute('SELECT * FROM CosViewHistory;')
-        print(dum)
         dum2 = curs.fetchall()
-        print(dum2)
 
         if not dum:
             dum2 = [{"Movie": "","Theater":"","Company":"","Card#":"","View Date":""}]
@@ -1431,14 +1434,55 @@ class VisitHistory(QDialog):
         self.setModal(True)
         self.setWindowTitle("Visit History")
 
+        vbox = QVBoxLayout()
+
+        hbox = QHBoxLayout()
+        comps = getCompanyNames()
+        comp = QComboBox()
+        comp.addItems(["ALL"] + comps)
+        vd1 = QLineEdit()
+        vd2 = QLineEdit()
+
+        hbox.addWidget(QLabel("Company Name:"))
+        hbox.addWidget(comp)
+        hbox.addWidget(QLabel("Visit Date:"))
+        hbox.addWidget(vd1)
+        hbox.addWidget(QLabel(" -- "))
+        hbox.addWidget(vd2)
+
+        vbox.addLayout(hbox)
+
+        filter_ = QPushButton("Filter")
+        filter_.pressed.connect(self.filter__)
+
+        vbox.addWidget(filter_)
+
+        MIN_DATE, MAX_DATE = getMinAndMaxDate()
+        MIN_DATE, MAX_DATE = str(MIN_DATE), str(MAX_DATE)
+        print(MIN_DATE, MAX_DATE)
+        curs.execute(f'call user_filter_visithistory("{USERNAME}","{MIN_DATE}","{MAX_DATE}");')
+        dum1 = curs.fetchall()
+        dum = curs.execute('SELECT * FROM CosViewHistory;')
+        dum2 = curs.fetchall()
+
+        if not dum:
+            dum2 = [{"Movie": "","Theater":"","Company":"","Card#":"","View Date":""}]
+
+        table_model = SimpleTableModel(dum2)
+        table_view = QTableView()
+        table_view.setModel(table_model)
+        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        vbox.addWidget(QLabel("Visit History for " + USERNAME))
+        vbox.addWidget(table_view)
+
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
 
-        vbox = QVBoxLayout()
-        vbox.addWidget(QLabel("" + USERNAME))
-        vbox.addWidget(back)
-
         self.setLayout(vbox)
+
+    def filter__(self):
+        print("DO STUFFFFFF!!!")
 
     def back_(self):
         self.close()
@@ -1448,6 +1492,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     # sys.argv = ["team11_gui.py", "asdf"]
     password = sys.argv[1]
+
     try:
         connection = pymysql.connect(host="localhost",
                                      user="root",
