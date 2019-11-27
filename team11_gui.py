@@ -83,7 +83,7 @@ def isDuplicateCreditCard(ccNum):
     else:
         return False
 
-def addCreditCards(un, ccComboBox):
+def addCreditCards(un, ccComboBox, storedProc):
     allItems = [ccComboBox.itemText(i) for i in range(ccComboBox.count())]
     if len(allItems) > 5:
         w = QMessageBox()
@@ -102,13 +102,14 @@ def addCreditCards(un, ccComboBox):
                 # error = True
                 return "error"
         for j in range(len(allItems)):
-            curs.execute(f'call customer_add_credicard("{un}", "{allItems[j]}");')
+            curs.execute(f'call {storedProc}("{un}", "{allItems[j]}");')
 
 def removeUser(un):
     user = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
     admin = curs.execute(f'SELECT DISTINCT username FROM admin where username = "{un}";')
     customer = curs.execute(f'SELECT DISTINCT username FROM customer where username = "{un}";')
     manager = curs.execute(f'SELECT DISTINCT username FROM manager where username = "{un}";')
+    employee = curs.execute(f'SELECT DISTINCT username FROM employee where username = "{un}";')
 
     if admin:
         curs.execute(f'DELETE FROM admin WHERE username = "{un}";')
@@ -116,11 +117,12 @@ def removeUser(un):
         curs.execute(f'DELETE FROM customer WHERE username = "{un}";')
     if manager:
         curs.execute(f'DELETE FROM manager WHERE username = "{un}";')
+    if employee:
+        curs.execute(f'DELETE FROM employee WHERE username = "{un}";')
     if user:
         curs.execute(f'DELETE FROM user WHERE username = "{un}";')
 
     connection.commit()
-
 
 # Helper class for tables
 class SimpleTableModel(QAbstractTableModel):
@@ -483,7 +485,7 @@ class CustomerRegistration(QDialog):
             if not firstName == "" and not lastName == "" and not username == "" and not password == "":
                 if cPassword == password:
                     curs.execute(f'call customer_only_register("{username}", "{password}", "{firstName}", "{lastName}");')
-                    error = addCreditCards(username, self.card_cb)
+                    error = addCreditCards(username, self.card_cb, "customer_add_creditcard")
                     if error != "error":
                         self.close()
                         connection.commit()
@@ -508,7 +510,8 @@ class CustomerRegistration(QDialog):
         i = self.card_cb.currentIndex()
         self.card_cb.removeItem(i)
 
-
+# DONEish
+#   - Hide password, password len
 class ManagerRegistration(QDialog):
 
     def __init__(self):
@@ -610,15 +613,19 @@ class ManagerRegistration(QDialog):
         state = self.state.currentText()
         zipcode = self.zip.text()
 
-        # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), 
+        # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50),
         # IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
         if not isDuplicateUsername(username):
             if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
                 if cPassword == password:
-                    curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
-                    self.close()
-                    connection.commit()
-                    Login().exec()
+                    if len(zipcode) == 5:
+                        curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                        self.close()
+                        connection.commit()
+                        Login().exec()
+                    else: 
+                        w = QMessageBox()
+                        QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                 else:
                     w = QMessageBox()
                     QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
@@ -626,7 +633,8 @@ class ManagerRegistration(QDialog):
                 b = QMessageBox()
                 QMessageBox.warning(b, "Registration Error", "You are missing some input")
 
-
+# Doneish
+#    - Hide password, password len
 class ManagerCustomerRegistration(QDialog):
     def __init__(self):
         super(ManagerCustomerRegistration, self).__init__()
@@ -637,13 +645,13 @@ class ManagerCustomerRegistration(QDialog):
         self.lastname = QLineEdit()
         self.username = QLineEdit()
         self.company = QComboBox()
-        self.company.addItems(["c1","c2","...","cn"])
+        self.company.addItems(getCompanyNames())
         self.password = QLineEdit()
         self.cpassword = QLineEdit()
         self.address = QLineEdit()
         self.city = QLineEdit()
         self.state = QComboBox()
-        self.state.addItems(["s1","s2","...","sn"])
+        self.state.addItems(getStates())
         self.zip = QLineEdit()
 
         form_group_box = QGroupBox("Please fill out the form below.")
@@ -740,8 +748,45 @@ class ManagerCustomerRegistration(QDialog):
 
     def run_register(self):
         # TEST FOR PASSWORD COMPATIBILITY, USERNAME TAKEN, ETC...
-        self.close()
-        Login().exec()
+        firstName = self.firstname.text()
+        lastName = self.lastname.text()
+        username = self.username.text()
+        company = self.company.currentText()
+        password = self.password.text()
+        cPassword = self.cpassword.text()
+        address = self.address.text()
+        city = self.city.text()
+        state = self.state.currentText()
+        zipcode = self.zip.text()
+
+        if not isDuplicateUsername(username):
+            if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
+                if cPassword == password:
+                    if len(zipcode) == 5:
+                        curs.execute(f'call manager_customer_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                        error = addCreditCards(username, self.card_cb, "manager_customer_add_creditcard")
+                        if error != "error":
+                            self.close()
+                            connection.commit()
+                            Login().exec()
+                        else:
+                            print('error')
+                            removeUser(username)
+                    else: 
+                        w = QMessageBox()
+                        QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
+                else:
+                    w = QMessageBox()
+                    QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
+            else:
+                m = QMessageBox()
+                QMessageBox.warning(m, "Registration Error", "You are missing some input")
+        else:
+            x = QMessageBox()
+            QMessageBox.warning(x, "Registration Error", "Username already taken.")
+
+        # self.close()
+        # Login().exec()
 
     def add_(self):
         self.card_cb.addItems([self.card_num.text()])
@@ -1221,7 +1266,11 @@ class ManageCompany(QDialog):
 
     def detail_(self):
         comp_name = self.name.currentText()
-        CompanyDetail(comp_name).exec()
+        if comp_name == "ALL":
+            w = QMessageBox()
+            QMessageBox.warning(w, "Manage Company Error", f"Cannot view detail for company all")
+        else:
+            CompanyDetail(comp_name).exec()
 
     def back_(self):
         self.close()
@@ -1323,7 +1372,7 @@ class CreateTheater(QDialog):
             w = QMessageBox()
             QMessageBox.warning(w, "Create Theater Error", f"The following exception occured...\n{e}")
 
-# EASIER
+# DONE
 class CompanyDetail(QDialog):
     def __init__(self, comp_name):
         super(CompanyDetail, self).__init__()
@@ -1351,8 +1400,11 @@ class CompanyDetail(QDialog):
         curs.fetchall()
         curs.execute("SELECT * FROM adcomdetailth;")
         data1 = curs.fetchall()
-        data1 = [{"Name":i["thName"], "Manager":i["thManagerUsername"], "Name":i["thName"], "Name":i["thName"]\
-                "Name":i["thName"], "Name":i["thName"]} for i in data1]
+
+        username_mappings = getUserNameMapping()
+
+        data1 = [{"Name":i["thName"], "Manager":username_mappings[i["thManagerUsername"]], "City":i["thCity"], \
+                "State":i["thState"], "Capacity":i["thCapacity"]} for i in data1]
 
         table_model = SimpleTableModel(data1)
         table_view = QTableView()
