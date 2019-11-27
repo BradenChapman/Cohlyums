@@ -70,7 +70,7 @@ def addCreditCards(un, ccComboBox):
                 QMessageBox.warning(b, "Length Error", "One of your credit cards is not of length 16")
                 error = True
                 return "error"
-            elif isDuplicateCreditCard(allItems[i]): 
+            elif isDuplicateCreditCard(allItems[i]):
                 error = True
                 return "error"
         for j in range(len(allItems)):
@@ -81,7 +81,7 @@ def removeUser(un):
     admin = curs.execute(f'SELECT DISTINCT username FROM admin where username = "{un}";')
     customer = curs.execute(f'SELECT DISTINCT username FROM customer where username = "{un}";')
     manager = curs.execute(f'SELECT DISTINCT username FROM manager where username = "{un}";')
-    
+
     if admin:
         curs.execute(f'DELETE FROM admin WHERE username = "{un}";')
     if customer:
@@ -351,13 +351,13 @@ class UserRegistration(QDialog):
                     curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
                     self.close()
                     Login().exec()
-                else: 
+                else:
                     w = QMessageBox()
                     QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else: 
+            else:
                 b = QMessageBox()
                 QMessageBox.warning(b, "Registration Error", "You are missing some input")
-            
+
 
 class CustomerRegistration(QDialog):
 
@@ -465,15 +465,15 @@ class CustomerRegistration(QDialog):
                     if not error == "error":
                         self.close()
                         Login().exec()
-                    else: 
+                    else:
                         removeUser(username)
-                else: 
+                else:
                     w = QMessageBox()
                     QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else: 
+            else:
                 m = QMessageBox()
                 QMessageBox.warning(m, "Registration Error", "You are missing some input")
-        # else: 
+        # else:
         #     x = QMessageBox()
         #     QMessageBox.warning(x, "Registration Error", "You are missing some input")
 
@@ -1508,37 +1508,13 @@ class ExploreTheater(QDialog):
         pass
 
 class VisitHistory(QDialog):
-    def __init__(self):
+    def __init__(self, ):
         super(VisitHistory, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Visit History")
 
-        vbox = QVBoxLayout()
-
-        hbox = QHBoxLayout()
-        comps = getCompanyNames()
-        comp = QComboBox()
-        comp.addItems(["ALL"] + comps)
-        vd1 = QLineEdit()
-        vd2 = QLineEdit()
-
-        hbox.addWidget(QLabel("Company Name:"))
-        hbox.addWidget(comp)
-        hbox.addWidget(QLabel("Visit Date:"))
-        hbox.addWidget(vd1)
-        hbox.addWidget(QLabel(" -- "))
-        hbox.addWidget(vd2)
-
-        vbox.addLayout(hbox)
-
-        filter_ = QPushButton("Filter")
-        filter_.pressed.connect(self.filter__)
-
-        vbox.addWidget(filter_)
-
         MIN_DATE, MAX_DATE = getMinAndMaxDate()
         MIN_DATE, MAX_DATE = str(MIN_DATE), str(MAX_DATE)
-        print(MIN_DATE, MAX_DATE)
         curs.execute(f'call user_filter_visithistory("{USERNAME}","{MIN_DATE}","{MAX_DATE}");')
         dum1 = curs.fetchall()
         dum = curs.execute('SELECT * FROM uservisithistory;')
@@ -1546,22 +1522,80 @@ class VisitHistory(QDialog):
 
         if not dum:
             dum2 = [{"Theater":"","Address":"","Company":"","Visit Date":""}]
+        else:
+            dum2 = [{"Theater":i["thName"],"Address":f'{i["thStreet"]}, {i["thCity"]}, {i["thState"]} {i["thZipcode"]}',\
+                "Company": i["comName"],"Visit Date":i["visitDate"]} for i in dum2]
 
-        table_model = SimpleTableModel(dum2)
-        table_view = QTableView()
-        table_view.setModel(table_model)
-        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.vbox = QVBoxLayout()
 
-        vbox.addWidget(QLabel("Visit History for " + USERNAME))
-        vbox.addWidget(table_view)
+        hbox = QHBoxLayout()
+        comps = list(set([i["Company"] for i in dum2]))
+        self.comp = QComboBox()
+        self.comp.addItems(["ALL"] + comps)
+        self.vd1 = QLineEdit()
+        self.vd2 = QLineEdit()
+
+        hbox.addWidget(QLabel("Company Name:"))
+        hbox.addWidget(self.comp)
+        hbox.addWidget(QLabel("Visit Date:"))
+        hbox.addWidget(self.vd1)
+        hbox.addWidget(QLabel(" -- "))
+        hbox.addWidget(self.vd2)
+
+        self.vbox.addLayout(hbox)
+
+        filter_ = QPushButton("Filter")
+        filter_.pressed.connect(self.filter__)
+
+        self.vbox.addWidget(filter_)
+
+        self.table_model = SimpleTableModel(dum2)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        self.vbox.addWidget(QLabel("Visit History for " + USERNAME))
+        self.vbox.addWidget(self.table_view)
 
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
 
-        self.setLayout(vbox)
+
+        self.setLayout(self.vbox)
 
     def filter__(self):
-        print("DO STUFFFFFF!!!")
+        self.the_comp = self.comp.currentText()
+        MIN_DATE, MAX_DATE = getMinAndMaxDate()
+        if not self.vd1.text():
+            ovd1 = MIN_DATE
+        else:
+            ovd1 = self.vd1.text()
+        if not self.vd2.text():
+            ovd2 = MAX_DATE
+        else:
+            ovd2 = self.vd2.text()
+        curs.execute(f'call user_filter_visithistory("{USERNAME}","{ovd1}","{ovd2}");')
+        dum1 = curs.fetchall()
+        dum = curs.execute('SELECT * FROM uservisithistory;')
+        dum2 = curs.fetchall()
+
+        if not dum:
+            dum2 = [{"Theater":"","Address":"","Company":"","Visit Date":""}]
+        else:
+            dum2 = [{"Theater":i["thName"],"Address":f'{i["thStreet"]}, {i["thCity"]}, {i["thState"]} {i["thZipcode"]}',\
+                "Company": i["comName"],"Visit Date":i["visitDate"]} for i in dum2]
+        if self.the_comp != "ALL":
+            dum2 = [i for i in dum2 if i["Company"] == self.the_comp]
+        self.table_model.setParent(None)
+        self.table_view.setParent(None)
+        self.table_model = SimpleTableModel(dum2)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        self.vbox.addWidget(self.table_view)
+        # self.close()
+        # VisitHistory(data).exec()
 
     def back_(self):
         self.close()
