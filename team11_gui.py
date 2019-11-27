@@ -49,6 +49,10 @@ def isDuplicateUsername(un):
     else:
         return False
 
+def getCreditCards(un):
+    curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
+    return [i["creditcardnum"] for i in curs.fetchall()]
+
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
         QAbstractTableModel.__init__(self, None)
@@ -1245,8 +1249,6 @@ class ExploreMovie(QDialog):
 
         vbox = QVBoxLayout()
 
-        hbox1 = QHBoxLayout()
-        hbox2 = QHBoxLayout()
 
         mn = QComboBox()
         mn.addItems(["ALL"])
@@ -1263,18 +1265,29 @@ class ExploreMovie(QDialog):
         filter_ = QPushButton("Filter")
         filter_.pressed.connect(self.filter__)
 
+        hbox1 = QHBoxLayout()
         hbox1.addWidget(QLabel("Movie Name:"))
         hbox1.addWidget(mn)
         hbox1.addWidget(QLabel("Company Name:"))
         hbox1.addWidget(comp)
 
+        hbox2 = QHBoxLayout()
         hbox2.addWidget(QLabel("City:"))
         hbox2.addWidget(city)
         hbox2.addWidget(QLabel("State:"))
         hbox2.addWidget(state)
 
+        hbox2_5 = QHBoxLayout()
+        mpd1 = QLineEdit()
+        mpd2 = QLineEdit()
+        hbox2_5.addWidget(QLabel("Movie PLay Date:"))
+        hbox2_5.addWidget(mpd1)
+        hbox2_5.addWidget(QLabel(" -- "))
+        hbox2_5.addWidget(mpd2)
+
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
+        vbox.addLayout(hbox2_5)
         vbox.addWidget(filter_)
 
         # table_model = SimpleTableModel(data1)
@@ -1287,13 +1300,14 @@ class ExploreMovie(QDialog):
         hbox3 = QHBoxLayout()
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
-        vd = QLineEdit()
+        cnum_combo = QComboBox()
+        cnum_combo.addItems(getCreditCards(USERNAME))
         view = QPushButton("View")
         view.pressed.connect(self.view_)
 
         hbox3.addWidget(back)
         hbox3.addWidget(QLabel("Card Number:"))
-        hbox3.addWidget(vd)
+        hbox3.addWidget(cnum_combo)
         hbox3.addWidget(view)
 
         vbox.addLayout(hbox3)
@@ -1317,21 +1331,25 @@ class ViewHistory(QDialog):
 
         vbox = QVBoxLayout()
 
-        # curs.execute('call customer_view_history("{USERNAME}");')
-        # dum1 = curs.fetchall()
-        # curs.execute('SELECT * FROM CosViewHistory;')
-        # dum2 = curs.fetchall()
-        # print(dum1)
-        # print(dum2)
+        curs.execute('call customer_view_history("{USERNAME}");')
+        print(USERNAME)
+        dum1 = curs.fetchall()
+        print(dum1)
+        dum = curs.execute('SELECT * FROM CosViewHistory;')
+        print(dum)
+        dum2 = curs.fetchall()
+        print(dum2)
 
-        # table_model = SimpleTableModel(dum2)
-        # table_view = QTableView()
-        # table_view.setModel(table_model)
-        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        if not dum:
+            dum2 = [{"Movie": "","Theater":"","Company":"","Card#":"","View Date":""}]
 
-        # vbox.addWidget(table_view)
+        table_model = SimpleTableModel(dum2)
+        table_view = QTableView()
+        table_view.setModel(table_model)
+        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
-        vbox.addWidget(QLabel("" + USERNAME))
+        vbox.addWidget(QLabel("View History for " + USERNAME))
+        vbox.addWidget(table_view)
 
         self.setLayout(vbox)
 
