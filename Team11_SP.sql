@@ -122,7 +122,7 @@ BEGIN
 		on user.username = cardInfo.username) as userInfo
 WHERE
 	(username = i_username OR i_username = "") AND
-	(status = i_status OR i_status = "ALL")
+	(status = i_status OR i_status = "ALL") 
 ORDER BY
 		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
