@@ -1509,11 +1509,11 @@ class VisitHistory(QDialog):
         print(MIN_DATE, MAX_DATE)
         curs.execute(f'call user_filter_visithistory("{USERNAME}","{MIN_DATE}","{MAX_DATE}");')
         dum1 = curs.fetchall()
-        dum = curs.execute('SELECT * FROM CosViewHistory;')
+        dum = curs.execute('SELECT * FROM uservisithistory;')
         dum2 = curs.fetchall()
 
         if not dum:
-            dum2 = [{"Movie": "","Theater":"","Company":"","Card#":"","View Date":""}]
+            dum2 = [{"Theater":"","Address":"","Company":"","Visit Date":""}]
 
         table_model = SimpleTableModel(dum2)
         table_view = QTableView()
