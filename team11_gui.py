@@ -46,20 +46,50 @@ def isDuplicateUsername(un):
     else:
         return False
 
+def isDuplicateCreditCard(ccNum):
+    dum = curs.execute(f'SELECT DISTINCT creditCardNum FROM customercreditcard where creditCardNum = "{ccNum}";')
+    if dum:
+        print('ok this is right')
+        w = QMessageBox()
+        QMessageBox.warning(w, "Duplicate Error", "Your credit card number is already in use")
+        return True
+    else:
+        return False
+
 def addCreditCards(un, ccComboBox):
     allItems = [ccComboBox.itemText(i) for i in range(ccComboBox.count())]
     if len(allItems) > 5:
-        b = QMessageBox()
+        w = QMessageBox()
         QMessageBox.warning(b, "Capacity Error", "You have input too many credit cards. Please input 5 or less credit cards.")
     else:
         # creditCard: IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16)
+        # error = False
         for i in range(len(allItems)):
             if not len(allItems[i]) == 16:
                 b = QMessageBox()
                 QMessageBox.warning(b, "Length Error", "One of your credit cards is not of length 16")
-                break
-            else:
-                curs.execute(f'call customer_add_credicard("{un}", "{allItems[i]}");')
+                error = True
+                return "error"
+            elif isDuplicateCreditCard(allItems[i]): 
+                error = True
+                return "error"
+        for j in range(len(allItems)):
+            curs.execute(f'call customer_add_credicard("{un}", "{allItems[i]}");')
+
+def removeUser(un):
+    user = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
+    admin = curs.execute(f'SELECT DISTINCT username FROM admin where username = "{un}";')
+    customer = curs.execute(f'SELECT DISTINCT username FROM customer where username = "{un}";')
+    manager = curs.execute(f'SELECT DISTINCT username FROM manager where username = "{un}";')
+    
+    if admin:
+        curs.execute(f'DELETE FROM admin WHERE username = "{un}";')
+    if customer:
+        curs.execute(f'DELETE FROM customer WHERE username = "{un}";')
+    if manager:
+        curs.execute(f'DELETE FROM manager WHERE username = "{un}";')
+    if user:
+        curs.execute(f'DELETE FROM user WHERE username = "{un}";')
 
 def getCreditCards(un):
     curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
@@ -431,19 +461,21 @@ class CustomerRegistration(QDialog):
             if not firstName == "" and not lastName == "" and not username == "" and not password == "":
                 if cPassword == password:
                     curs.execute(f'call customer_only_register("{username}", "{password}", "{firstName}", "{lastName}");')
-                    print('hello :3')
-                    addCreditCards(username, self.card_cb)
-                    self.close()
-                    Login().exec()
+                    error = addCreditCards(username, self.card_cb)
+                    if not error == "error":
+                        self.close()
+                        Login().exec()
+                    else: 
+                        removeUser(username)
                 else: 
                     w = QMessageBox()
                     QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
             else: 
                 m = QMessageBox()
                 QMessageBox.warning(m, "Registration Error", "You are missing some input")
-        else: 
-            self.close()
-            Login().exec()
+        # else: 
+        #     x = QMessageBox()
+        #     QMessageBox.warning(x, "Registration Error", "You are missing some input")
 
     def add_(self):
         self.card_cb.addItems([self.card_num.text()])
