@@ -27,7 +27,6 @@ from PyQt5.QtWidgets import (
 #    - "Wait ... this actually makes no sense ..." - David Zhou
 
 # STATIC FUNCTIONS
-
 def getCompanyNames():
     curs.execute("SELECT DISTINCT comname FROM company;")
     dum = curs.fetchall()
@@ -1132,26 +1131,27 @@ class User(QDialog):
         self.close()
         Login().exec()
 
-# NEED TO DO ............
+# DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 class ManageUser(QDialog):
     def __init__(self):
         super(ManageUser, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Manage User")
 
-        username = QLineEdit()
-        status = QComboBox()
-        status.addItems(["ALL","Approved","Declined","Pending"])
+        self.username = QLineEdit()
+        self.username.setText("")
+        self.status = QComboBox()
+        self.status.addItems(["ALL","Approved","Declined","Pending"])
 
-        mvbox = QVBoxLayout()
+        self.mvbox = QVBoxLayout()
         hbox1 = QHBoxLayout()
 
         hbox1.addWidget(QLabel("Username:"))
-        hbox1.addWidget(username)
+        hbox1.addWidget(self.username)
         hbox1.addWidget(QLabel("Status:"))
-        hbox1.addWidget(status)
+        hbox1.addWidget(self.status)
 
-        mvbox.addLayout(hbox1)
+        self.mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
         filter_ = QPushButton("Filter")
@@ -1165,30 +1165,150 @@ class ManageUser(QDialog):
         hbox2.addWidget(approve)
         hbox2.addWidget(decline)
 
-        mvbox.addLayout(hbox2)
+        self.mvbox.addLayout(hbox2)
 
-        # cursor.execute("call admin_filter_user()")
-        # table_model = SimpleTableModel(data)
-        # table_view = QTableView()
-        # table_view.setModel(table_model)
-        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel("Sort By:"))
+        self.s1 = QComboBox()
+        stuff = ["","Username","Credit Card Count", "User Type", "Status"]
+        stufff = ["","username","creditCardCount", "userType", "status"]
+        self.stuffff = dict(zip(stufff, stuff))
+        self.sstuff = dict(zip(stuff, stufff))
+        self.s1.addItems(stuff)
+        hbox3.addWidget(self.s1)
+        self.mvbox.addLayout(hbox3)
 
-        # mvbox.addWidget(table_view)
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel("Sort Direction:"))
+        self.s2 = QComboBox()
+        self.s2.addItems(["","ASC","DESC"])
+        hbox4.addWidget(self.s2)
+        self.mvbox.addLayout(hbox4)
 
-        back = QPushButton("Back")
-        back.pressed.connect(self.back_)
-        mvbox.addWidget(back)
+        sort = QPushButton("Sort")
+        sort.pressed.connect(self.add_dataa)
+        self.mvbox.addWidget(sort)
 
-        self.setLayout(mvbox)
+        self.add_data(self.username.text(),self.status.currentText())
+
+        self.setLayout(self.mvbox)
+
+    def add_data(self, username, status, sort_by = None, sort_dir = None):
+        if not bool(sort_by):
+            sort_by = ""
+        else:
+            sort_by = self.sstuff[sort_by]
+        sort_dir = "" if None else sort_dir
+        if username != "":
+            if sort_by != "" or sort_dir != "":
+                curs.execute(f'call admin_filter_user("{username}", "{status}", "{sort_by}","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_by == "":
+                curs.execute(f'call admin_filter_user("{username}", "{status}", "","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_dir == "":
+                curs.execute(f'call admin_filter_user("{username}", "{status}", "{sort_by}","");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+        else:
+            if sort_by != "" or sort_dir != "":
+                curs.execute(f'call admin_filter_user("", "{status}", "{sort_by}","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_by == "":
+                curs.execute(f'call admin_filter_user("", "{status}", "","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_dir == "":
+                curs.execute(f'call admin_filter_user("", "{status}", "{sort_by}","");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+        try:
+            self.back.setParent(None)
+            self.table_model.setParent(None)
+            self.table_view.setParent(None)
+        except:
+            pass
+        if bool(data):
+            print(data[0].keys())
+            data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
+            "User Type" : i["userType"], "Status" : i["status"]} for i in data]
+            # if bool(sort_by) and bool(sort_dir):
+            #     if sort_dir == "ASC":
+            #         data.sort(key = lambda x : x[sort_by])
+            #     else:
+            #         data.sort(key = lambda x : x[sort_by], reverse = True)
+        else:
+            data = [{i : "" for i in self.stuffff.keys() }]
+        self.table_model = SimpleTableModel(data)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.mvbox.addWidget(self.table_view)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.mvbox.addWidget(self.back)
+
+    def add_dataa(self):
+        self.add_data(self.username.text(), self.status.currentText(), self.s1.currentText(), self.s2.currentText())
 
     def filter__(self):
-        pass
+        self.add_data(self.username.text(), self.status.currentText(), self.s1.currentText(), self.s2.currentText())
 
     def approve_(self):
-        pass
+        current_index = self.table_view.currentIndex().row()
+        selected_item = self.table_model.row(current_index)
+        success = True
+        try:
+            curs.execute(f'call admin_approve_user("{selected_item["username"]}");')
+            curs.fetchall()
+            connection.commit()
+        except Exception as e:
+            success = False
+            w = QMessageBox()
+            QMessageBox.warning(w, "Approval Error", f"Cannot accept user {selected_item['username']}")
+        if success:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText(f"{selected_item['username']} Accepted!")
+            msgBox.setWindowTitle("Approval Accepted")
+            msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            returnValue = msgBox.exec()
+            if returnValue == QMessageBox.Ok:
+                  msgBox.close()
+        self.add_data(self.username.text(), self.status.currentText())
 
     def decline_(self):
-        pass
+        current_index = self.table_view.currentIndex().row()
+        selected_item = self.table_model.row(current_index)
+        success = True
+        try:
+            curs.execute(f'call admin_decline_user("{selected_item["username"]}");')
+            curs.fetchall()
+            connection.commit()
+        except Exception as e:
+            success = False
+            w = QMessageBox()
+            QMessageBox.warning(w, "Decline Error", f"Cannot decline user {selected_item['username']}")
+        if success:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText(f"{selected_item['username']} Declined..")
+            msgBox.setWindowTitle("Decline Accepted")
+            msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            returnValue = msgBox.exec()
+            if returnValue == QMessageBox.Ok:
+                  msgBox.close()
+        self.add_data(self.username.text(), self.status.currentText())
 
     def back_(self):
         self.close()
@@ -1201,40 +1321,39 @@ class ManageCompany(QDialog):
         self.setWindowTitle("Manage Company")
 
         self.name = QComboBox()
-        self.name.addItems(["ALL"])
         dum = getCompanyNames()
-        self.name.addItems(dum)
+        self.name.addItems(["ALL"] + dum)
 
-        c1 = QLineEdit()
-        c2 = QLineEdit()
-        t1 = QLineEdit()
-        t2 = QLineEdit()
-        e1 = QLineEdit()
-        e2 = QLineEdit()
+        self.c1 = QLineEdit()
+        self.c2 = QLineEdit()
+        self.t1 = QLineEdit()
+        self.t2 = QLineEdit()
+        self.e1 = QLineEdit()
+        self.e2 = QLineEdit()
 
-        mvbox = QVBoxLayout()
+        self.mvbox = QVBoxLayout()
 
         hbox1 = QHBoxLayout()
         hbox1.addWidget(QLabel("Name:"))
         hbox1.addWidget(self.name)
         hbox1.addWidget(QLabel("# City Covered"))
-        hbox1.addWidget(c1)
+        hbox1.addWidget(self.c1)
         hbox1.addWidget(QLabel(" -- "))
-        hbox1.addWidget(c2)
+        hbox1.addWidget(self.c2)
 
-        mvbox.addLayout(hbox1)
+        self.mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
         hbox2.addWidget(QLabel("# Theaters"))
-        hbox2.addWidget(t1)
+        hbox2.addWidget(self.t1)
         hbox2.addWidget(QLabel(" -- "))
-        hbox2.addWidget(t2)
+        hbox2.addWidget(self.t2)
         hbox2.addWidget(QLabel("# Employees"))
-        hbox2.addWidget(e1)
+        hbox2.addWidget(self.e1)
         hbox2.addWidget(QLabel(" -- "))
-        hbox2.addWidget(e2)
+        hbox2.addWidget(self.e2)
 
-        mvbox.addLayout(hbox2)
+        self.mvbox.addLayout(hbox2)
 
         hbox2 = QHBoxLayout()
         filter_ = QPushButton("Filter")
@@ -1248,39 +1367,86 @@ class ManageCompany(QDialog):
         hbox2.addWidget(ct)
         hbox2.addWidget(detail)
 
-        mvbox.addLayout(hbox2)
+        self.mvbox.addLayout(hbox2)
 
-        # cursor.execute("call admin_filter_user()")
-        # table_model = SimpleTableModel(data)
-        # table_view = QTableView()
-        # table_view.setModel(table_model)
-        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel("Sort By:"))
+        stuff = ["","Name","#CityCovered", "#Theaters", "#Employee"]
+        stufff = ["","username","creditCardCount", "userType", "status"]
+        self.s1 = QComboBox()
+        self.s1.addItems(stufff)
+        # self.stuffff = dict(zip(stufff, stuff))
+        # self.sstuff = dict(zip(stuff, stufff))
+        # self.s1.addItems(stuff)
+        hbox3.addWidget(self.s1)
+        self.mvbox.addLayout(hbox3)
 
-        # mvbox.addWidget(table_view)
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel("Sort Direction:"))
+        self.s2 = QComboBox()
+        self.s2.addItems(["","ASC","DESC"])
+        hbox4.addWidget(self.s2)
+        self.mvbox.addLayout(hbox4)
 
-        back = QPushButton("Back")
-        back.pressed.connect(self.back_)
+        sort = QPushButton("Sort")
+        sort.pressed.connect(self.add_dataa)
+        self.mvbox.addWidget(sort)
 
-        mvbox.addWidget(back)
+        # DO SOMETHING HERE
+        self.add_data(self.name.currentText(), self.c1.text(), self.c2.text(), \
+            self.t1.text(), self.t2.text(), self.e1.text(), self.e2.text(),
+            self.s1.currentText(), self.s2.currentText())
 
-        self.setLayout(mvbox)
+        self.setLayout(self.mvbox)
+
+    def add_data(self, name, c1, c2, t1, t2, e1, e2, s1, s2):
+
+        # company_name, mincity, max_city, min theater, max theater, min emp, max emp, sort by , sort dir
+        curs.execute(f'call admin_filter_company("{name}", "{c1}", "{c2}","{t1}","{t2}","{e1}","{e2}","{s1}","{s2}");')
+        curs.fetchall()
+        curs.execute("SELECT * FROM AdFilterCompany;")
+        data = curs.fetchall()
+        print(data)
+        try:
+            self.back.setParent(None)
+            self.table_model.setParent(None)
+            self.table_view.setParent(None)
+        except:
+            pass
+        if bool(data):
+            print(data[0].keys())
+            data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
+            "User Type" : i["userType"], "Status" : i["status"]} for i in data]
+        else:
+            data = [{i : "" for i in self.stuffff.keys() }]
+        self.table_model = SimpleTableModel(data)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.mvbox.addWidget(self.table_view)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.mvbox.addWidget(self.back)
+
+    def add_dataa(self):
+        self.add_data(self.name.currentText(), self.c1.text(), self.c2.text(), \
+            self.t1.text(), self.t2.text(), self.e1.text(), self.e2.text(),
+            self.s1.currentText(), self.s2.currentText())
 
     def filter__(self):
-        pass
-
-    def ct_(self):
-        CreateTheater().exec()
-
-    def detail_(self):
-        comp_name = self.name.currentText()
-        if comp_name == "ALL":
-            w = QMessageBox()
-            QMessageBox.warning(w, "Manage Company Error", f"Cannot view detail for company all")
-        else:
-            CompanyDetail(comp_name).exec()
+        self.add_data(self.name.currentText(), self.c1.text(), self.c2.text(), \
+            self.t1.text(), self.t2.text(), self.e1.text(), self.e2.text(),
+            self.s1.currentText(), self.s2.currentText())
 
     def back_(self):
         self.close()
+
+    def ct_(self):
+        CreateTheater(self.name.currentText()).exec()
+
+    def detail_(self):
+        CompanyDetail(self.name.currentText()).exec()
 
 # DONE!!!
 class CreateTheater(QDialog):
@@ -1774,7 +1940,7 @@ class ExploreTheater(QDialog):
         self.city = QLineEdit()
         self.state = QComboBox()
         self.state.addItems(["ALL"] + list(set([i["thState"] for i in data])))
-        
+
         self.filter_ = QPushButton("Filter")
         self.filter_.pressed.connect(self.filter__)
 
@@ -1872,7 +2038,7 @@ class ExploreTheater(QDialog):
         if not visitDate == "":
             curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
             connection.commit()
-        else: 
+        else:
             b = QMessageBox()
             QMessageBox.warning(b, "Null Error", "You are missing a visit date")
 

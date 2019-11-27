@@ -49,7 +49,7 @@ DROP PROCEDURE IF EXISTS `manager_only_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
+		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1);
 		INSERT INTO employee (username, isAdmin, isManager) VALUES (i_username, 0, 1);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 END$$
@@ -61,8 +61,8 @@ DROP PROCEDURE IF EXISTS `manager_customer_register`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1,1);
-        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode,isManager) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode,1);
+		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1,1);
+        INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 		INSERT INTO customer (username) VALUES (i_username);
 END$$
 DELIMITER ;
@@ -127,7 +127,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -136,7 +136,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'ASC') THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -163,12 +163,12 @@ BEGIN
 	ON theaterInfo.comName = manInfo.comName) AS comFilter
     WHERE
 		(comName = i_comName OR i_comName = "" OR i_comName = "ALL") AND
-		(numCityCover >= i_minCity OR i_minCity IS NULL) AND
-        (numCityCover<= i_maxCity OR i_maxCity IS NULL) AND
-        (numTheater >= i_minTheater OR i_minTheater IS NULL) AND
-        (numTheater<= i_maxTheater OR i_maxTheater IS NULL) AND
-        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL) AND
-        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL)
+		(numCityCover >= i_minCity OR i_minCity IS NULL OR i_minCity = "") AND
+        (numCityCover<= i_maxCity OR i_maxCity IS NULL OR i_maxCity = "") AND
+        (numTheater >= i_minTheater OR i_minTheater IS NULL OR i_minTheater = "") AND
+        (numTheater<= i_maxTheater OR i_maxTheater IS NULL OR i_maxTheater = "") AND
+        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL OR i_minEmployee = "") AND
+        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL OR i_maxEmployee = "")
 	ORDER BY
 			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 					(CASE
