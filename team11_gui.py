@@ -1654,7 +1654,7 @@ class ViewHistory(QDialog):
 
         self.setLayout(vbox)
 
-# NEED TO DO ............ (MARY DO)
+# DONE
 class ExploreTheater(QDialog):
     def __init__(self):
         super(ExploreTheater, self).__init__()
@@ -1766,19 +1766,19 @@ class ExploreTheater(QDialog):
         self.close()
 
     def lv_(self): # log visit helper
-        # pass
-
         # `user_visit_th`(IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_visitDate DATE, IN i_username VARCHAR(50))
         current_index = self.table_view.currentIndex().row()
         selected_item = self.table_model.row(current_index)
-        # print(selected_item)
         theater = selected_item["Theater"]
-        # address = selected_item["Address"]
         company = selected_item["Company"]
         visitDate = self.vd.text()
-        print(visitDate)
         username = USERNAME
-
+        if not visitDate == "":
+            curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
+            connection.commit()
+        else: 
+            b = QMessageBox()
+            QMessageBox.warning(b, "Null Error", "You are missing a visit date")
 
 # DONE! (I think)
 class VisitHistory(QDialog):
