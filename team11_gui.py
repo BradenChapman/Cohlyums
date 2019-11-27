@@ -37,6 +37,14 @@ def getCreditCards(un):
     curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
     return [i["creditcardnum"] for i in curs.fetchall()]
 
+def getManagerNames():
+    curs.execute("SELECT username FROM manager;")
+    return [i["username"] for i in curs.fetchall()]
+
+def getUserNameMapping():
+    curs.execute("SELECT username, firstname, lastname FROM user;")
+    return {i["username"] : f'{i["firstname"]} {i["lastname"]}' for i in curs.fetchall()}
+
 def getMinAndMaxDate():
     curs.execute("SELECT min(visitdate) as min1 from uservisittheater;")
     dum1 = curs.fetchall()
@@ -44,9 +52,17 @@ def getMinAndMaxDate():
     dum2 = curs.fetchall()
     return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
 
+def getMovies():
+    curs.execute("SELECT movname from movie;")
+    return [i["movname"] for i in curs.fetchall()]
+
 def getStates():
     curs.execute("SELECT DISTINCT thState from theater;")
     return [ i["thState"] for i in curs.fetchall() ]
+
+def getManagersAtCompany(comp):
+    curs.execute(f"SELECT username FROM manager where comname = '{comp}';")
+    return [i["username"] for i in curs.fetchall()]
 
 def isDuplicateUsername(un):
     dum = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
@@ -108,10 +124,8 @@ def removeUser(un):
 
     connection.commit()
 
-def getMovies():
-    curs.execute("SELECT movname from movie;")
-    return [i["movname"] for i in curs.fetchall()]
 
+# Helper class for tables
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
         QAbstractTableModel.__init__(self, None)
@@ -1252,61 +1266,64 @@ class ManageCompany(QDialog):
         CreateTheater().exec()
 
     def detail_(self):
-        dum = self.name.currentText()
-        CompanyDetail(dum).exec()
+        comp_name = self.name.currentText()
+        CompanyDetail(comp_name).exec()
 
     def back_(self):
         self.close()
 
-# EASIER
+# DONE!!!
 class CreateTheater(QDialog):
     def __init__(self):
         super(CreateTheater, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Create Theater")
 
-        name = QLineEdit()
-        comp = QComboBox()
-        comp.addItems(["ALL"])
-        street = QLineEdit()
-        city = QLineEdit()
-        state = QLineEdit()
-        zip_ = QLineEdit()
-        cap = QLineEdit()
-        manager = QComboBox()
-        manager.addItems(["ALL"])
+        self.name = QLineEdit()
+        self.comp = QComboBox()
+        self.comps = getCompanyNames()
+        self.comp.addItems(self.comps)
+        self.street = QLineEdit()
+        self.city = QLineEdit()
+        self.state = QComboBox()
+        self.state.addItems(getStates())
+        self.zip_ = QLineEdit()
+        self.cap = QLineEdit()
+        self.manager = QComboBox()
+        self.mans = getManagerNames()
+        self.manager.addItems(self.mans)
 
         mvbox = QVBoxLayout()
 
         hbox1 = QHBoxLayout()
         hbox1.addWidget(QLabel("Name:"))
-        hbox1.addWidget(name)
+        hbox1.addWidget(self.name)
         hbox1.addWidget(QLabel("Company:"))
-        hbox1.addWidget(comp)
+        hbox1.addWidget(self.comp)
 
         mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
         hbox2.addWidget(QLabel("Street Address:"))
-        hbox2.addWidget(street)
+        hbox2.addWidget(self.street)
 
         mvbox.addLayout(hbox2)
 
         hbox3 = QHBoxLayout()
         hbox3.addWidget(QLabel("City"))
-        hbox3.addWidget(city)
+        hbox3.addWidget(self.city)
         hbox3.addWidget(QLabel("State"))
-        hbox3.addWidget(state)
+        hbox3.addWidget(self.state)
         hbox3.addWidget(QLabel("Zipcode"))
-        hbox3.addWidget(zip_)
+        hbox3.addWidget(self.zip_)
 
         mvbox.addLayout(hbox3)
 
         hbox4 = QHBoxLayout()
         hbox4.addWidget(QLabel("Capacity"))
-        hbox4.addWidget(cap)
+        hbox4.addWidget(self.cap)
         hbox4.addWidget(QLabel("Manager"))
-        hbox4.addWidget(manager)
+        hbox4.addWidget(self.manager)
 
         mvbox.addLayout(hbox4)
 
@@ -1328,11 +1345,33 @@ class CreateTheater(QDialog):
 
     def create_(self):
         # Create theater
-        self.close()
+        name = self.name.text()
+        comp = self.comp.currentText()
+        street = self.street.text()
+        city = self.city.text()
+        state = self.state.currentText()
+        zip_ = self.zip_.text()
+        cap = self.cap.text()
+        manager = self.manager.currentText()
+        try:
+            dum = getManagersAtCompany(comp)
+            if manager in dum:
+                curs.execute(f'call admin_create_theater("{name}","{comp}","{street}","{city}","{state}","{zip_}","{cap}","{manager}")')
+                self.name.setText("")
+                self.street.setText("")
+                self.city.setText("")
+                self.zip_.setText("")
+                self.cap.setText("")
+            else:
+                w = QMessageBox()
+                QMessageBox.warning(w, "Create Theater Error", f"Manager, {manager} not employed at company {comp}.")
+        except Exception as e:
+            w = QMessageBox()
+            QMessageBox.warning(w, "Create Theater Error", f"The following exception occured...\n{e}")
 
 # EASIER
 class CompanyDetail(QDialog):
-    def __init__(self, name):
+    def __init__(self, comp_name):
         super(CompanyDetail, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Company Detail")
@@ -1341,20 +1380,39 @@ class CompanyDetail(QDialog):
 
         hbox1 = QHBoxLayout()
         hbox1.addWidget(QLabel("Name:"))
-        hbox1.addWidget(QLabel("" + name))
+        hbox1.addWidget(QLabel("" + comp_name))
 
         mvbox.addLayout(hbox1)
 
-        # HOW WILL WE FIND THE EMPLOYEES AT A COMPANY???
         hbox2 = QHBoxLayout()
         hbox2.addWidget(QLabel("Employees:"))
-        hbox2.addWidget(QLabel("Some Employees...."))
+        mans = getManagersAtCompany(comp_name)
+        hbox2.addWidget(QLabel(", ".join(mans)[-2::-1][::-1]))
 
         mvbox.addLayout(hbox2)
 
         mvbox.addWidget(QLabel("Theaters:"))
 
+        curs.execute(f'call admin_view_comdetail_th("{comp_name}");')
+        curs.fetchall()
+        curs.execute("SELECT * FROM adcomdetailth;")
+        data1 = curs.fetchall()
+        data1 = [{"Name":i["thName"], "Manager":i["thManagerUsername"], "Name":i["thName"], "Name":i["thName"]\
+                "Name":i["thName"], "Name":i["thName"]} for i in data1]
+
+        table_model = SimpleTableModel(data1)
+        table_view = QTableView()
+        table_view.setModel(table_model)
+        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        mvbox.addWidget(table_view)
+
+        back = QPushButton("Back")
+        back.pressed.connect(self.back_)
         self.setLayout(mvbox)
+
+    def back_(self):
+        self.close()
 
 # DONE! (I think)
 class CreateMovie(QDialog):
@@ -1404,12 +1462,12 @@ class CreateMovie(QDialog):
         date = self.date.text()
         try:
             curs.execute(f'call admin_create_mov("{name}","{dur}","{date}");')
+            self.name.setText("")
+            self.duration.setText("")
+            self.date.setText("")
         except Exception as e:
             w = QMessageBox()
             QMessageBox.warning(w, "Create Movie Error", f"The following exception occured...\n{e}")
-        self.name.setText("")
-        self.duration.setText("")
-        self.date.setText("")
 
 # NEED TO DO ??
 class TheaterOverview(QDialog):
