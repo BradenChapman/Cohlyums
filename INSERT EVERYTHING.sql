@@ -101,7 +101,7 @@ DROP TABLE IF EXISTS `adfilteruser`;
 CREATE TABLE `adfilteruser` (
   `username` varchar(30) NOT NULL,
   `creditCardCount` bigint(21) DEFAULT NULL,
-  `userType` varchar(15) CHARACTER SET cp850 DEFAULT NULL,
+  `userType` varchar(15) CHARACTER SET cp850 COLLATE cp850_general_ci DEFAULT NULL,
   `status` varchar(45) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1032,7 +1032,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_customer_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1,1);
+		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1,1);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode,isManager) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode,1);
 		INSERT INTO customer (username) VALUES (i_username);
 END ;;
@@ -1045,9 +1045,9 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET character_set_client  = cp850 */ ;
+/*!50003 SET character_set_results = cp850 */ ;
+/*!50003 SET collation_connection  = cp850_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
@@ -1109,7 +1109,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_only_register`(IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
 BEGIN
-		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, MD5(i_password), i_firstname, i_lastname,1);
+		INSERT INTO user (username, password, firstname, lastname,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1);
 		INSERT INTO employee (username, isAdmin, isManager) VALUES (i_username, 0, 1);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 END ;;
@@ -1264,4 +1264,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-27  1:53:38
+-- Dump completed on 2019-11-27  2:34:12
