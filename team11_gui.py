@@ -1900,7 +1900,12 @@ class ExploreMovie(QDialog):
         if maxDate == "":
             maxDate = MAX_DATE
 
-        curs.execute(f'call customer_filter_mov("{movieName}","{company}","{city}", "{state}", "{minDate}", "{maxDate}");')
+        try: 
+            curs.execute(f'call customer_filter_mov("{movieName}","{company}","{city}", "{state}", "{minDate}", "{maxDate}");')
+        except: 
+            b = QMessageBox()
+            QMessageBox.warning(b, "Error", "Your date is the wrong format")
+        
         dum1 = curs.fetchall()
         dum = curs.execute('SELECT * FROM CosFilterMovie;')
         dum2 = curs.fetchall()
@@ -1965,8 +1970,12 @@ class ExploreMovie(QDialog):
         company = selected_item['Company']
         playDate = selected_item['PlayDate']
 
-        curs.execute(f'call customer_view_mov("{ccard}", "{movie}", "{releaseDate}", "{theater}", "{company}", "{playDate}");')
-        connection.commit()
+        try:
+            curs.execute(f'call customer_view_mov("{ccard}", "{movie}", "{releaseDate}", "{theater}", "{company}", "{playDate}");')
+            connection.commit()
+        except: 
+            b = QMessageBox()
+            QMessageBox.warning(b, "Error", "Your date is the wrong format")
 
 # DONE! (I think)
 class ViewHistory(QDialog):
@@ -2115,8 +2124,12 @@ class ExploreTheater(QDialog):
         visitDate = self.vd.text()
         username = USERNAME
         if not visitDate == "":
-            curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
-            connection.commit()
+            try: 
+                curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
+                connection.commit()
+            except: 
+                b = QMessageBox()
+                QMessageBox.warning(b, "Error", "Your date is the wrong format")
         else:
             b = QMessageBox()
             QMessageBox.warning(b, "Null Error", "You are missing a visit date")
