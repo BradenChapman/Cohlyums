@@ -71,7 +71,8 @@ def addCreditCards(un, ccComboBox):
     allItems = [ccComboBox.itemText(i) for i in range(ccComboBox.count())]
     if len(allItems) > 5:
         w = QMessageBox()
-        QMessageBox.warning(b, "Capacity Error", "You have input too many credit cards. Please input 5 or less credit cards.")
+        QMessageBox.warning(w, "Capacity Error", "You have input too many credit cards. Please input 5 or less credit cards.")
+        return "error"
     else:
         # creditCard: IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16)
         # error = False
@@ -79,13 +80,13 @@ def addCreditCards(un, ccComboBox):
             if not len(allItems[i]) == 16:
                 b = QMessageBox()
                 QMessageBox.warning(b, "Length Error", "One of your credit cards is not of length 16")
-                error = True
+                # error = True
                 return "error"
             elif isDuplicateCreditCard(allItems[i]):
-                error = True
+                # error = True
                 return "error"
         for j in range(len(allItems)):
-            curs.execute(f'call customer_add_credicard("{un}", "{allItems[i]}");')
+            curs.execute(f'call customer_add_credicard("{un}", "{allItems[j]}");')
 
 def removeUser(un):
     user = curs.execute(f'SELECT DISTINCT username FROM user where username = "{un}";')
