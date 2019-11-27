@@ -520,13 +520,13 @@ class ManagerRegistration(QDialog):
         self.lastname = QLineEdit()
         self.username = QLineEdit()
         self.company = QComboBox()
-        self.company.addItems(["c1","c2","...","cn"])
+        self.company.addItems(getCompanyNames())
         self.password = QLineEdit()
         self.cpassword = QLineEdit()
         self.address = QLineEdit()
         self.city = QLineEdit()
         self.state = QComboBox()
-        self.state.addItems(["s1","s2","...","sn"])
+        self.state.addItems(getStates())
         self.zip = QLineEdit()
 
         form_group_box = QGroupBox("Please fill out the form below.")
@@ -599,8 +599,32 @@ class ManagerRegistration(QDialog):
 
     def run_register(self):
         # TEST FOR PASSWORD COMPATIBILITY, USERNAME TAKEN, ETC...
-        self.close()
-        Login().exec()
+        firstName = self.firstname.text()
+        lastName = self.lastname.text()
+        username = self.username.text()
+        company = self.company.currentText()
+        password = self.password.text()
+        cPassword = self.cpassword.text()
+        address = self.address.text()
+        city = self.city.text()
+        state = self.state.currentText()
+        zipcode = self.zip.text()
+
+        # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), 
+        # IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
+        if not isDuplicateUsername(username):
+            if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
+                if cPassword == password:
+                    curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                    self.close()
+                    connection.commit()
+                    Login().exec()
+                else:
+                    w = QMessageBox()
+                    QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
+            else:
+                b = QMessageBox()
+                QMessageBox.warning(b, "Registration Error", "You are missing some input")
 
 
 class ManagerCustomerRegistration(QDialog):
