@@ -127,7 +127,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -136,7 +136,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'ASC') THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
