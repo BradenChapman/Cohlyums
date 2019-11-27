@@ -118,13 +118,13 @@ BEGIN
 		on user.username = cCardCount.username) as cardInfo
 		on user.username = cardInfo.username) as userInfo
 WHERE
-	(username = i_username) AND
-	(status = i_status OR i_status = "ALL")
+	(username = i_username OR i_username = "") AND
+	(status = i_status OR i_status = "ALL") 
 ORDER BY
-		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
+		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -133,7 +133,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'ASC') THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
