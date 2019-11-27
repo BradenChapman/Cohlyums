@@ -64,12 +64,6 @@ BEGIN
 		INSERT INTO user (username, password, firstname, lastname, isCustomer,isEmployee) VALUES (i_username, i_password, i_firstname, i_lastname,1,1);
         INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
 		INSERT INTO customer (username) VALUES (i_username);
-<<<<<<< HEAD
-		INSERT INTO employee (username, isAdmin, isManager) VALUES (i_username, 0, 1);
-    INSERT INTO manager (username, comName, manStreet, manCity, manState, manZipcode) VALUES (i_username, i_comName, i_empStreet, i_empCity, i_empState, i_empZipcode);
-
-=======
->>>>>>> 727983a675002d2d60c06057dc3c8e51aa3a4a8f
 END$$
 DELIMITER ;
 
@@ -263,32 +257,6 @@ BEGIN
     CREATE TABLE ManFilterTh
     SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
     FROM movie
-<<<<<<< HEAD
-    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
-    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate)
-    AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (i_minMovPlayDate IS NULL OR minMovPlayDate >= i_minMovPlayDate)
-    AND (i_maxMovPlayDate IS NULL OR maxMovPlayDate <= i_maxMovPlayDate)
-	AND (movName IN
-    (SELECT DISTINCT movName FROM movieplay
-    INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
-	WHERE NOT manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
-
-    ELSE
-    CREATE TABLE ManFilterTh
-	SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
-    FROM movie
-    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
-    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate)
-    AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (movName IN
-    (SELECT DISTINCT movName FROM movieplay INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
-	WHERE NOT manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')))
-    UNION
-    SELECT movieplay.movName, movie.duration, movieplay.movReleaseDate, movieplay.movPlayDate
-=======
     WHERE (i_minMovDuration IS NULL OR duration >= i_minMovDuration)
     AND (i_maxMovDuration IS NULL OR duration <= i_maxMovDuration)
     AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
@@ -301,15 +269,14 @@ BEGIN
     ELSE
     CREATE TABLE ManFilterTh
 	SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
->>>>>>> 727983a675002d2d60c06057dc3c8e51aa3a4a8f
     FROM movieplay, movie
     WHERE (SELECT thName FROM theater WHERE theater.manUsername = i_manUsername) = movieplay.thName
     AND movie.movName = movieplay.movName
-    AND (i_minMovDuration IS NULL OR movie.duration >= i_minMovDuration)
+    AND (i_minMovDuration IS NULL OR movie.duration >= i_minMovDuration) 
     AND (i_maxMovDuration IS NULL OR movie.duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movieplay.movReleaseDate >= i_minMovReleaseDate)
+    AND (i_minMovReleaseDate IS NULL OR movieplay.movReleaseDate >= i_minMovReleaseDate) 
     AND (i_maxMovReleaseDate IS NULL OR movieplay.movReleaseDate <= i_maxMovReleaseDate)
-    AND (i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate)
+    AND (i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate) 
     AND (i_maxMovPlayDate IS NULL OR movieplay.movPlayDate <= i_maxMovPlayDate)
     AND movieplay.movName IN (Select movName from movie where movName like CONCAT('%', i_movName, '%'))
     UNION
