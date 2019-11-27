@@ -1669,8 +1669,6 @@ class TheaterOverview(QDialog):
         self.setModal(True)
         self.setWindowTitle("Theater Overview")
 
-        
-
         self.vbox = QVBoxLayout()
         self.hbox1 = QHBoxLayout()
         self.hbox2 = QHBoxLayout()
@@ -1686,10 +1684,7 @@ class TheaterOverview(QDialog):
         self.mpd1 = QLineEdit()
         self.mpd2 = QLineEdit()
         self.inclusion = QComboBox()
-        self.inclusion.addItems(['All', 'Only include not played movies'])
-        
-        self.data1 = [{}]
-
+        self.inclusion.addItems(['ALL', 'Only include not played movies'])
 
         self.hbox1.addWidget(QLabel("Movie Name:"))
         self.hbox1.addWidget(self.mn)
@@ -1705,32 +1700,79 @@ class TheaterOverview(QDialog):
         self.hbox3.addWidget(self.mpd1)
         self.hbox3.addWidget(QLabel(" -- "))
         self.hbox3.addWidget(self.mpd2)
-        self.hbox3.addWidget(self.inclusion)
 
         self.filter_ = QPushButton("Filter")
+        self.filter_.pressed.connect(self.add_dataa)
 
         self.hbox4.addWidget(self.filter_)
         self.vbox.addLayout(self.hbox1)
         self.vbox.addLayout(self.hbox2)
         self.vbox.addLayout(self.hbox3)
+        self.vbox.addWidget(self.inclusion)
         self.vbox.addLayout(self.hbox4)
 
-        self.table_model = SimpleTableModel(self.data1)
+        self.add_dataa()
+
+        self.setLayout(self.vbox)
+
+    def add_data(self, un, mn, d1, d2, r1, r2, p1, p2, played):
+
+        mn, d1, d2, r1, r2, p1, p2 = mn.text(), d1.text(), d2.text(), r1.text(), r2.text(), p1.text(), p2.text()
+        # CHECK TO SEE IF DATES IN CORRECT FORMAT
+        aList = [d1, d2, r1, r2, p1, p2]
+        bList = [ "NULL" if i == "" else i for i in aList]
+        d1, d2, r1, r2, p1, p2 = bList
+        if mn == "":
+            query = f'call manager_filter_th("{un}", "", '+ d1 +", "+ d2 +", "+ r1 + \
+                    ", " + r2 + ", " + p1 + ", " + p2 + ", " + str(played) + ");"
+            print(query)
+        else:
+            query = f'call manager_filter_th("{un}", "{mn}", '+ d1 +", "+ d2 +", "+ r1 + \
+                    ", " + r2 + ", " + p1 + ", " + p2 + ", " + str(played) + ");"
+            print(query)
+        curs.execute(query)
+        curs.fetchall()
+        curs.execute("SELECT * FROM ManFilterTh;")
+        data = curs.fetchall()
+        try:
+            self.back.setParent(None)
+            self.table_model.setParent(None)
+            self.table_view.setParent(None)
+        except:
+            pass
+        if bool(data):
+            data = [{"Movie Name" : i["movName"], "Duration" : i["movDuration"], "Release Date": i["movReleaseDate"] , \
+            "Play Date": i["movPlayDate"]} for i in data]
+        else:
+            data = [{i : "" for i in self.stuffff.keys() }]
+        self.table_model = SimpleTableModel(data)
         self.table_view = QTableView()
         self.table_view.setModel(self.table_model)
         self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
-
         self.vbox.addWidget(self.table_view)
+
         self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
         self.vbox.addWidget(self.back)
 
-        self.setLayout(self.vbox)
-    
+
+
+    def add_dataa(self):
+        if self.inclusion.currentText() == "ALL":
+            played = False
+        else:
+            played = True
+        self.add_data(USERNAME, self.mn, self.md1, self.md2, self.mrd1, self.mrd2, self.mpd1, self.mpd2, played)
+
     def filter__(self):
-        pass
+        if self.inclusion.currentText() == "ALL":
+            played = False
+        else:
+            played = True
+        self.add_data(USERNAME, self.mn, self.md1, self.md2, self.mrd1, self.mrd2, self.mpd1, self.mpd2, played)
 
     def back_(self):
-        pass
+        self.close()
 
 # DONE! (I think)
 class ScheduleMovie(QDialog):
