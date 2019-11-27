@@ -1646,12 +1646,75 @@ class CreateMovie(QDialog):
             w = QMessageBox()
             QMessageBox.warning(w, "Create Movie Error", f"The following exception occured...\n{e}")
 
-# NEED TO DO ??
+# DONE!
 class TheaterOverview(QDialog):
     def __init__(self):
         super(TheaterOverview, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Theater Overview")
+
+        
+
+        self.vbox = QVBoxLayout()
+        self.hbox1 = QHBoxLayout()
+        self.hbox2 = QHBoxLayout()
+        self.hbox3 = QHBoxLayout()
+        self.hbox4 = QHBoxLayout()
+        self.hbox5 = QHBoxLayout()
+
+        self.mn = QLineEdit()
+        self.md1 = QLineEdit()
+        self.md2 = QLineEdit()
+        self.mrd1 = QLineEdit()
+        self.mrd2 = QLineEdit()
+        self.mpd1 = QLineEdit()
+        self.mpd2 = QLineEdit()
+        self.inclusion = QComboBox()
+        self.inclusion.addItems(['All', 'Only include not played movies'])
+        
+        self.data1 = [{}]
+
+
+        self.hbox1.addWidget(QLabel("Movie Name:"))
+        self.hbox1.addWidget(self.mn)
+        self.hbox1.addWidget(QLabel("Movie Duration:"))
+        self.hbox1.addWidget(self.md1)
+        self.hbox1.addWidget(QLabel(" -- "))
+        self.hbox1.addWidget(self.md2)
+        self.hbox2.addWidget(QLabel("Movie Release Date:"))
+        self.hbox2.addWidget(self.mrd1)
+        self.hbox2.addWidget(QLabel(" -- "))
+        self.hbox2.addWidget(self.mrd2)
+        self.hbox3.addWidget(QLabel("Movie Play Date:"))
+        self.hbox3.addWidget(self.mpd1)
+        self.hbox3.addWidget(QLabel(" -- "))
+        self.hbox3.addWidget(self.mpd2)
+        self.hbox3.addWidget(self.inclusion)
+
+        self.filter_ = QPushButton("Filter")
+
+        self.hbox4.addWidget(self.filter_)
+        self.vbox.addLayout(self.hbox1)
+        self.vbox.addLayout(self.hbox2)
+        self.vbox.addLayout(self.hbox3)
+        self.vbox.addLayout(self.hbox4)
+
+        self.table_model = SimpleTableModel(self.data1)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        self.vbox.addWidget(self.table_view)
+        self.back = QPushButton("Back")
+        self.vbox.addWidget(self.back)
+
+        self.setLayout(self.vbox)
+    
+    def filter__(self):
+        pass
+
+    def back_(self):
+        pass
 
 # DONE! (I think)
 class ScheduleMovie(QDialog):
@@ -1711,7 +1774,7 @@ class ScheduleMovie(QDialog):
             self.date.setText("")
             self.play_date.setText("")
 
-# NEED TO DO ............
+# DONE
 class ExploreMovie(QDialog):
     def __init__(self):
         super(ExploreMovie, self).__init__()
