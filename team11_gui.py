@@ -33,6 +33,17 @@ def getCompanyNames():
     dum = curs.fetchall()
     return [ i["comname"] for i in dum]
 
+def getCreditCards(un):
+    curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
+    return [i["creditcardnum"] for i in curs.fetchall()]
+
+def getMinAndMaxDate():
+    curs.execute("SELECT min(visitdate) as min1 from uservisittheater;")
+    dum1 = curs.fetchall()
+    curs.execute("SELECT max(visitdate) as max1 from uservisittheater;")
+    dum2 = curs.fetchall()
+    return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
+
 def getStates():
     curs.execute("SELECT DISTINCT thState from theater;")
     return [ i["thState"] for i in curs.fetchall() ]
@@ -93,16 +104,9 @@ def removeUser(un):
 
     connection.commit()
 
-def getCreditCards(un):
-    curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
-    return [i["creditcardnum"] for i in curs.fetchall()]
-
-def getMinAndMaxDate():
-    curs.execute("SELECT min(visitdate) as min1 from uservisittheater;")
-    dum1 = curs.fetchall()
-    curs.execute("SELECT max(visitdate) as max1 from uservisittheater;")
-    dum2 = curs.fetchall()
-    return [i["min1"] for i in dum1] + [i["max1"] for i in dum2]
+def getMovies():
+    curs.execute("SELECT movname from movie;")
+    return [i["movname"] for i in curs.fetchall()]
 
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
@@ -134,6 +138,8 @@ class SimpleTableModel(QAbstractTableModel):
         else:
             return self.headers[section]
 
+# DONEish
+#     - Hide password
 class Login(QDialog):
     def __init__(self):
         super(Login, self).__init__()
@@ -236,6 +242,7 @@ class Login(QDialog):
         self.close()
         RegisterNavigation().exec()
 
+# DOOONNNEE
 class RegisterNavigation(QDialog):
 
     def __init__(self):
@@ -284,6 +291,8 @@ class RegisterNavigation(QDialog):
         self.close()
         Login().exec()
 
+# DONEish
+#     - Hide password, password len
 class UserRegistration(QDialog):
 
     def __init__(self):
@@ -361,6 +370,8 @@ class UserRegistration(QDialog):
                 b = QMessageBox()
                 QMessageBox.warning(b, "Registration Error", "You are missing some input")
 
+# DONEish
+# - Hide password, password len, no more than 5 credit cards
 class CustomerRegistration(QDialog):
 
     def __init__(self):
@@ -699,6 +710,7 @@ class ManagerCustomerRegistration(QDialog):
         i = self.card_cb.currentIndex()
         self.card_cb.removeItem(i)
 
+# DONE
 class AdminOnly(QDialog):
 
     def __init__(self):
@@ -754,6 +766,7 @@ class AdminOnly(QDialog):
         self.close()
         Login().exec()
 
+# DONE
 class AdminCustomer(QDialog):
 
     def __init__(self):
@@ -821,6 +834,7 @@ class AdminCustomer(QDialog):
         self.close()
         Login().exec()
 
+# DONE
 class ManagerOnly(QDialog):
 
     def __init__(self):
@@ -874,6 +888,7 @@ class ManagerOnly(QDialog):
         self.close()
         Login().exec()
 
+# DONE
 class ManagerCustomer(QDialog):
 
     def __init__(self):
@@ -939,6 +954,7 @@ class ManagerCustomer(QDialog):
         self.close()
         Login().exec()
 
+# DONE
 class Customer(QDialog):
     def __init__(self):
         super(Customer, self).__init__()
@@ -991,6 +1007,7 @@ class Customer(QDialog):
         self.close()
         Login().exec()
 
+# DONE
 class User(QDialog):
 
     def __init__(self):
@@ -1022,6 +1039,7 @@ class User(QDialog):
         self.close()
         Login().exec()
 
+# NEED TO DO ............
 class ManageUser(QDialog):
     def __init__(self):
         super(ManageUser, self).__init__()
@@ -1082,6 +1100,7 @@ class ManageUser(QDialog):
     def back_(self):
         self.close()
 
+# NEED TO DO ............
 class ManageCompany(QDialog):
     def __init__(self):
         super(ManageCompany, self).__init__()
@@ -1166,6 +1185,7 @@ class ManageCompany(QDialog):
     def back_(self):
         self.close()
 
+# EASIER
 class CreateTheater(QDialog):
     def __init__(self):
         super(CreateTheater, self).__init__()
@@ -1237,6 +1257,7 @@ class CreateTheater(QDialog):
         # Create theater
         self.close()
 
+# EASIER
 class CompanyDetail(QDialog):
     def __init__(self, name):
         super(CompanyDetail, self).__init__()
@@ -1262,6 +1283,7 @@ class CompanyDetail(QDialog):
 
         self.setLayout(mvbox)
 
+# EASIER
 class CreateMovie(QDialog):
     def __init__(self):
         super(CreateMovie, self).__init__()
@@ -1306,18 +1328,57 @@ class CreateMovie(QDialog):
         # UPDATE AND CLEAR DATA
         self.close()
 
+# NEED TO DO ??
 class TheaterOverview(QDialog):
     def __init__(self):
         super(TheaterOverview, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Theater Overview")
 
+# EASIER
 class ScheduleMovie(QDialog):
     def __init__(self):
         super(ScheduleMovie, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Schedule Movie")
 
+        vbox = QVBoxLayout()
+
+        hbox1 = QHBoxLayout()
+        hbox2 = QHBoxLayout()
+        hbox3 = QHBoxLayout()
+
+        curs.execute("SELECT movname FROM manager NATURAL JOIN movie WHERE ;")
+        movies = [i["movname"] for i in curs.fetchall()]
+        self.movie = QComboBox()
+        self.movie.addItems(movies)
+        date = QLineEdit()
+
+        hbox1.addWidget(QLabel("Name:"))
+        hbox1.addWidget(self.movie)
+        hbox1.addWidget(QLabel("Release Date:"))
+        hbox1.addWidget(date)
+
+        play_date = QLineEdit()
+        hbox2.addWidget(QLabel("Play Date:"))
+        hbox2.addWidget(play_date)
+
+        back = QPushButton("Back")
+        back.pressed.connect(self.back_)
+        add = QPushButton("Add")
+        add.pressed.connect(self.add_)
+
+        hbox3.addWidget(back)
+        hbox3.addWidget(add)
+
+    def back_(self):
+        self.close()
+
+    def add_(self):
+        # CALL SCHEDULE MOVIE SP
+        pass
+
+# NEED TO DO ............
 class ExploreMovie(QDialog):
     def __init__(self):
         super(ExploreMovie, self).__init__()
@@ -1406,6 +1467,7 @@ class ExploreMovie(QDialog):
     def view_(self):
         pass
 
+# DONE! (I think)
 class ViewHistory(QDialog):
     def __init__(self):
         super(ViewHistory, self).__init__()
@@ -1432,6 +1494,7 @@ class ViewHistory(QDialog):
 
         self.setLayout(vbox)
 
+# NEED TO DO ............
 class ExploreTheater(QDialog):
     def __init__(self):
         super(ExploreTheater, self).__init__()
@@ -1504,6 +1567,7 @@ class ExploreTheater(QDialog):
     def lv_(self):
         pass
 
+# DONE! (I think)
 class VisitHistory(QDialog):
     def __init__(self, ):
         super(VisitHistory, self).__init__()
