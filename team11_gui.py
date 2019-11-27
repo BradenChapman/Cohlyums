@@ -27,7 +27,6 @@ from PyQt5.QtWidgets import (
 #    - "Wait ... this actually makes no sense ..." - David Zhou
 
 # STATIC FUNCTIONS
-
 def getCompanyNames():
     curs.execute("SELECT DISTINCT comname FROM company;")
     dum = curs.fetchall()
@@ -1132,19 +1131,20 @@ class ManageUser(QDialog):
         self.setModal(True)
         self.setWindowTitle("Manage User")
 
-        username = QLineEdit()
-        status = QComboBox()
-        status.addItems(["ALL","Approved","Declined","Pending"])
+        self.username = QLineEdit()
+        self.username.setText("")
+        self.status = QComboBox()
+        self.status.addItems(["ALL","Approved","Declined","Pending"])
 
-        mvbox = QVBoxLayout()
+        self.mvbox = QVBoxLayout()
         hbox1 = QHBoxLayout()
 
         hbox1.addWidget(QLabel("Username:"))
-        hbox1.addWidget(username)
+        hbox1.addWidget(self.username)
         hbox1.addWidget(QLabel("Status:"))
-        hbox1.addWidget(status)
+        hbox1.addWidget(self.status)
 
-        mvbox.addLayout(hbox1)
+        self.mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
         filter_ = QPushButton("Filter")
@@ -1158,30 +1158,150 @@ class ManageUser(QDialog):
         hbox2.addWidget(approve)
         hbox2.addWidget(decline)
 
-        mvbox.addLayout(hbox2)
+        self.mvbox.addLayout(hbox2)
 
-        # cursor.execute("call admin_filter_user()")
-        # table_model = SimpleTableModel(data)
-        # table_view = QTableView()
-        # table_view.setModel(table_model)
-        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel("Sort By:"))
+        self.s1 = QComboBox()
+        stuff = ["","Username","Credit Card Count", "User Type", "Status"]
+        stufff = ["","username","creditCardCount", "userType", "status"]
+        self.stuffff = dict(zip(stufff, stuff))
+        self.s1.addItems(stuff)
+        hbox3.addWidget(self.s1)
+        self.mvbox.addLayout(hbox3)
 
-        # mvbox.addWidget(table_view)
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel("Sort Direction:"))
+        self.s2 = QComboBox()
+        self.s2.addItems(["","ASC","DESC"])
+        hbox4.addWidget(self.s2)
+        self.mvbox.addLayout(hbox4)
 
-        back = QPushButton("Back")
-        back.pressed.connect(self.back_)
-        mvbox.addWidget(back)
+        sort = QPushButton("Sort")
+        sort.pressed.connect(self.add_dataa)
+        self.mvbox.addWidget(sort)
 
-        self.setLayout(mvbox)
+        self.add_data(self.username.text(),self.status.currentText())
+
+        self.setLayout(self.mvbox)
+
+    def add_data(self, username, status, sort_by = None, sort_dir = None):
+        print(username)
+        print(status)
+        print(sort_by)
+        print(sort_dir)
+        sort_by = "" if None else sort_by
+        sort_dir = "" if None else sort_dir
+        if username != "":
+            if sort_by != "" or sort_dir != "":
+                curs.execute(f'call admin_filter_user("{username}", "{status}", "{sort_by}","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_by == "":
+                curs.execute(f'call admin_filter_user("{username}", "{status}", "","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_dir == "":
+                curs.execute(f'call admin_filter_user("{username}", "{status}", "{sort_by}","");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+        else:
+            if sort_by != "" or sort_dir != "":
+                curs.execute(f'call admin_filter_user("", "{status}", "{sort_by}","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_by == "":
+                curs.execute(f'call admin_filter_user("", "{status}", "","{sort_dir}");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+            elif sort_dir == "":
+                curs.execute(f'call admin_filter_user("", "{status}", "{sort_by}","");')
+                curs.fetchall()
+                curs.execute("SELECT * FROM AdFilterUser;")
+                data = curs.fetchall()
+        try:
+            self.back.setParent(None)
+            self.table_model.setParent(None)
+            self.table_view.setParent(None)
+        except:
+            pass
+        if bool(data):
+            print(data[0].keys())
+            data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
+            "User Type" : i["userType"], "Status" : i["status"]} for i in data]
+            # if bool(sort_by) and bool(sort_dir):
+            #     if sort_dir == "ASC":
+            #         data.sort(key = lambda x : x[sort_by])
+            #     else:
+            #         data.sort(key = lambda x : x[sort_by], reverse = True)
+        else:
+            data = [{i : "" for i in self.stuffff.keys() }]
+        self.table_model = SimpleTableModel(data)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.mvbox.addWidget(self.table_view)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.mvbox.addWidget(self.back)
+
+    def add_dataa(self):
+        self.add_data(self.username.text(), self.status.currentText(), self.s1.currentText(), self.s2.currentText())
 
     def filter__(self):
-        pass
+        self.add_data(self.username.text(), self.status.currentText(), self.s1.currentText(), self.s2.currentText())
 
     def approve_(self):
-        pass
+        current_index = self.table_view.currentIndex().row()
+        selected_item = self.table_model.row(current_index)
+        success = True
+        try:
+            curs.execute(f'call admin_approve_user("{selected_item["username"]}");')
+            curs.fetchall()
+            connection.commit()
+        except Exception as e:
+            success = False
+            w = QMessageBox()
+            QMessageBox.warning(w, "Approval Error", f"Cannot accept user {selected_item['username']}")
+        if success:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText(f"{selected_item['username']} Accepted!")
+            msgBox.setWindowTitle("Approval Accepted")
+            msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            returnValue = msgBox.exec()
+            if returnValue == QMessageBox.Ok:
+                  msgBox.close()
+        self.add_data(self.username.text(), self.status.currentText())
 
     def decline_(self):
-        pass
+        current_index = self.table_view.currentIndex().row()
+        selected_item = self.table_model.row(current_index)
+        success = True
+        try:
+            curs.execute(f'call admin_decline_user("{selected_item["username"]}");')
+            curs.fetchall()
+            connection.commit()
+        except Exception as e:
+            success = False
+            w = QMessageBox()
+            QMessageBox.warning(w, "Decline Error", f"Cannot decline user {selected_item['username']}")
+        if success:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText(f"{selected_item['username']} Declined..")
+            msgBox.setWindowTitle("Decline Accepted")
+            msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            returnValue = msgBox.exec()
+            if returnValue == QMessageBox.Ok:
+                  msgBox.close()
+        self.add_data(self.username.text(), self.status.currentText())
 
     def back_(self):
         self.close()
