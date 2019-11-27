@@ -1124,7 +1124,7 @@ class User(QDialog):
         self.close()
         Login().exec()
 
-# NEED TO DO ............
+# DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 class ManageUser(QDialog):
     def __init__(self):
         super(ManageUser, self).__init__()
@@ -1166,6 +1166,7 @@ class ManageUser(QDialog):
         stuff = ["","Username","Credit Card Count", "User Type", "Status"]
         stufff = ["","username","creditCardCount", "userType", "status"]
         self.stuffff = dict(zip(stufff, stuff))
+        self.sstuff = dict(zip(stuff, stufff))
         self.s1.addItems(stuff)
         hbox3.addWidget(self.s1)
         self.mvbox.addLayout(hbox3)
@@ -1186,11 +1187,10 @@ class ManageUser(QDialog):
         self.setLayout(self.mvbox)
 
     def add_data(self, username, status, sort_by = None, sort_dir = None):
-        print(username)
-        print(status)
-        print(sort_by)
-        print(sort_dir)
-        sort_by = "" if None else sort_by
+        if not bool(sort_by):
+            sort_by = ""
+        else:
+            sort_by = self.sstuff[sort_by]
         sort_dir = "" if None else sort_dir
         if username != "":
             if sort_by != "" or sort_dir != "":
@@ -1798,7 +1798,7 @@ class ExploreTheater(QDialog):
         self.city = QLineEdit()
         self.state = QComboBox()
         self.state.addItems(["ALL"] + list(set([i["thState"] for i in data])))
-        
+
         self.filter_ = QPushButton("Filter")
         self.filter_.pressed.connect(self.filter__)
 
@@ -1896,7 +1896,7 @@ class ExploreTheater(QDialog):
         if not visitDate == "":
             curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
             connection.commit()
-        else: 
+        else:
             b = QMessageBox()
             QMessageBox.warning(b, "Null Error", "You are missing a visit date")
 
