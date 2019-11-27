@@ -310,10 +310,10 @@ BEGIN
     FROM theater
     NATURAL JOIN movieplay
     WHERE
-		(i_movName = movName or i_movName = "ALL") AND
-        (i_comName = comName or i_comName = "ALL") AND
-        (i_city = thCity or i_city = "") AND
-        (i_state = thState or i_state = "ALL") AND
+		(movName = i_movName or i_movName = "ALL") AND
+        (comName = i_comName or i_comName = "ALL") AND
+        (thCity = i_city or i_city = "") AND
+        (thState = i_state or i_state = "ALL") AND
         (i_minMovPlayDate IS NULL OR movPlayDate >= i_minMovPlayDate) AND
         (i_maxMovPlayDate IS NULL OR movPlayDate <= i_maxMovPlayDate);
 END$$
