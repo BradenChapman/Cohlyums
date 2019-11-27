@@ -100,15 +100,15 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_filter_user`(IN i_username VA
 BEGIN
 	DROP TABLE IF EXISTS AdFilterUser;
     CREATE TABLE AdFilterUser
-    SELECT username,creditCardCount,status,
+    SELECT username,creditCardCount,
     (CASE
 		WHEN isUser = 1 THEN 'User'
-        WHEN isCustomer = 1 THEN 'Customer'
-        WHEN isCustomer = 1 AND isAdmin = 1 THEN 'CustomerAdmin'
-        WHEN isCustomer = 1 AND isManager = 1 THEN 'CustomerManager'
-        WHEN isCustomer = 0 AND isAdmin = 1 THEN 'Admin'
-        WHEN isCustomer = 0 AND isManager = 1 THEN 'Manager'
-	END) AS userType
+        WHEN isCustomer = 1 AND isAdmin = 0 AND isManager = 0 THEN 'Customer'
+        WHEN isCustomer = 1 AND isAdmin = 1 AND isUser = 0 THEN 'CustomerAdmin'
+        WHEN isCustomer = 1 AND isManager = 1 AND isUser = 0 THEN 'CustomerManager'
+        WHEN isCustomer = 0 AND isAdmin = 1 AND isUser = 0 THEN 'Admin'
+        WHEN isCustomer = 0 AND isManager = 1 AND isUser = 0 THEN 'Manager'
+	END) AS userType, status
     FROM (
 		SELECT user.username as username, creditCardCount, status, isCustomer, isUser, ifnull(isAdmin,0) as isAdmin, ifnull(isManager,0) as isManager
 		FROM user left join employee on user.username = employee.username
@@ -159,13 +159,13 @@ BEGIN
 		(SELECT comName, count(username) AS numEmployee FROM manager GROUP BY comName) AS manInfo
 	ON theaterInfo.comName = manInfo.comName) AS comFilter
     WHERE
-		(comName = i_comName) AND
-		(numCityCover >= i_minCity) AND
-        (numCityCover<= i_maxCity) AND
-        (numTheater >= i_minTheater) AND
-        (numTheater<= i_maxTheater) AND
-        (numEmployee >= i_minEmployee) AND
-        (numEmployee<= i_maxEmployee)
+		(comName = i_comName OR i_comName = "" OR i_comName = "ALL") AND
+		(numCityCover >= i_minCity OR i_minCity IS NULL) AND
+        (numCityCover<= i_maxCity OR i_maxCity IS NULL) AND
+        (numTheater >= i_minTheater OR i_minTheater IS NULL) AND
+        (numTheater<= i_maxTheater OR i_maxTheater IS NULL) AND
+        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL) AND
+        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL)
 	ORDER BY
 			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 					(CASE
