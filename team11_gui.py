@@ -23,8 +23,8 @@ from PyQt5.QtWidgets import (
 # MEMORABLE COMMENTS
 #
 #    - "It's the fix a ton of stuff that destroyed everthing" - David Zhou
-#    - "I can assure that the rest of the SP work .... 5:15 pm"
-#    -
+#    - "I can assure that the rest of the SP work .... 5:15 pm" - David Zhou
+#    - "Wait ... this actually makes no sense ..." - David Zhou
 
 # STATIC FUNCTIONS
 
@@ -1310,30 +1310,30 @@ class CompanyDetail(QDialog):
 
         self.setLayout(mvbox)
 
-# EASIER
+# DONE! (I think)
 class CreateMovie(QDialog):
     def __init__(self):
         super(CreateMovie, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Create Movie")
 
-        name = QLineEdit()
-        duration = QLineEdit()
-        date = QLineEdit()
+        self.name = QLineEdit()
+        self.duration = QLineEdit()
+        self.date = QLineEdit()
 
         mvbox = QVBoxLayout()
 
         hbox1 = QHBoxLayout()
         hbox1.addWidget(QLabel("Name:"))
-        hbox1.addWidget(name)
+        hbox1.addWidget(self.name)
         hbox1.addWidget(QLabel("Duration:"))
-        hbox1.addWidget(duration)
+        hbox1.addWidget(self.duration)
 
         mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
         hbox2.addWidget(QLabel("Release Date"))
-        hbox2.addWidget(date)
+        hbox2.addWidget(self.date)
 
         mvbox.addLayout(hbox2)
 
@@ -1343,6 +1343,7 @@ class CreateMovie(QDialog):
         create = QPushButton("Create")
         create.pressed.connect(self.create_)
         hbox3.addWidget(back)
+        hbox3.addWidget(create)
 
         mvbox.addLayout(hbox3)
 
@@ -1352,8 +1353,17 @@ class CreateMovie(QDialog):
         self.close()
 
     def create_(self):
-        # UPDATE AND CLEAR DATA
-        self.close()
+        name = self.name.text()
+        dur = self.duration.text()
+        date = self.date.text()
+        try:
+            curs.execute(f'call admin_create_mov("{name}","{dur}","{date}");')
+        except Exception as e:
+            w = QMessageBox()
+            QMessageBox.warning(w, "Create Movie Error", f"The following exception occured...\n{e}")
+        self.name.setText("")
+        self.duration.setText("")
+        self.date.setText("")
 
 # NEED TO DO ??
 class TheaterOverview(QDialog):
@@ -1362,7 +1372,7 @@ class TheaterOverview(QDialog):
         self.setModal(True)
         self.setWindowTitle("Theater Overview")
 
-# EASIER
+# DONE! (I think)
 class ScheduleMovie(QDialog):
     def __init__(self):
         super(ScheduleMovie, self).__init__()
@@ -1419,7 +1429,6 @@ class ScheduleMovie(QDialog):
             QMessageBox.warning(w, "Scheduling Error", f"The following exception occured...\n{e}")
             self.date.setText("")
             self.play_date.setText("")
-
 
 # NEED TO DO ............
 class ExploreMovie(QDialog):
