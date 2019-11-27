@@ -91,6 +91,8 @@ def removeUser(un):
     if user:
         curs.execute(f'DELETE FROM user WHERE username = "{un}";')
 
+    connection.commit()
+
 def getCreditCards(un):
     curs.execute(f'SELECT creditcardnum FROM customercreditcard where username = "{un}";')
     return [i["creditcardnum"] for i in curs.fetchall()]
@@ -350,6 +352,7 @@ class UserRegistration(QDialog):
                 if cPassword == password:
                     curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
                     self.close()
+                    connection.commit()
                     Login().exec()
                 else:
                     w = QMessageBox()
@@ -457,6 +460,7 @@ class CustomerRegistration(QDialog):
                     error = addCreditCards(username, self.card_cb)
                     if error != "error":
                         self.close()
+                        connection.commit()
                         Login().exec()
                     else:
                         removeUser(username)
