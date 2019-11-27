@@ -121,7 +121,6 @@ def removeUser(un):
 
     connection.commit()
 
-
 # Helper class for tables
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data: List[Dict[str, str]]):
@@ -610,7 +609,7 @@ class ManagerRegistration(QDialog):
         state = self.state.currentText()
         zipcode = self.zip.text()
 
-        # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50), 
+        # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50),
         # IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
         if not isDuplicateUsername(username):
             if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
@@ -1221,7 +1220,11 @@ class ManageCompany(QDialog):
 
     def detail_(self):
         comp_name = self.name.currentText()
-        CompanyDetail(comp_name).exec()
+        if comp_name == "ALL":
+            w = QMessageBox()
+            QMessageBox.warning(w, "Manage Company Error", f"Cannot view detail for company all")
+        else:
+            CompanyDetail(comp_name).exec()
 
     def back_(self):
         self.close()
@@ -1323,7 +1326,7 @@ class CreateTheater(QDialog):
             w = QMessageBox()
             QMessageBox.warning(w, "Create Theater Error", f"The following exception occured...\n{e}")
 
-# EASIER
+# DONE
 class CompanyDetail(QDialog):
     def __init__(self, comp_name):
         super(CompanyDetail, self).__init__()
@@ -1351,8 +1354,11 @@ class CompanyDetail(QDialog):
         curs.fetchall()
         curs.execute("SELECT * FROM adcomdetailth;")
         data1 = curs.fetchall()
-        data1 = [{"Name":i["thName"], "Manager":i["thManagerUsername"], "Name":i["thName"], "Name":i["thName"]\
-                "Name":i["thName"], "Name":i["thName"]} for i in data1]
+
+        username_mappings = getUserNameMapping()
+
+        data1 = [{"Name":i["thName"], "Manager":username_mappings[i["thManagerUsername"]], "City":i["thCity"], \
+                "State":i["thState"], "Capacity":i["thCapacity"]} for i in data1]
 
         table_model = SimpleTableModel(data1)
         table_view = QTableView()
