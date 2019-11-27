@@ -623,7 +623,7 @@ class ManagerRegistration(QDialog):
                         self.close()
                         connection.commit()
                         Login().exec()
-                    else: 
+                    else:
                         w = QMessageBox()
                         QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                 else:
@@ -772,7 +772,7 @@ class ManagerCustomerRegistration(QDialog):
                         else:
                             print('error')
                             removeUser(username)
-                    else: 
+                    else:
                         w = QMessageBox()
                         QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                 else:
@@ -1372,7 +1372,7 @@ class CreateTheater(QDialog):
             w = QMessageBox()
             QMessageBox.warning(w, "Create Theater Error", f"The following exception occured...\n{e}")
 
-# DONE
+# DONE! (I think)
 class CompanyDetail(QDialog):
     def __init__(self, comp_name):
         super(CompanyDetail, self).__init__()
@@ -1382,15 +1382,13 @@ class CompanyDetail(QDialog):
         mvbox = QVBoxLayout()
 
         hbox1 = QHBoxLayout()
-        hbox1.addWidget(QLabel("Name:"))
-        hbox1.addWidget(QLabel("" + comp_name))
+        hbox1.addWidget(QLabel("Name:" + comp_name))
 
         mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
-        hbox2.addWidget(QLabel("Employees:"))
         mans = getManagersAtCompany(comp_name)
-        hbox2.addWidget(QLabel(", ".join(mans)[-2::-1][::-1]))
+        hbox2.addWidget(QLabel("Employees:" + ", ".join(mans)[-2::-1][::-1]))
 
         mvbox.addLayout(hbox2)
 
@@ -1656,7 +1654,7 @@ class ViewHistory(QDialog):
 
         self.setLayout(vbox)
 
-# NEED TO DO ............
+# NEED TO DO ............ (MARY DO)
 class ExploreTheater(QDialog):
     def __init__(self):
         super(ExploreTheater, self).__init__()
