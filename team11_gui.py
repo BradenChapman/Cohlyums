@@ -1774,7 +1774,7 @@ class ViewHistory(QDialog):
 
         self.setLayout(vbox)
 
-# NEED TO DO ............ (MARY DO)
+# DONE
 class ExploreTheater(QDialog):
     def __init__(self):
         super(ExploreTheater, self).__init__()
@@ -1787,65 +1787,118 @@ class ExploreTheater(QDialog):
                 i["thCity"] + ", " + i["thState"] + " " + str(i["thZipcode"]), \
                 "Company" : i["comName"]} for i in data]
 
-        vbox = QVBoxLayout()
+        self.vbox = QVBoxLayout()
         hbox1 = QHBoxLayout()
         hbox2 = QHBoxLayout()
 
-        tn = QComboBox()
-        tn.addItems(["ALL"] + list(set([i["Theater"] for i in data1])))
-        comp = QComboBox()
-        comp.addItems(list(set([i["Company"] for i in data1])))
-        city = QLineEdit()
-        state = QComboBox()
-        state.addItems(list(set([i["thState"] for i in data])))
-        filter_ = QPushButton("Filter")
-        filter_.pressed.connect(self.filter__)
+        self.tn = QComboBox()
+        self.tn.addItems(["ALL"] + list(set([i["Theater"] for i in data1])))
+        self.comp = QComboBox()
+        self.comp.addItems(["ALL"] + list(set([i["Company"] for i in data1])))
+        self.city = QLineEdit()
+        self.state = QComboBox()
+        self.state.addItems(["ALL"] + list(set([i["thState"] for i in data])))
+        
+        self.filter_ = QPushButton("Filter")
+        self.filter_.pressed.connect(self.filter__)
 
         hbox1.addWidget(QLabel("Theater Name:"))
-        hbox1.addWidget(tn)
+        hbox1.addWidget(self.tn)
         hbox1.addWidget(QLabel("Company Name:"))
-        hbox1.addWidget(comp)
+        hbox1.addWidget(self.comp)
 
         hbox2.addWidget(QLabel("City:"))
-        hbox2.addWidget(city)
+        hbox2.addWidget(self.city)
         hbox2.addWidget(QLabel("State:"))
-        hbox2.addWidget(state)
+        hbox2.addWidget(self.state)
 
-        vbox.addLayout(hbox1)
-        vbox.addLayout(hbox2)
-        vbox.addWidget(filter_)
+        self.vbox.addLayout(hbox1)
+        self.vbox.addLayout(hbox2)
+        self.vbox.addWidget(self.filter_)
 
-        table_model = SimpleTableModel(data1)
-        table_view = QTableView()
-        table_view.setModel(table_model)
-        table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.table_model = SimpleTableModel(data1)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
-        vbox.addWidget(table_view)
+        self.vbox.addWidget(self.table_view)
 
-        hbox3 = QHBoxLayout()
-        back = QPushButton("Back")
-        back.pressed.connect(self.back_)
-        vd = QLineEdit()
-        lv = QPushButton("Log Visit")
-        lv.pressed.connect(self.lv_)
+        self.hbox3 = QHBoxLayout()
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.vd = QLineEdit()
+        self.lv = QPushButton("Log Visit")
+        self.lv.pressed.connect(self.lv_)
 
-        hbox3.addWidget(back)
-        hbox3.addWidget(QLabel("Visit Date:"))
-        hbox3.addWidget(vd)
-        hbox3.addWidget(lv)
+        self.hbox3.addWidget(self.back)
+        self.hbox3.addWidget(QLabel("Visit Date:"))
+        self.hbox3.addWidget(self.vd)
+        self.hbox3.addWidget(self.lv)
 
-        vbox.addLayout(hbox3)
+        self.vbox.addLayout(self.hbox3)
 
-        self.setLayout(vbox)
+        self.setLayout(self.vbox)
 
     def filter__(self):
-        pass
+        company = self.comp.currentText()
+        theaterName = self.tn.currentText()
+        city = self.city.text()
+        state = self.state.currentText()
+
+        curs.execute(f'call user_filter_th("{theaterName}","{company}","{city}", "{state}");')
+        dum1 = curs.fetchall()
+        dum = curs.execute('SELECT * FROM UserFilterTh;')
+        dum2 = curs.fetchall()
+
+        if not dum:
+            dum3 = [{"Theater":"","Address":"","Company":""}]
+        else:
+            dum3 = [{"Theater" : i["thName"], "Address" : i["thStreet"] + ", " + \
+                i["thCity"] + ", " + i["thState"] + " " + str(i["thZipcode"]), \
+                "Company" : i["comName"]} for i in dum2]
+        self.table_model.setParent(None)
+        self.table_view.setParent(None)
+        self.hbox3.setParent(None)
+        self.vbox.addWidget(self.filter_)
+        self.table_model = SimpleTableModel(dum3)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+
+        self.vbox.addWidget(self.table_view)
+        self.hbox3 = QHBoxLayout()
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.vd = QLineEdit()
+        self.lv = QPushButton("Log Visit")
+        self.lv.pressed.connect(self.lv_)
+
+        self.hbox3.addWidget(self.back)
+        self.hbox3.addWidget(QLabel("Visit Date:"))
+        self.hbox3.addWidget(self.vd)
+        self.hbox3.addWidget(self.lv)
+
+        self.vbox.addLayout(self.hbox3)
+
+        self.setLayout(self.vbox)
 
     def back_(self):
         self.close()
 
-    def lv_(self):
-        pass
+    def lv_(self): # log visit helper
+        # `user_visit_th`(IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_visitDate DATE, IN i_username VARCHAR(50))
+        current_index = self.table_view.currentIndex().row()
+        selected_item = self.table_model.row(current_index)
+        theater = selected_item["Theater"]
+        company = selected_item["Company"]
+        visitDate = self.vd.text()
+        username = USERNAME
+        if not visitDate == "":
+            curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
+            connection.commit()
+        else: 
+            b = QMessageBox()
+            QMessageBox.warning(b, "Null Error", "You are missing a visit date")
 
 # DONE! (I think)
 class VisitHistory(QDialog):
