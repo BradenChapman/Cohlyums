@@ -261,7 +261,9 @@ BEGIN
     AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
     AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate) 
     AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (movName IN 
+    AND (i_minMovPlayDate IS NULL OR minMovPlayDate >= i_minMovPlayDate) 
+    AND (i_maxMovPlayDate IS NULL OR maxMovPlayDate <= i_maxMovPlayDate)
+	AND (movName IN 
     (SELECT DISTINCT movName FROM movieplay 
     INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
 	WHERE NOT manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
