@@ -1,5 +1,4 @@
-DROP DATABASE IF EXISTS `team11`;
-CREATE DATABASE IF NOT EXISTS `team11` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE  IF NOT EXISTS `team11` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `team11`;
 -- MySQL dump 10.13  Distrib 8.0.17, for Win64 (x86_64)
 --
@@ -102,7 +101,7 @@ DROP TABLE IF EXISTS `adfilteruser`;
 CREATE TABLE `adfilteruser` (
   `username` varchar(30) NOT NULL,
   `creditCardCount` bigint(21) DEFAULT NULL,
-  `userType` varchar(15) CHARACTER SET cp850 COLLATE cp850_general_ci DEFAULT NULL,
+  `userType` varchar(15) DEFAULT NULL,
   `status` varchar(45) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -113,7 +112,7 @@ CREATE TABLE `adfilteruser` (
 
 LOCK TABLES `adfilteruser` WRITE;
 /*!40000 ALTER TABLE `adfilteruser` DISABLE KEYS */;
-INSERT INTO `adfilteruser` VALUES ('theScienceGuy',1,'Customer','Approved'),('thePiGuy3.14',1,'Customer','Approved'),('RitzLover28',1,'Customer','Approved'),('radioactivePoRa',0,'Manager','Approved'),('programerAAL',1,'Customer','Approved'),('notFullMetal',1,'Customer','Approved'),('manager4',0,'Manager','Approved'),('manager3',0,'Manager','Approved'),('manager2',0,'Manager','Approved'),('manager1',0,'Manager','Approved'),('isthisthekrustykrab',3,'Customer','Approved'),('imready',1,'Customer','Approved'),('imbatman',0,'Manager','Approved'),('ilikemoney$$',3,'Customer','Approved'),('ghcghc',0,'Manager','Approved'),('georgep',5,'CustomerManager','Approved'),('fullMetal',1,'Customer','Approved'),('fatherAI',0,'Manager','Approved'),('entropyRox',2,'CustomerManager','Approved'),('eeqmcsquare',1,'Customer','Approved'),('does2Much',1,'Customer','Approved'),('DNAhelix',1,'Customer','Approved'),('cool_class4400',1,'CustomerAdmin','Approved'),('calcwizard',1,'Customer','Approved'),('calcultron2',2,'Customer','Approved'),('calcultron',1,'CustomerManager','Approved');
+INSERT INTO `adfilteruser` VALUES ('georgep',5,'CustomerManager','Approved'),('ilikemoney$$',3,'Customer','Approved'),('isthisthekrustykrab',3,'Customer','Approved'),('calcultron2',2,'Customer','Approved'),('entropyRox',2,'CustomerManager','Approved'),('calcultron',1,'CustomerManager','Approved'),('calcwizard',1,'Customer','Approved'),('cool_class4400',1,'CustomerAdmin','Approved'),('DNAhelix',1,'Customer','Approved'),('does2Much',1,'Customer','Approved'),('eeqmcsquare',1,'Customer','Approved'),('fullMetal',1,'Customer','Approved'),('imready',1,'Customer','Approved'),('notFullMetal',1,'Customer','Approved'),('programerAAL',1,'Customer','Approved'),('RitzLover28',1,'Customer','Approved'),('thePiGuy3.14',1,'Customer','Approved'),('theScienceGuy',1,'Customer','Approved'),('fatherAI',0,'Manager','Approved'),('ghcghc',0,'Manager','Approved'),('imbatman',0,'Manager','Approved'),('manager1',0,'Manager','Approved'),('manager2',0,'Manager','Approved'),('manager3',0,'Manager','Approved'),('manager4',0,'Manager','Approved'),('radioactivePoRa',0,'Manager','Approved');
 /*!40000 ALTER TABLE `adfilteruser` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -708,9 +707,9 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = cp850 */ ;
-/*!50003 SET character_set_results = cp850 */ ;
-/*!50003 SET collation_connection  = cp850_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
@@ -728,12 +727,12 @@ BEGIN
 	ON theaterInfo.comName = manInfo.comName) AS comFilter
     WHERE
 		(comName = i_comName OR i_comName = "" OR i_comName = "ALL") AND
-		(numCityCover >= i_minCity OR i_minCity IS NULL) AND
-        (numCityCover<= i_maxCity OR i_maxCity IS NULL) AND
-        (numTheater >= i_minTheater OR i_minTheater IS NULL) AND
-        (numTheater<= i_maxTheater OR i_maxTheater IS NULL) AND
-        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL) AND
-        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL)
+		(numCityCover >= i_minCity OR i_minCity IS NULL OR i_minCity = "") AND
+        (numCityCover<= i_maxCity OR i_maxCity IS NULL OR i_maxCity = "") AND
+        (numTheater >= i_minTheater OR i_minTheater IS NULL OR i_minTheater = "") AND
+        (numTheater<= i_maxTheater OR i_maxTheater IS NULL OR i_maxTheater = "") AND
+        (numEmployee >= i_minEmployee OR i_minEmployee IS NULL OR i_minEmployee = "") AND
+        (numEmployee<= i_maxEmployee OR i_maxEmployee IS NULL OR i_maxEmployee = "")
 	ORDER BY
 			(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = '') THEN
 					(CASE
@@ -764,9 +763,9 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = cp850 */ ;
-/*!50003 SET character_set_results = cp850 */ ;
-/*!50003 SET collation_connection  = cp850_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
@@ -798,7 +797,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'DESC') or (i_sortDirection = "") THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -807,7 +806,7 @@ ORDER BY
 		(CASE WHEN (i_sortDirection = 'ASC') THEN
 				(CASE
 					WHEN i_sortBy = 'username' THEN username
-					WHEN i_sortBY = 'creditCardNum' THEN creditCardCount
+					WHEN i_sortBY = 'creditCardCount' THEN creditCardCount
 					WHEN i_sortBy = 'userType' THEN userType
 					WHEN i_sortBy = 'status' THEN status
 					ELSE username
@@ -1265,4 +1264,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-27  2:44:33
+-- Dump completed on 2019-11-27  4:43:57
