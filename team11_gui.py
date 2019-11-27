@@ -1775,6 +1775,8 @@ class ExploreTheater(QDialog):
         theater = selected_item["Theater"]
         # address = selected_item["Address"]
         company = selected_item["Company"]
+        visitDate = self.vd.text()
+        print(visitDate)
         username = USERNAME
 
 
