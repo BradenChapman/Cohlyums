@@ -34,9 +34,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `customer_add_credicard`;
+DROP PROCEDURE IF EXISTS `customer_add_creditcard`;
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_add_credicard`(IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_add_creditcard`(IN i_username VARCHAR(50), IN i_creditCardNum CHAR(16))
 BEGIN
 		INSERT INTO customercreditcard (username, creditCardNum) VALUES (i_username, i_creditCardNum);
 END$$
