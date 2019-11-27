@@ -1364,13 +1364,13 @@ class ManageCompany(QDialog):
 
         hbox3 = QHBoxLayout()
         hbox3.addWidget(QLabel("Sort By:"))
+
         stuff = ["","Name","#CityCovered", "#Theaters", "#Employee"]
-        stufff = ["","username","creditCardCount", "userType", "status"]
+        stufff = ["","comName","numCityCover", "numTheater", "numEmployee"]
         self.s1 = QComboBox()
-        self.s1.addItems(stufff)
-        # self.stuffff = dict(zip(stufff, stuff))
-        # self.sstuff = dict(zip(stuff, stufff))
-        # self.s1.addItems(stuff)
+        self.stuffff = dict(zip(stufff, stuff))
+        self.sstuff = dict(zip(stuff, stufff))
+        self.s1.addItems(stuff)
         hbox3.addWidget(self.s1)
         self.mvbox.addLayout(hbox3)
 
@@ -1393,13 +1393,25 @@ class ManageCompany(QDialog):
         self.setLayout(self.mvbox)
 
     def add_data(self, name, c1, c2, t1, t2, e1, e2, s1, s2):
-
+        if c1 == "":
+            c1 = 0
+        if c2 == "":
+            c2 = 2 ** 20
+        if t1 == "":
+            t1 = 0
+        if t2 == "":
+            t2 = 2 ** 20
+        if e1 == "":
+            e1 = 0
+        if e2 == "":
+            e2 = 2 ** 20
+        if s1 != "":
+            s1 = self.sstuff[s1]
         # company_name, mincity, max_city, min theater, max theater, min emp, max emp, sort by , sort dir
         curs.execute(f'call admin_filter_company("{name}", "{c1}", "{c2}","{t1}","{t2}","{e1}","{e2}","{s1}","{s2}");')
         curs.fetchall()
-        curs.execute("SELECT * FROM AdFilterCompany;")
+        curs.execute("SELECT * FROM AdFilterCom;")
         data = curs.fetchall()
-        print(data)
         try:
             self.back.setParent(None)
             self.table_model.setParent(None)
@@ -1407,9 +1419,8 @@ class ManageCompany(QDialog):
         except:
             pass
         if bool(data):
-            print(data[0].keys())
-            data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
-            "User Type" : i["userType"], "Status" : i["status"]} for i in data]
+            data = [{"Name" : i["comName"], "#CityCovered" : i["numCityCover"] , \
+            "#Theaters": i["numTheater"], "#Employees": i["numEmployee"] } for i in data]
         else:
             data = [{i : "" for i in self.stuffff.keys() }]
         self.table_model = SimpleTableModel(data)
@@ -1436,7 +1447,7 @@ class ManageCompany(QDialog):
         self.close()
 
     def ct_(self):
-        CreateTheater(self.name.currentText()).exec()
+        CreateTheater().exec()
 
     def detail_(self):
         CompanyDetail(self.name.currentText()).exec()
