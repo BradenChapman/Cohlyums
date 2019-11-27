@@ -1314,40 +1314,39 @@ class ManageCompany(QDialog):
         self.setWindowTitle("Manage Company")
 
         self.name = QComboBox()
-        self.name.addItems(["ALL"])
         dum = getCompanyNames()
-        self.name.addItems(dum)
+        self.name.addItems(["ALL"] + dum)
 
-        c1 = QLineEdit()
-        c2 = QLineEdit()
-        t1 = QLineEdit()
-        t2 = QLineEdit()
-        e1 = QLineEdit()
-        e2 = QLineEdit()
+        self.c1 = QLineEdit()
+        self.c2 = QLineEdit()
+        self.t1 = QLineEdit()
+        self.t2 = QLineEdit()
+        self.e1 = QLineEdit()
+        self.e2 = QLineEdit()
 
-        mvbox = QVBoxLayout()
+        self.mvbox = QVBoxLayout()
 
         hbox1 = QHBoxLayout()
         hbox1.addWidget(QLabel("Name:"))
         hbox1.addWidget(self.name)
         hbox1.addWidget(QLabel("# City Covered"))
-        hbox1.addWidget(c1)
+        hbox1.addWidget(self.c1)
         hbox1.addWidget(QLabel(" -- "))
-        hbox1.addWidget(c2)
+        hbox1.addWidget(self.c2)
 
-        mvbox.addLayout(hbox1)
+        self.mvbox.addLayout(hbox1)
 
         hbox2 = QHBoxLayout()
         hbox2.addWidget(QLabel("# Theaters"))
-        hbox2.addWidget(t1)
+        hbox2.addWidget(self.t1)
         hbox2.addWidget(QLabel(" -- "))
-        hbox2.addWidget(t2)
+        hbox2.addWidget(self.t2)
         hbox2.addWidget(QLabel("# Employees"))
-        hbox2.addWidget(e1)
+        hbox2.addWidget(self.e1)
         hbox2.addWidget(QLabel(" -- "))
-        hbox2.addWidget(e2)
+        hbox2.addWidget(self.e2)
 
-        mvbox.addLayout(hbox2)
+        self.mvbox.addLayout(hbox2)
 
         hbox2 = QHBoxLayout()
         filter_ = QPushButton("Filter")
@@ -1361,39 +1360,86 @@ class ManageCompany(QDialog):
         hbox2.addWidget(ct)
         hbox2.addWidget(detail)
 
-        mvbox.addLayout(hbox2)
+        self.mvbox.addLayout(hbox2)
 
-        # cursor.execute("call admin_filter_user()")
-        # table_model = SimpleTableModel(data)
-        # table_view = QTableView()
-        # table_view.setModel(table_model)
-        # table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel("Sort By:"))
+        stuff = ["","Name","#CityCovered", "#Theaters", "#Employee"]
+        stufff = ["","username","creditCardCount", "userType", "status"]
+        self.s1 = QComboBox()
+        self.s1.addItems(stufff)
+        # self.stuffff = dict(zip(stufff, stuff))
+        # self.sstuff = dict(zip(stuff, stufff))
+        # self.s1.addItems(stuff)
+        hbox3.addWidget(self.s1)
+        self.mvbox.addLayout(hbox3)
 
-        # mvbox.addWidget(table_view)
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel("Sort Direction:"))
+        self.s2 = QComboBox()
+        self.s2.addItems(["","ASC","DESC"])
+        hbox4.addWidget(self.s2)
+        self.mvbox.addLayout(hbox4)
 
-        back = QPushButton("Back")
-        back.pressed.connect(self.back_)
+        sort = QPushButton("Sort")
+        sort.pressed.connect(self.add_dataa)
+        self.mvbox.addWidget(sort)
 
-        mvbox.addWidget(back)
+        # DO SOMETHING HERE
+        self.add_data(self.name.currentText(), self.c1.text(), self.c2.text(), \
+            self.t1.text(), self.t2.text(), self.e1.text(), self.e2.text(),
+            self.s1.currentText(), self.s2.currentText())
 
-        self.setLayout(mvbox)
+        self.setLayout(self.mvbox)
+
+    def add_data(self, name, c1, c2, t1, t2, e1, e2, s1, s2):
+
+        # company_name, mincity, max_city, min theater, max theater, min emp, max emp, sort by , sort dir
+        curs.execute(f'call admin_filter_company("{name}", "{c1}", "{c2}","{t1}","{t2}","{e1}","{e2}","{s1}","{s2}");')
+        curs.fetchall()
+        curs.execute("SELECT * FROM AdFilterCompany;")
+        data = curs.fetchall()
+        print(data)
+        try:
+            self.back.setParent(None)
+            self.table_model.setParent(None)
+            self.table_view.setParent(None)
+        except:
+            pass
+        if bool(data):
+            print(data[0].keys())
+            data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
+            "User Type" : i["userType"], "Status" : i["status"]} for i in data]
+        else:
+            data = [{i : "" for i in self.stuffff.keys() }]
+        self.table_model = SimpleTableModel(data)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
+        self.mvbox.addWidget(self.table_view)
+
+        self.back = QPushButton("Back")
+        self.back.pressed.connect(self.back_)
+        self.mvbox.addWidget(self.back)
+
+    def add_dataa(self):
+        self.add_data(self.name.currentText(), self.c1.text(), self.c2.text(), \
+            self.t1.text(), self.t2.text(), self.e1.text(), self.e2.text(),
+            self.s1.currentText(), self.s2.currentText())
 
     def filter__(self):
-        pass
-
-    def ct_(self):
-        CreateTheater().exec()
-
-    def detail_(self):
-        comp_name = self.name.currentText()
-        if comp_name == "ALL":
-            w = QMessageBox()
-            QMessageBox.warning(w, "Manage Company Error", f"Cannot view detail for company all")
-        else:
-            CompanyDetail(comp_name).exec()
+        self.add_data(self.name.currentText(), self.c1.text(), self.c2.text(), \
+            self.t1.text(), self.t2.text(), self.e1.text(), self.e2.text(),
+            self.s1.currentText(), self.s2.currentText())
 
     def back_(self):
         self.close()
+
+    def ct_(self):
+        CreateTheater(self.name.currentText()).exec()
+
+    def detail_(self):
+        CompanyDetail(self.name.currentText()).exec()
 
 # DONE!!!
 class CreateTheater(QDialog):
