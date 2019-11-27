@@ -493,6 +493,7 @@ class CustomerRegistration(QDialog):
         i = self.card_cb.currentIndex()
         self.card_cb.removeItem(i)
 
+
 class ManagerRegistration(QDialog):
 
     def __init__(self):
@@ -585,6 +586,7 @@ class ManagerRegistration(QDialog):
         # TEST FOR PASSWORD COMPATIBILITY, USERNAME TAKEN, ETC...
         self.close()
         Login().exec()
+
 
 class ManagerCustomerRegistration(QDialog):
     def __init__(self):
@@ -1348,20 +1350,19 @@ class ScheduleMovie(QDialog):
         hbox2 = QHBoxLayout()
         hbox3 = QHBoxLayout()
 
-        curs.execute("SELECT movname FROM manager NATURAL JOIN movie WHERE ;")
-        movies = [i["movname"] for i in curs.fetchall()]
+        movies = getMovies()
         self.movie = QComboBox()
         self.movie.addItems(movies)
-        date = QLineEdit()
+        self.date = QLineEdit()
 
         hbox1.addWidget(QLabel("Name:"))
         hbox1.addWidget(self.movie)
         hbox1.addWidget(QLabel("Release Date:"))
-        hbox1.addWidget(date)
+        hbox1.addWidget(self.date)
 
-        play_date = QLineEdit()
+        self.play_date = QLineEdit()
         hbox2.addWidget(QLabel("Play Date:"))
-        hbox2.addWidget(play_date)
+        hbox2.addWidget(self.play_date)
 
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
@@ -1371,12 +1372,29 @@ class ScheduleMovie(QDialog):
         hbox3.addWidget(back)
         hbox3.addWidget(add)
 
+        vbox.addLayout(hbox1)
+        vbox.addLayout(hbox2)
+        vbox.addLayout(hbox3)
+
+        self.setLayout(vbox)
+
     def back_(self):
         self.close()
 
     def add_(self):
-        # CALL SCHEDULE MOVIE SP
-        pass
+        mov = self.movie.currentText()
+        r_date = self.date.text()
+        p_date = self.play_date.text()
+        try:
+            curs.execute(f'call manager_schedule_mov("{USERNAME}","{mov}","{r_date}","{p_date}");')
+            self.date.setText("")
+            self.play_date.setText("")
+        except Exception as e:
+            w = QMessageBox()
+            QMessageBox.warning(w, "Scheduling Error", f"The following exception occured...\n{e}")
+            self.date.setText("")
+            self.play_date.setText("")
+
 
 # NEED TO DO ............
 class ExploreMovie(QDialog):
