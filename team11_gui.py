@@ -70,7 +70,7 @@ def addCreditCards(un, ccComboBox):
                 QMessageBox.warning(b, "Length Error", "One of your credit cards is not of length 16")
                 error = True
                 return "error"
-            elif isDuplicateCreditCard(allItems[i]): 
+            elif isDuplicateCreditCard(allItems[i]):
                 error = True
                 return "error"
         for j in range(len(allItems)):
@@ -81,7 +81,7 @@ def removeUser(un):
     admin = curs.execute(f'SELECT DISTINCT username FROM admin where username = "{un}";')
     customer = curs.execute(f'SELECT DISTINCT username FROM customer where username = "{un}";')
     manager = curs.execute(f'SELECT DISTINCT username FROM manager where username = "{un}";')
-    
+
     if admin:
         curs.execute(f'DELETE FROM admin WHERE username = "{un}";')
     if customer:
@@ -351,13 +351,13 @@ class UserRegistration(QDialog):
                     curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
                     self.close()
                     Login().exec()
-                else: 
+                else:
                     w = QMessageBox()
                     QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else: 
+            else:
                 b = QMessageBox()
                 QMessageBox.warning(b, "Registration Error", "You are missing some input")
-            
+
 
 class CustomerRegistration(QDialog):
 
@@ -465,15 +465,15 @@ class CustomerRegistration(QDialog):
                     if not error == "error":
                         self.close()
                         Login().exec()
-                    else: 
+                    else:
                         removeUser(username)
-                else: 
+                else:
                     w = QMessageBox()
                     QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else: 
+            else:
                 m = QMessageBox()
                 QMessageBox.warning(m, "Registration Error", "You are missing some input")
-        # else: 
+        # else:
         #     x = QMessageBox()
         #     QMessageBox.warning(x, "Registration Error", "You are missing some input")
 
@@ -1530,13 +1530,13 @@ class VisitHistory(QDialog):
 
         hbox = QHBoxLayout()
         comps = list(set([i["Company"] for i in dum2]))
-        comp = QComboBox()
-        comp.addItems(["ALL"] + comps)
+        self.comp = QComboBox()
+        self.comp.addItems(["ALL"] + comps)
         self.vd1 = QLineEdit()
         self.vd2 = QLineEdit()
 
         hbox.addWidget(QLabel("Company Name:"))
-        hbox.addWidget(comp)
+        hbox.addWidget(self.comp)
         hbox.addWidget(QLabel("Visit Date:"))
         hbox.addWidget(self.vd1)
         hbox.addWidget(QLabel(" -- "))
@@ -1560,11 +1560,11 @@ class VisitHistory(QDialog):
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
 
-        self.the_comp = comp.currentText()
 
         self.setLayout(self.vbox)
 
     def filter__(self):
+        self.the_comp = self.comp.currentText()
         MIN_DATE, MAX_DATE = getMinAndMaxDate()
         if not self.vd1.text():
             ovd1 = MIN_DATE
@@ -1584,7 +1584,8 @@ class VisitHistory(QDialog):
         else:
             dum2 = [{"Theater":i["thName"],"Address":f'{i["thStreet"]}, {i["thCity"]}, {i["thState"]} {i["thZipcode"]}',\
                 "Company": i["comName"],"Visit Date":i["visitDate"]} for i in dum2]
-
+        if self.the_comp != "ALL":
+            dum2 = [i for i in dum2 if i["Company"] == self.the_comp]
         self.table_model.setParent(None)
         self.table_view.setParent(None)
         self.table_model = SimpleTableModel(dum2)
