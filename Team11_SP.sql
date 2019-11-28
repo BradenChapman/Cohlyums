@@ -268,7 +268,17 @@ BEGIN
 
     ELSE
     CREATE TABLE ManFilterTh
-	SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
+	SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
+    FROM movie
+    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
+    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
+    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate)
+    AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
+    AND (movName NOT IN
+    (SELECT DISTINCT movName FROM movieplay INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
+	WHERE manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')))
+    UNION
+    SELECT movieplay.movName, movie.duration as movDuration, movieplay.movReleaseDate, movieplay.movPlayDate
     FROM movieplay, movie
     WHERE (SELECT thName FROM theater WHERE theater.manUsername = i_manUsername) = movieplay.thName
     AND movie.movName = movieplay.movName
@@ -278,17 +288,7 @@ BEGIN
     AND (i_maxMovReleaseDate IS NULL OR movieplay.movReleaseDate <= i_maxMovReleaseDate)
     AND (i_minMovPlayDate IS NULL OR movieplay.movPlayDate >= i_minMovPlayDate)
     AND (i_maxMovPlayDate IS NULL OR movieplay.movPlayDate <= i_maxMovPlayDate)
-    AND movieplay.movName IN (Select movName from movie where movName like CONCAT('%', i_movName, '%'))
-    UNION
-	SELECT movName, duration as movDuration, movReleaseDate, null as movPlayDate
-    FROM movie
-    WHERE (i_minMovDuration IS NULL or duration >= i_minMovDuration)
-    AND (i_maxMovDuration IS NULL or duration <= i_maxMovDuration)
-    AND (i_minMovReleaseDate IS NULL OR movReleaseDate >= i_minMovReleaseDate)
-    AND (i_maxMovReleaseDate IS NULL OR movReleaseDate <= i_maxMovReleaseDate)
-    AND (movName NOT IN
-    (SELECT DISTINCT movName FROM movieplay INNER JOIN theater ON theater.thName = movieplay.thName AND theater.comName = movieplay.comName
-	WHERE manUsername = i_manUsername AND movName LIKE CONCAT('%', i_movName, '%')));
+    AND movieplay.movName IN (Select movName from movie where movName like CONCAT('%', i_movName, '%'));
 	END IF;
 END$$
 DELIMITER ;
