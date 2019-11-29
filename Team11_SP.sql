@@ -317,8 +317,8 @@ BEGIN
     WHERE
 		(movName = i_movName or i_movName = "ALL") AND
         (comName = i_comName or i_comName = "ALL") AND
-        (thCity = i_city or i_city = "") AND
-        (thState = i_state or i_state = "ALL") AND
+        (thCity = i_city or i_city = "" OR i_city = "ALL") AND
+        (thState = i_state or i_state = "ALL" or i_state = "") AND
         (i_minMovPlayDate IS NULL OR movPlayDate >= i_minMovPlayDate) AND
         (i_maxMovPlayDate IS NULL OR movPlayDate <= i_maxMovPlayDate);
 END$$

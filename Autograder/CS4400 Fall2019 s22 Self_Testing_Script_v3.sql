@@ -1,3 +1,4 @@
+USE team11;
 -- CS4400 Introduction to Database Systems (v8/Wednesday, November 27, 2019)
 -- Self-Contained Autograding/Testing Script for Phase 3 of the Course Project
 
