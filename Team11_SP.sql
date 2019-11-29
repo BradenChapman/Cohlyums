@@ -319,8 +319,8 @@ BEGIN
         (comName = i_comName or i_comName = "ALL") AND
         (thCity = i_city or i_city = "") AND
         (thState = i_state or i_state = "ALL") AND
-        (i_minMovPlayDate = NULL OR movPlayDate >= i_minMovPlayDate) AND
-        (i_maxMovPlayDate = NULL OR movPlayDate <= i_maxMovPlayDate);
+        (i_minMovPlayDate IS NULL OR movPlayDate >= i_minMovPlayDate) AND
+        (i_maxMovPlayDate IS NULL OR movPlayDate <= i_maxMovPlayDate);
 END$$
 DELIMITER ;
 
