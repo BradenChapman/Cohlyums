@@ -1,0 +1,13 @@
+CS 4400 Team 11 Compilation Commands
+
+- DEPENDeNCIES
+    - Make sure the python 3 interpreter is accessible through the terminal
+    - Execute all of the following commands beginning with either pip, pip3 or
+      python -m pip
+         - install pymysql
+         - install pyqt5
+
+- EXECUTING THE APPLICATION
+    - After unzipping the submitted file and navigating to the appropriate directory
+    execute "python team11_gui.py <mysqlpassword>" from the terminal where
+    <mysqlpassword> is the the password to your local mysql server

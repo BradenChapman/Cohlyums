@@ -1,5 +1,4 @@
 import pymysql, sys, datetime
-from typing import *
 from PyQt5.QtCore import Qt, QAbstractTableModel, QVariant
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
@@ -132,7 +131,7 @@ def removeUser(un):
 
 # Helper class for tables
 class SimpleTableModel(QAbstractTableModel):
-    def __init__(self, data: List[Dict[str, str]]):
+    def __init__(self, data):
         QAbstractTableModel.__init__(self, None)
         self.data = data
         self.headers = [str(k) for k, v in data[0].items()]
