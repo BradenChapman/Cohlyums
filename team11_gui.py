@@ -1879,6 +1879,9 @@ class ScheduleMovie(QDialog):
         mov = self.movie.currentText()
         r_date = self.date.text()
         p_date = self.play_date.text()
+        if p_date < r_date:
+            w = QMessageBox()
+            QMessageBox.warning(w, "Scheduling Error", f"Play date must be after the release date")
         try:
             curs.execute(f'call manager_schedule_mov("{USERNAME}","{mov}","{r_date}","{p_date}");')
             self.date.setText("")
