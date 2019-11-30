@@ -995,7 +995,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_view_mov`(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
 BEGIN
-	IF (SELECT COUNT(username) FROM customerviewmovie NATURAL JOIN customercreditcard WHERE customerviewmovie.movPlayDate = i_movPlayDate) < 3 THEN
+	IF (SELECT COUNT(username) FROM customerviewmovie NATURAL JOIN customercreditcard WHERE customerviewmovie.movPlayDate = i_movPlayDate AND username IN (SELECT username FROM customercreditcard WHERE creditcardnum = i_creditCardNum)) < 3 THEN
     INSERT INTO customerviewmovie (creditcardnum, thName, comName, movName, movReleaseDate, movPlayDate)
     VALUES (i_creditCardNum, i_thName, i_comName, i_movName, i_movReleaseDate, i_movPlayDate);
 	END IF;
