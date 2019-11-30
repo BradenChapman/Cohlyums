@@ -171,6 +171,7 @@ class Login(QDialog):
 
         self.username = QLineEdit()
         self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
 
         form_group_box = QGroupBox("Enter your login credentials")
         layout = QFormLayout()
@@ -326,7 +327,9 @@ class UserRegistration(QDialog):
         self.lastname = QLineEdit()
         self.username = QLineEdit()
         self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
         self.cpassword = QLineEdit()
+        self.cpassword.setEchoMode(QLineEdit.Password)
 
         form_group_box = QGroupBox("Please fill out the form below.")
         layout = QFormLayout()
@@ -377,7 +380,9 @@ class UserRegistration(QDialog):
         lastName = self.lastname.text()
         username = self.username.text()
         password = self.password.text()
+        self.password.setEchoMode(QLineEdit.Password)
         cPassword = self.cpassword.text()
+        self.password.setEchoMode(QLineEdit.Password)
         if not isDuplicateUsername(username):
             if not firstName == "" and not lastName == "" and not username == "" and not password == "":
                 if cPassword == password:
@@ -405,7 +410,9 @@ class CustomerRegistration(QDialog):
         self.lastname = QLineEdit()
         self.username = QLineEdit()
         self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
         self.cpassword = QLineEdit()
+        self.cpassword.setEchoMode(QLineEdit.Password)
 
         form_group_box = QGroupBox("Please fill out the form below.")
         layout = QFormLayout()
@@ -484,7 +491,9 @@ class CustomerRegistration(QDialog):
         lastName = self.lastname.text()
         username = self.username.text()
         password = self.password.text()
+        self.password.setEchoMode(QLineEdit.Password)
         cPassword = self.cpassword.text()
+        self.cPassword.setEchoMode(QLineEdit.Password)
 
         if not isDuplicateUsername(username):
             if not firstName == "" and not lastName == "" and not username == "" and not password == "":
@@ -530,7 +539,9 @@ class ManagerRegistration(QDialog):
         self.company = QComboBox()
         self.company.addItems(getCompanyNames())
         self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
         self.cpassword = QLineEdit()
+        self.cpassword.setEchoMode(QLineEdit.Password)
         self.address = QLineEdit()
         self.city = QLineEdit()
         self.state = QComboBox()
@@ -652,7 +663,9 @@ class ManagerCustomerRegistration(QDialog):
         self.company = QComboBox()
         self.company.addItems(getCompanyNames())
         self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
         self.cpassword = QLineEdit()
+        self.cpassword.setEchoMode(QLineEdit.Password)
         self.address = QLineEdit()
         self.city = QLineEdit()
         self.state = QComboBox()
@@ -758,8 +771,10 @@ class ManagerCustomerRegistration(QDialog):
         username = self.username.text()
         company = self.company.currentText()
         password = self.password.text()
+        self.password.setEchoMode(QLineEdit.Password)
         cPassword = self.cpassword.text()
         address = self.address.text()
+        self.cpassword.setEchoMode(QLineEdit.Password)
         city = self.city.text()
         state = self.state.currentText()
         zipcode = self.zip.text()
@@ -1130,7 +1145,7 @@ class User(QDialog):
         self.close()
         Login().exec()
 
-# DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# DONE!!!!!
 class ManageUser(QDialog):
     def __init__(self):
         super(ManageUser, self).__init__()
@@ -1788,8 +1803,6 @@ class TheaterOverview(QDialog):
         self.back = QPushButton("Back")
         self.back.pressed.connect(self.back_)
         self.vbox.addWidget(self.back)
-
-
 
     def add_dataa(self):
         if self.inclusion.currentText() == "ALL":
