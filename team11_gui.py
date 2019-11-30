@@ -129,6 +129,15 @@ def removeUser(un):
 
     connection.commit()
 
+def passwordWeak(password):
+    if len(password) < 8:
+        b = QMessageBox()
+        QMessageBox.warning(b, "Registration Error", "Your password must be at least 8 characters in length")
+        return True
+    else:
+        return False
+
+
 # Helper class for tables
 class SimpleTableModel(QAbstractTableModel):
     def __init__(self, data):
@@ -269,7 +278,6 @@ class RegisterNavigation(QDialog):
 
     def __init__(self):
         super(RegisterNavigation, self).__init__()
-        print("RegisterNavigation")
         self.setModal(True)
         self.setWindowTitle("Register Navigation")
 
@@ -314,7 +322,7 @@ class RegisterNavigation(QDialog):
         Login().exec()
 
 # DONEish
-#     - Hide password, password len
+#     - password len
 class UserRegistration(QDialog):
 
     def __init__(self):
@@ -379,23 +387,21 @@ class UserRegistration(QDialog):
         lastName = self.lastname.text()
         username = self.username.text()
         password = self.password.text()
-        self.password.setEchoMode(QLineEdit.Password)
         cPassword = self.cpassword.text()
-        self.password.setEchoMode(QLineEdit.Password)
         if not isDuplicateUsername(username):
-            if not firstName == "" and not lastName == "" and not username == "" and not password == "":
-                if cPassword == password:
-                    curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
-                    self.close()
-                    connection.commit()
-                    Login().exec()
+            if not (passwordWeak(password) or passwordWeak(cPassword)):
+                if not firstName == "" and not lastName == "" and not username == "" and not password == "":
+                    if cPassword == password:
+                        curs.execute(f'call user_register("{username}", "{password}", "{firstName}", "{lastName}");')
+                        self.close()
+                        connection.commit()
+                        Login().exec()
+                    else:
+                        w = QMessageBox()
+                        QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
                 else:
-                    w = QMessageBox()
-                    QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else:
-                b = QMessageBox()
-                QMessageBox.warning(b, "Registration Error", "You are missing some input")
-
+                    b = QMessageBox()
+                    QMessageBox.warning(b, "Registration Error", "You are missing some input")
 # DONEish
 # - Hide password, password len, no more than 5 credit cards
 class CustomerRegistration(QDialog):
@@ -490,27 +496,26 @@ class CustomerRegistration(QDialog):
         lastName = self.lastname.text()
         username = self.username.text()
         password = self.password.text()
-        self.password.setEchoMode(QLineEdit.Password)
         cPassword = self.cpassword.text()
-        self.cPassword.setEchoMode(QLineEdit.Password)
 
         if not isDuplicateUsername(username):
-            if not firstName == "" and not lastName == "" and not username == "" and not password == "":
-                if cPassword == password:
-                    curs.execute(f'call customer_only_register("{username}", "{password}", "{firstName}", "{lastName}");')
-                    error = addCreditCards(username, self.card_cb, "customer_add_creditcard")
-                    if error != "error":
-                        self.close()
-                        connection.commit()
-                        Login().exec()
+            if not (passwordWeak(password) or passwordWeak(cPassword)):
+                if not firstName == "" and not lastName == "" and not username == "" and not password == "":
+                    if cPassword == password:
+                        curs.execute(f'call customer_only_register("{username}", "{password}", "{firstName}", "{lastName}");')
+                        error = addCreditCards(username, self.card_cb, "customer_add_creditcard")
+                        if error != "error":
+                            self.close()
+                            connection.commit()
+                            Login().exec()
+                        else:
+                            removeUser(username)
                     else:
-                        removeUser(username)
+                        w = QMessageBox()
+                        QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
                 else:
-                    w = QMessageBox()
-                    QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else:
-                m = QMessageBox()
-                QMessageBox.warning(m, "Registration Error", "You are missing some input")
+                    m = QMessageBox()
+                    QMessageBox.warning(m, "Registration Error", "You are missing some input")
         else:
             x = QMessageBox()
             QMessageBox.warning(x, "Registration Error", "Username already taken.")
@@ -631,21 +636,22 @@ class ManagerRegistration(QDialog):
         # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50),
         # IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
         if not isDuplicateUsername(username):
-            if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
-                if cPassword == password:
-                    if len(zipcode) == 5:
-                        curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
-                        self.close()
-                        connection.commit()
-                        Login().exec()
+            if not (passwordWeak(password) or passwordWeak(cPassword)):
+                if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
+                    if cPassword == password:
+                        if len(zipcode) == 5:
+                            curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                            self.close()
+                            connection.commit()
+                            Login().exec()
+                        else:
+                            w = QMessageBox()
+                            QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                     else:
                         w = QMessageBox()
-                        QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
+                        QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
                 else:
-                    w = QMessageBox()
-                    QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else:
-                b = QMessageBox()
+                    b = QMessageBox()
                 QMessageBox.warning(b, "Registration Error", "You are missing some input")
 
 # Doneish
@@ -779,27 +785,28 @@ class ManagerCustomerRegistration(QDialog):
         zipcode = self.zip.text()
 
         if not isDuplicateUsername(username):
-            if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
-                if cPassword == password:
-                    if len(zipcode) == 5:
-                        curs.execute(f'call manager_customer_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
-                        error = addCreditCards(username, self.card_cb, "manager_customer_add_creditcard")
-                        if error != "error":
-                            self.close()
-                            connection.commit()
-                            Login().exec()
+            if not (passwordWeak(password) or passwordWeak(cPassword)):
+                if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
+                    if cPassword == password:
+                        if len(zipcode) == 5:
+                            curs.execute(f'call manager_customer_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                            error = addCreditCards(username, self.card_cb, "manager_customer_add_creditcard")
+                            if error != "error":
+                                self.close()
+                                connection.commit()
+                                Login().exec()
+                            else:
+                                print('error')
+                                removeUser(username)
                         else:
-                            print('error')
-                            removeUser(username)
+                            w = QMessageBox()
+                            QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                     else:
                         w = QMessageBox()
-                        QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
+                        QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
                 else:
-                    w = QMessageBox()
-                    QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
-            else:
-                m = QMessageBox()
-                QMessageBox.warning(m, "Registration Error", "You are missing some input")
+                    m = QMessageBox()
+                    QMessageBox.warning(m, "Registration Error", "You are missing some input")
         else:
             x = QMessageBox()
             QMessageBox.warning(x, "Registration Error", "Username already taken.")
@@ -826,7 +833,7 @@ class AdminOnly(QDialog):
         self.mhbox = QHBoxLayout()
 
         self.vbox1 = QVBoxLayout()
-        self.mu = QPushButton("Manager User")
+        self.mu = QPushButton("Manage User")
         self.mu.pressed.connect(self.mu_)
         self.mc = QPushButton("Manage Company")
         self.mc.pressed.connect(self.mc_)
@@ -882,7 +889,7 @@ class AdminCustomer(QDialog):
         self.mhbox = QHBoxLayout()
 
         self.vbox1 = QVBoxLayout()
-        self.mu = QPushButton("Manager User")
+        self.mu = QPushButton("Manage User")
         self.mu.pressed.connect(self.mu_)
         self.mc = QPushButton("Manage Company")
         self.mc.pressed.connect(self.mc_)
@@ -1123,13 +1130,13 @@ class User(QDialog):
         self.vbox1 = QVBoxLayout()
         self.et = QPushButton("Explore Theater")
         self.et.pressed.connect(self.et_)
-        self.viewh = QPushButton("View History")
-        self.viewh.pressed.connect(self.viewh_)
+        self.visith = QPushButton("Visit History")
+        self.visith.pressed.connect(self.visith_)
         self.back = QPushButton("Back")
         self.back.pressed.connect(self.back_)
 
         self.vbox1.addWidget(self.et)
-        self.vbox1.addWidget(self.viewh)
+        self.vbox1.addWidget(self.visith)
         self.vbox1.addWidget(self.back)
 
         self.setLayout(self.vbox1)
@@ -1137,8 +1144,8 @@ class User(QDialog):
     def et_(self):
         ExploreTheater().exec()
 
-    def viewh_(self):
-        ViewHistory().exec()
+    def visith_(self):
+        VisitHistory().exec()
 
     def back_(self):
         self.close()
@@ -1282,17 +1289,17 @@ class ManageUser(QDialog):
         selected_item = self.table_model.row(current_index)
         success = True
         try:
-            curs.execute(f'call admin_approve_user("{selected_item["username"]}");')
+            curs.execute(f'call admin_approve_user("{selected_item["Username"]}");')
             curs.fetchall()
             connection.commit()
         except Exception as e:
             success = False
             w = QMessageBox()
-            QMessageBox.warning(w, "Approval Error", f"Cannot accept user {selected_item['username']}")
+            QMessageBox.warning(w, "Approval Error", f"Cannot accept user {selected_item['Username']}")
         if success:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Information)
-            msgBox.setText(f"{selected_item['username']} Accepted!")
+            msgBox.setText(f"{selected_item['Username']} Accepted!")
             msgBox.setWindowTitle("Approval Accepted")
             msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
             returnValue = msgBox.exec()
@@ -1304,18 +1311,22 @@ class ManageUser(QDialog):
         current_index = self.table_view.currentIndex().row()
         selected_item = self.table_model.row(current_index)
         success = True
+        if selected_item['Status'] == "Approved":
+            success = False
+            w = QMessageBox()
+            QMessageBox.warning(w, "Decline Error", f"Cannot decline user {selected_item['Username']}, this user is already approved.")
         try:
-            curs.execute(f'call admin_decline_user("{selected_item["username"]}");')
+            curs.execute(f'call admin_decline_user("{selected_item["Username"]}");')
             curs.fetchall()
             connection.commit()
         except Exception as e:
             success = False
             w = QMessageBox()
-            QMessageBox.warning(w, "Decline Error", f"Cannot decline user {selected_item['username']}")
+            QMessageBox.warning(w, "Decline Error", f"Cannot decline user {selected_item['Username']}")
         if success:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Information)
-            msgBox.setText(f"{selected_item['username']} Declined..")
+            msgBox.setText(f"{selected_item['Username']} Declined..")
             msgBox.setWindowTitle("Decline Accepted")
             msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
             returnValue = msgBox.exec()
