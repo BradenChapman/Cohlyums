@@ -674,8 +674,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `admin_create_theater`(IN i_thName V
 	IN i_comName VARCHAR(30), IN i_thStreet VARCHAR(45), IN i_thCity VARCHAR(45),
     IN i_thState CHAR(2), IN i_thZipcode CHAR(11), IN i_capacity INT(11), IN i_managerUsername VARCHAR(45))
 BEGIN
-	insert into theater (thName, comName, thStreet, thCity, thState, thZipcode, capacity, manUsername)
-    values (i_thName, i_comName, i_thStreet, i_thCity, i_thState, i_thZipcode, i_capacity, i_managerUsername);
+	IF i_managerUsername in (SELECT username from manager where manager.comName = i_comName) THEN
+		insert into theater (thName, comName, thStreet, thCity, thState, thZipcode, capacity, manUsername)
+		values (i_thName, i_comName, i_thStreet, i_thCity, i_thState, i_thZipcode, i_capacity, i_managerUsername);
+    END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -993,8 +995,10 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_view_mov`(IN  i_creditCardNum CHAR(16), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_thName VARCHAR(50), IN i_comName VARCHAR(50), IN i_movPlayDate DATE)
 BEGIN
+	IF (SELECT COUNT(username) FROM customerviewmovie NATURAL JOIN customercreditcard WHERE customerviewmovie.movPlayDate = i_movPlayDate) < 3 THEN
     INSERT INTO customerviewmovie (creditcardnum, thName, comName, movName, movReleaseDate, movPlayDate)
     VALUES (i_creditCardNum, i_thName, i_comName, i_movName, i_movReleaseDate, i_movPlayDate);
+	END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1131,7 +1135,9 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `manager_schedule_mov`(IN i_manUsername VARCHAR(50), IN i_movName VARCHAR(50), IN i_movReleaseDate DATE, IN i_movPlayDate DATE)
 BEGIN
-	INSERT INTO movieplay(thName, comName, movName, movReleaseDate, movPlayDate) VALUES((SELECT thName FROM team11.manager WHERE username = i_manUsername), (SELECT comName FROM team11.manager WHERE username = i_manUsername), i_movName, i_movReleaseDate, i_movPlayDate);
+	IF i_movReleaseDate < i_movPlayDate THEN
+		INSERT INTO movieplay(thName, comName, movName, movReleaseDate, movPlayDate) VALUES((SELECT thName FROM team11.manager WHERE username = i_manUsername), (SELECT comName FROM team11.manager WHERE username = i_manUsername), i_movName, i_movReleaseDate, i_movPlayDate);
+	END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
