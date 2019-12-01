@@ -1496,7 +1496,7 @@ class ManageCompany(QDialog):
         dum = self.name.currentText()
         if dum == "ALL":
             w = QMessageBox()
-            QMessageBox.warning(w, "Company Detail Error", f"Cannot view data for all companies")
+            QMessageBox.warning(w, "Company Detail Error", f"Cannot view data for all companies, please select an individual company name.")
         else:
             CompanyDetail(dum).exec()
 
@@ -1518,7 +1518,8 @@ class CreateTheater(QDialog):
         self.zip_ = QLineEdit()
         self.cap = QLineEdit()
         self.manager = QComboBox()
-        self.mans = getManagerNames()
+        curs.execute("SELECT username FROM manager where thName is NULL or thName = '';")
+        self.mans = [i["username"] for i in curs.fetchall()]
         self.manager.addItems(self.mans)
 
         mvbox = QVBoxLayout()
@@ -1569,7 +1570,6 @@ class CreateTheater(QDialog):
 
     def back_(self):
         self.close()
-        RegisterNavigation().exec()
 
     def create_(self):
         # Create theater
