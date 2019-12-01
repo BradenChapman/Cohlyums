@@ -1755,7 +1755,6 @@ class TheaterOverview(QDialog):
     def add_data(self, un, mn, d1, d2, r1, r2, p1, p2, played):
 
         mn, d1, d2, r1, r2, p1, p2 = mn.text(), d1.text(), d2.text(), r1.text(), r2.text(), p1.text(), p2.text()
-        # CHECK TO SEE IF DATES IN CORRECT FORMAT
         if bool(r1):
             try:
                 datetime.datetime.strptime(r1, '%Y-%m-%d')
@@ -2074,7 +2073,7 @@ class ExploreMovie(QDialog):
         ccard = self.cnum_combo.currentText()
         movie = selected_item['Movie']
 
-        curs.execute(f"SELECT * FROM movie WHERE movName = '{movie}';")
+        curs.execute(f"SELECT * FROM movie WHERE movName = \"{movie}\";")
         movieInfo = curs.fetchall()
 
         releaseDate = movieInfo[0]['movReleaseDate'] # write this
@@ -2085,9 +2084,14 @@ class ExploreMovie(QDialog):
         try:
             curs.execute(f'call customer_view_mov("{ccard}", "{movie}", "{releaseDate}", "{theater}", "{company}", "{playDate}");')
             connection.commit()
-        except:
-            b = QMessageBox()
-            QMessageBox.warning(b, "Error", "Your date is the wrong format")
+        except Exception as e:
+            if "duplicate" in e:
+                b = QMessageBox()
+                QMessageBox.warning(b, "Error", "You are already scheduled to view this movie")
+            else:
+                b = QMessageBox()
+                QMessageBox.warning(b, "Error", "Your date is in the wrong format")
+
 
 # DONE! (I think)
 class ViewHistory(QDialog):
@@ -2239,6 +2243,16 @@ class ExploreTheater(QDialog):
             try:
                 curs.execute(f'call user_visit_th("{theater}", "{company}", "{visitDate}", "{username}");')
                 connection.commit()
+                self.vd.setText("")
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText(f"Visit logged successfully")
+                msgBox.setWindowTitle("Success!")
+                msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                returnValue = msgBox.exec()
+                if returnValue == QMessageBox.Ok:
+                      msgBox.close()
+
             except:
                 b = QMessageBox()
                 QMessageBox.warning(b, "Error", "Your date is the wrong format")
@@ -2294,18 +2308,19 @@ class VisitHistory(QDialog):
         self.table_view.setModel(self.table_model)
         self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
-        self.vbox.addWidget(QLabel("Visit History for " + USERNAME))
         self.vbox.addWidget(self.table_view)
 
         back = QPushButton("Back")
         back.pressed.connect(self.back_)
 
+        self.vbox.addWidget(back)
 
         self.setLayout(self.vbox)
 
     def filter__(self):
         self.the_comp = self.comp.currentText()
         MIN_DATE, MAX_DATE = getMinAndMaxDate()
+        MIN_DATE, MAX_DATE = str(MIN_DATE), str(MAX_DATE)
         if not self.vd1.text():
             ovd1 = MIN_DATE
         else:
@@ -2314,10 +2329,15 @@ class VisitHistory(QDialog):
             ovd2 = MAX_DATE
         else:
             ovd2 = self.vd2.text()
-        curs.execute(f'call user_filter_visithistory("{USERNAME}","{ovd1}","{ovd2}");')
-        dum1 = curs.fetchall()
-        dum = curs.execute('SELECT * FROM uservisithistory;')
-        dum2 = curs.fetchall()
+        try:
+            curs.execute(f'call user_filter_visithistory("{USERNAME}","{ovd1}","{ovd2}");')
+            dum1 = curs.fetchall()
+            dum = curs.execute('SELECT * FROM uservisithistory;')
+            dum2 = curs.fetchall()
+        except:
+            w = QMessageBox()
+            QMessageBox.warning(w, "Visit Date Error", f"Please enter a valid visit date.")
+            return None
 
         if not dum:
             dum2 = [{"Theater":"","Address":"","Company":"","Visit Date":""}]
@@ -2334,8 +2354,6 @@ class VisitHistory(QDialog):
         self.table_view.setSelectionMode(QAbstractItemView.SelectRows | QAbstractItemView.SingleSelection)
 
         self.vbox.addWidget(self.table_view)
-        # self.close()
-        # VisitHistory(data).exec()
 
     def back_(self):
         self.close()
@@ -2362,3 +2380,4 @@ if __name__ == '__main__':
     log = Login()
     log.show()
     sys.exit(app.exec_())
+
