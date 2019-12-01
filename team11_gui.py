@@ -2085,7 +2085,7 @@ class ExploreMovie(QDialog):
             curs.execute(f'call customer_view_mov("{ccard}", "{movie}", "{releaseDate}", "{theater}", "{company}", "{playDate}");')
             connection.commit()
         except Exception as e:
-            if "duplicate" in e:
+            if "duplicate" in str(e).lower():
                 b = QMessageBox()
                 QMessageBox.warning(b, "Error", "You are already scheduled to view this movie")
             else:
