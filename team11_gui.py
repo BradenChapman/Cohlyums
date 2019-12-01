@@ -39,6 +39,10 @@ def getManagerNames():
     curs.execute("SELECT username FROM manager;")
     return [i["username"] for i in curs.fetchall()]
 
+def getManagerAddresses():
+    curs.execute("SELECT manStreet, manCity, manState, manZipcode FROM manager;")
+    return [[i["manStreet"], i["manCity"], i["manState"], i["manZipcode"]] for i in curs.fetchall()]
+
 def getUserNameMapping():
     curs.execute("SELECT username, firstname, lastname FROM user;")
     return {i["username"] : f'{i["firstname"]} {i["lastname"]}' for i in curs.fetchall()}
@@ -631,6 +635,8 @@ class ManagerRegistration(QDialog):
         city = self.city.text()
         state = self.state.currentText()
         zipcode = self.zip.text()
+        combined_address = [address, city, state, zipcode]
+        addresses = getManagerAddresses()
 
         # IN i_username VARCHAR(50), IN i_password VARCHAR(50), IN i_firstname VARCHAR(50), IN i_lastname VARCHAR(50),
         # IN i_comName VARCHAR(50), IN i_empStreet VARCHAR(50), IN i_empCity VARCHAR(50), IN i_empState CHAR(2), IN i_empZipcode CHAR(5))
@@ -638,14 +644,18 @@ class ManagerRegistration(QDialog):
             if not (passwordWeak(password) or passwordWeak(cPassword)):
                 if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
                     if cPassword == password:
-                        if len(zipcode) == 5:
-                            curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
-                            self.close()
-                            connection.commit()
-                            Login().exec()
+                        if combined_address not in addresses:
+                            if len(zipcode) == 5:
+                                curs.execute(f'call manager_only_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                                self.close()
+                                connection.commit()
+                                Login().exec()
+                            else:
+                                w = QMessageBox()
+                                QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                         else:
                             w = QMessageBox()
-                            QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
+                            QMessageBox.warning(w, "Registration Error", "There is already a Manager with this address.")
                     else:
                         w = QMessageBox()
                         QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
@@ -781,23 +791,29 @@ class ManagerCustomerRegistration(QDialog):
         city = self.city.text()
         state = self.state.currentText()
         zipcode = self.zip.text()
+        combined_address = [address, city, state, zipcode]
+        addresses = getManagerAddresses()
 
         if not isDuplicateUsername(username):
             if not (passwordWeak(password) or passwordWeak(cPassword)):
                 if not firstName == "" and not lastName == "" and not username == "" and not password == "" and not company == "" and not address == "" and not city == "" and not state == "" and not zipcode == "":
                     if cPassword == password:
-                        if len(zipcode) == 5:
-                            curs.execute(f'call manager_customer_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
-                            error = addCreditCards(username, self.card_cb, "manager_customer_add_creditcard")
-                            if error != "error":
-                                self.close()
-                                connection.commit()
-                                Login().exec()
+                        if combined_address not in addresses:
+                            if len(zipcode) == 5:
+                                curs.execute(f'call manager_customer_register("{username}", "{password}", "{firstName}", "{lastName}", "{company}", "{address}", "{city}", "{state}", "{zipcode}");')
+                                error = addCreditCards(username, self.card_cb, "manager_customer_add_creditcard")
+                                if error != "error":
+                                    self.close()
+                                    connection.commit()
+                                    Login().exec()
+                                else:
+                                    removeUser(username)
                             else:
-                                removeUser(username)
+                                w = QMessageBox()
+                                QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
                         else:
                             w = QMessageBox()
-                            QMessageBox.warning(w, "Registration Error", "Your zipcode is not 5 characters")
+                            QMessageBox.warning(w, "Registration Error", "There is a Manager with this address.")
                     else:
                         w = QMessageBox()
                         QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
