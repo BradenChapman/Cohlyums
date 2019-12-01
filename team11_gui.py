@@ -81,7 +81,6 @@ def isDuplicateUsername(un):
 def isDuplicateCreditCard(ccNum):
     dum = curs.execute(f'SELECT DISTINCT creditCardNum FROM customercreditcard where creditCardNum = "{ccNum}";')
     if dum:
-        print('ok this is right')
         w = QMessageBox()
         QMessageBox.warning(w, "Duplicate Error", "Your credit card number is already in use")
         return True
@@ -652,7 +651,7 @@ class ManagerRegistration(QDialog):
                         QMessageBox.warning(w, "Registration Error", "Your passwords do not match")
                 else:
                     b = QMessageBox()
-                QMessageBox.warning(b, "Registration Error", "You are missing some input")
+                    QMessageBox.warning(b, "Registration Error", "You are missing some input")
 
 # Doneish
 #    - Hide password, password len
@@ -661,7 +660,6 @@ class ManagerCustomerRegistration(QDialog):
         super(ManagerCustomerRegistration, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Manager Customer Registration")
-
         self.firstname = QLineEdit()
         self.lastname = QLineEdit()
         self.username = QLineEdit()
@@ -796,7 +794,6 @@ class ManagerCustomerRegistration(QDialog):
                                 connection.commit()
                                 Login().exec()
                             else:
-                                print('error')
                                 removeUser(username)
                         else:
                             w = QMessageBox()
@@ -1258,7 +1255,6 @@ class ManageUser(QDialog):
         except:
             pass
         if bool(data):
-            print(data[0].keys())
             data = [{"Username": i["username"], "Credit Card Count" : i["creditCardCount"], \
             "User Type" : i["userType"], "Status" : i["status"]} for i in data]
             # if bool(sort_by) and bool(sort_dir):
@@ -2011,7 +2007,6 @@ class ExploreMovie(QDialog):
         dum1 = curs.fetchall()
         dum = curs.execute('SELECT * FROM CosFilterMovie;')
         dum2 = curs.fetchall()
-        print(dum2)
 
         if not dum:
             dum3 = [{"Theater":"","Address":"","Company":""}]
@@ -2065,7 +2060,6 @@ class ExploreMovie(QDialog):
 
         curs.execute(f"SELECT * FROM movie WHERE movName = '{movie}';")
         movieInfo = curs.fetchall()
-        print(movieInfo)
 
         releaseDate = movieInfo[0]['movReleaseDate'] # write this
         theater = selected_item['Theater']
